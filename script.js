@@ -9,6 +9,10 @@ submitBtn.addEventListener("click", () => {
         hasSubmitted = true;
         console.log(userGuess.value);
         userGuess.placeholder = "Submitted!";
+        userGuess.disabled = true;
         userGuess.value = "";
+
+        const answers = document.getElementsByClassName("answers")[0];
+        answers.style.display = "grid";
     }
 })

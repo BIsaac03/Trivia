@@ -26,6 +26,7 @@ div.guess{
 }
 
 div.answers{
+    display: none;
     font-size: 50px;
     list-style-position: inside;
 }

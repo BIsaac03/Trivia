@@ -1,5 +1,3 @@
-console.log("hello world");
-
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -37,5 +35,11 @@ io.use((socket, next) => {
 });
 
 io.on("connection", (socket) => {
-    console.log("connected");
+    console.log("hello world");
 })
+
+httpServer.listen(port, function () {
+    var host = httpServer.address().address
+    var port = httpServer.address().port
+    console.log('App listening at https://%s:%s', host, port)
+});

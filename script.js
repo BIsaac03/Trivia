@@ -52,8 +52,8 @@ io.on("connection", (socket) => {
         }
     });
     
-    const question = "What is 2 + 2?";
-    io.emit("sendQuestion", question);
+    //const question = "What is 2 + 2?";
+    //io.emit("sendQuestion", question);
 });
 
 httpServer.listen(port, function () {

@@ -1,7 +1,19 @@
-//const socket = io("https://trivia-k294.onrender.com/");
-const socket = io("http://localhost:3000");
+if (document.cookie == ""){
+    document.cookie = "userID="+crypto.randomUUID();
+}
+let userIDCookie = document.cookie;
+
+//const socket = io("https://trivia-k294.onrender.com/", {
+const socket = io("http://localhost:3000", {
+    auth: {
+        token: userIDCookie
+    }
+});
+
+const bodyElement = document.body;
 
 socket.on("connect", () => {  
+    firstTimePlayerSetup();
     console.log("connected");
 });
 
@@ -10,6 +22,7 @@ socket.on("sendQuestion", (question) => {
     questionText.textContent = question;
 });
 
+/*
 let hasSubmitted = false;
 const submitBtn = document.querySelector(`.guess .submit`);
 submitBtn.addEventListener("click", () => {
@@ -25,3 +38,28 @@ submitBtn.addEventListener("click", () => {
         answers.style.display = "grid";
     }
 })
+*/
+
+function firstTimePlayerSetup(){
+
+    const playerSetup = document.createElement("div");
+
+    const nameEntry = document.createElement("input");
+    nameEntry.type = "text";
+    
+    const imgEntry = document.createElement("input");
+    imgEntry.type = "file";
+    imgEntry.accept = "image";
+    imgEntry.capture = "user";
+
+    const joinBtn = document.createElement("button");
+    joinBtn.addEventListener("click", () => {
+        socket.emit("playerJoined", nameEntry.value, userIDCookie, imgEntry.value)
+    })
+
+    playerSetup.appendChild(nameEntry);
+    playerSetup.appendChild(imgEntry);
+    playerSetup.appendChild(joinBtn);
+
+    bodyElement.appendChild(playerSetup);
+}

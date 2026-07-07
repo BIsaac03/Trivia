@@ -26,8 +26,9 @@ app.use("/static", express.static('./static/'));
 
 const io = new Server(httpServer, {
     cors: {
-        origin: "http://trivia-k294.onrender.com",
-}
+        //origin: "http://trivia-k294.onrender.com",
+        origin: "http://localhost:5501",
+    }
 });
 
 io.use((socket, next) => {
@@ -36,6 +37,8 @@ io.use((socket, next) => {
 
 io.on("connection", (socket) => {
     console.log("hello world");
+    const question = "What is 2 + 2";
+    io.emit("sendQuestion", question);
 })
 
 httpServer.listen(port, function () {

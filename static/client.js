@@ -1,10 +1,15 @@
-const socket = io.connect("https://trivia-k294.onrender.com/");
+//const socket = io("https://trivia-k294.onrender.com/");
+const socket = io("http://localhost:3000");
 
 socket.on("connect", () => {  
     console.log("connected");
 });
 
-/*
+socket.on("sendQuestion", (question) => {
+    const questionText = document.querySelector(`p.question`);
+    questionText.textContent = question;
+});
+
 let hasSubmitted = false;
 const submitBtn = document.querySelector(`.guess .submit`);
 submitBtn.addEventListener("click", () => {
@@ -20,4 +25,3 @@ submitBtn.addEventListener("click", () => {
         answers.style.display = "grid";
     }
 })
-*/

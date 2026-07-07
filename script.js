@@ -35,14 +35,40 @@ io.use((socket, next) => {
     next();
 });
 
+const players = [];
+
 io.on("connection", (socket) => {
     console.log("hello world");
-    const question = "What is 2 + 2";
+
+    socket.on("playerJoined", (name, ID, img) => {
+        const existingPlayer = players.find(player => player.playerID == ID);
+        if (existingPlayer == undefined){
+            const newPlayer = makePlayer(name, ID, img);
+            players.push(newPlayer) 
+        }
+        else{
+            existingPlayer.playerName = name;
+            existingPlayer.playerImg = img;
+        }
+    });
+    
+    const question = "What is 2 + 2?";
     io.emit("sendQuestion", question);
-})
+});
 
 httpServer.listen(port, function () {
     var host = httpServer.address().address
     var port = httpServer.address().port
     console.log('App listening at https://%s:%s', host, port)
 });
+
+function makePlayer(name, ID, img){
+    let playerName = name;
+    const playerID = ID;
+    let playerImg = img;
+    let firstGuess = '';
+    let finalSelection = '';
+    let pts = 0;
+    let abilities = {'50/50': true, '2nd selection': true, 'double pts': true};
+    return {playerName, playerId, playerImg, firstGuess, finalSelection, pts, abilities}
+}

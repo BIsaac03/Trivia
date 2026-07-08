@@ -45,6 +45,7 @@ io.on("connection", (socket) => {
         if (existingPlayer == undefined){
             const newPlayer = makePlayer(name, ID, img);
             players.push(newPlayer) 
+            console.log(players[0]);
         }
         else{
             existingPlayer.playerName = name;
@@ -70,5 +71,5 @@ function makePlayer(name, ID, img){
     let finalSelection = '';
     let pts = 0;
     let abilities = {'50/50': true, '2nd selection': true, 'double pts': true};
-    return {playerName, playerId, playerImg, firstGuess, finalSelection, pts, abilities}
+    return {playerName, playerID, playerImg, firstGuess, finalSelection, pts, abilities}
 }

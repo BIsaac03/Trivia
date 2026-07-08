@@ -33,3 +33,23 @@ div.answers{
 .answers li{
     padding-bottom: 10px;
 }
+
+div.me{
+    display: grid;
+    justify-items: center;
+    gap: 20px;
+}
+input[type="file"]{
+    display: none;
+}
+.imgEntry{
+    display: block;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background-color: aquamarine;
+}
+button.submit{
+    width: 80px;
+    height: 50px;
+}

@@ -43,22 +43,31 @@ submitBtn.addEventListener("click", () => {
 function firstTimePlayerSetup(){
 
     const playerSetup = document.createElement("div");
+    playerSetup.classList.add("me")
 
-    const nameEntry = document.createElement("input");
-    nameEntry.type = "text";
-    
     const imgEntry = document.createElement("input");
     imgEntry.type = "file";
     imgEntry.accept = "image";
     imgEntry.capture = "user";
+    imgEntry.id = "imgEntry";
+
+    const imgEntryUI = document.createElement("label");
+    imgEntryUI.setAttribute("for", "imgEntry");
+    imgEntryUI.classList.add("imgEntry");
+
+    const nameEntry = document.createElement("input");
+    nameEntry.type = "text";
 
     const joinBtn = document.createElement("button");
+    joinBtn.classList.add("submit");
+    joinBtn.textContent = "Submit";
     joinBtn.addEventListener("click", () => {
-        socket.emit("playerJoined", nameEntry.value, userIDCookie, imgEntry.value)
+        socket.emit("playerJoined", nameEntry.value, userIDCookie.slice(7), imgEntry.value)
     })
 
-    playerSetup.appendChild(nameEntry);
+    playerSetup.appendChild(imgEntryUI);
     playerSetup.appendChild(imgEntry);
+    playerSetup.appendChild(nameEntry);
     playerSetup.appendChild(joinBtn);
 
     bodyElement.appendChild(playerSetup);

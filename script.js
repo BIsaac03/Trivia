@@ -40,20 +40,22 @@ io.use((socket, next) => {
 const players = [];
 
 io.on("connection", (socket) => {
-    console.log("hello world");
-
     socket.on("playerJoined", (name, ID, img) => {
         const existingPlayer = players.find(player => player.playerID == ID);
         if (existingPlayer == undefined){
             const newPlayer = makePlayer(name, ID, img);
             players.push(newPlayer) 
-            console.log(players[0]);
+            // console.log(players[0]);
         }
         else{
             existingPlayer.playerName = name;
             existingPlayer.playerImg = img;
         }
     });
+
+    socket.on("waitingInLobby", () => {
+        socket.emit("displayLobby", players);
+    })
     
     //io.emit("sendQuestion", questions[0].questionText);
 });

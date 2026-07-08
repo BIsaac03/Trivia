@@ -13,9 +13,14 @@ const socket = io("http://localhost:3000", {
 const bodyElement = document.body;
 
 socket.on("connect", () => {  
+    bodyElement.textContent = "";
     firstTimePlayerSetup();
     console.log("connected");
 });
+
+socket.on("displayLobby", (players) => {
+    displayLobby(players);
+})
 
 socket.on("sendQuestion", (question) => {
     const questionText = document.querySelector(`p.question`);
@@ -53,7 +58,21 @@ function firstTimePlayerSetup(){
 
     const imgEntryUI = document.createElement("label");
     imgEntryUI.setAttribute("for", "imgEntry");
-    imgEntryUI.classList.add("imgEntry");
+    imgEntryUI.classList.add("imgEntry", "pfp");
+
+    const pfpPreview = document.createElement("img");
+    imgEntry.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.addEventListener("load", () => {
+                pfpPreview.src = reader.result;
+                pfpPreview.classList.add("imgEntry", "pfp");
+                imgEntryUI.appendChild(pfpPreview);
+            });
+            reader.readAsDataURL(file);
+        }
+    });
 
     const nameEntry = document.createElement("input");
     nameEntry.type = "text";
@@ -62,7 +81,10 @@ function firstTimePlayerSetup(){
     joinBtn.classList.add("submit");
     joinBtn.textContent = "Submit";
     joinBtn.addEventListener("click", () => {
-        socket.emit("playerJoined", nameEntry.value, userIDCookie.slice(7), imgEntry.value)
+        if (nameEntry.value != "" && imgEntry.value != "") {
+            socket.emit("playerJoined", nameEntry.value, userIDCookie.slice(7), pfpPreview.src);
+            socket.emit("waitingInLobby");
+        }
     })
 
     playerSetup.appendChild(imgEntryUI);
@@ -71,4 +93,25 @@ function firstTimePlayerSetup(){
     playerSetup.appendChild(joinBtn);
 
     bodyElement.appendChild(playerSetup);
+}
+
+function displayLobby(players){
+    bodyElement.textContent = "";
+    // !! display ALL players in lobby
+    for (let i = 0; i < players.length; i++){
+        const player = document.createElement("div");
+        player.classList.add(i);
+
+        const name = document.createElement("p");
+        name.textContent = players[i].playerName;
+
+        const img = document.createElement("img");
+        img.src = players[i].playerImg;
+        img.classList.add("pfp");
+
+        player.appendChild(name);
+        player.appendChild(img);
+        bodyElement.appendChild(player);
+    }
+    //console.log(players);
 }

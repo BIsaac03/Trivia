@@ -42,12 +42,17 @@ div.me{
 input[type="file"]{
     display: none;
 }
-.imgEntry{
+.imgEntry.pfp{
     display: block;
     width: 200px;
     height: 200px;
-    border-radius: 50%;
     background-color: aquamarine;
+}
+.pfp{
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 button.submit{
     width: 80px;

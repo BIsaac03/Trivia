@@ -1,3 +1,5 @@
+import questions from "./static/questions.json" assert { type: "json" }
+
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
@@ -53,8 +55,7 @@ io.on("connection", (socket) => {
         }
     });
     
-    //const question = "What is 2 + 2?";
-    //io.emit("sendQuestion", question);
+    //io.emit("sendQuestion", questions[0].questionText);
 });
 
 httpServer.listen(port, function () {

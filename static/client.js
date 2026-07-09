@@ -4,8 +4,8 @@ if (document.cookie == ""){
 const userIDCookie = document.cookie;
 const myID = userIDCookie.slice(7);
 
-//const socket = io("https://trivia-k294.onrender.com/", {
-const socket = io("http://localhost:3000", {
+const socket = io("https://trivia-k294.onrender.com/", {
+//const socket = io("http://localhost:3000", {
     auth: {
         token: userIDCookie
     }

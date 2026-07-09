@@ -28,8 +28,8 @@ app.use("/static", express.static('./static/'));
 
 const io = new Server(httpServer, {
     cors: {
-        //origin: "http://trivia-k294.onrender.com",
-        origin: "http://localhost:5501",
+        origin: "http://trivia-k294.onrender.com",
+        //origin: "http://localhost:5501",
     }
 });
 

@@ -48,7 +48,7 @@ const gameState = {
 
 io.on("connection", (socket) => {
     socket.on("playerConnected", (ID) => {
-        const returningPlayer = players.find(player => player.playerID = ID)
+        const returningPlayer = players.find(player => player.playerID == ID)
         if (returningPlayer == undefined){
             socket.emit("newConnection");
         }

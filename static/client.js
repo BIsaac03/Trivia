@@ -24,10 +24,6 @@ socket.on("newConnection", () => {
 });
 
 socket.on("reconnection", (gameState, players) => {
-    console.log("players")
-    console.log(players)
-    console.log("gameState")
-    console.log(gameState)
     // joining a lobby
     if (!gameState.gameHasStarted){
         const alreadyJoined = players.find(player => player.playerID == myID);
@@ -51,7 +47,9 @@ socket.on("displayLobby", (players) => {
 
 socket.on("playerJoined", (newPlayer) => {
     const lobby = document.getElementById("lobby");
-    displayPlayerInLobby(newPlayer, lobby);
+    if (lobby != undefined){
+        displayPlayerInLobby(newPlayer, lobby);
+    } 
 });
 
 socket.on("playerModified", (modifiedPlayer) => {

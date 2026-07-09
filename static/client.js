@@ -27,7 +27,7 @@ socket.on("reconnection", (gameState, players) => {
     console.log(players)
     // joining a lobby
     if (!gameState.gameHasStarted){
-        const alreadyJoined = players.find(player => player.playerID = myID);
+        const alreadyJoined = players.find(player => player.playerID == myID);
         if (alreadyJoined == undefined){
             firstTimePlayerSetup();
         }

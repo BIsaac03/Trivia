@@ -119,9 +119,8 @@ function firstTimePlayerSetup(){
     joinBtn.classList.add("submit");
     joinBtn.textContent = "Submit";
     joinBtn.addEventListener("click", () => {
-        console.log("attempted join")
         if (nameEntry.value != "" && imgEntry.value != "") {
-            console.log("join successful!")
+            console.log(nameEntry.value);
             socket.emit("playerJoined", nameEntry.value, myID, pfpPreview.src);
             socket.emit("waitingInLobby");
         }
@@ -136,7 +135,7 @@ function firstTimePlayerSetup(){
 }
 
 function displayLobby(players){
-    bodyElement.textContent = "";
+    document.body.innerHTML = "";
     
     const lobby = document.createElement("div");
     lobby.id = "lobby";

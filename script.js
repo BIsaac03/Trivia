@@ -45,11 +45,13 @@ io.on("connection", (socket) => {
         if (existingPlayer == undefined){
             const newPlayer = makePlayer(name, ID, img);
             players.push(newPlayer) 
+            socket.broadcast.emit("playerJoined", newPlayer);
             // console.log(players[0]);
         }
         else{
             existingPlayer.playerName = name;
             existingPlayer.playerImg = img;
+            socket.broadcast.emit("playerModified", existingPlayer);
         }
     });
 

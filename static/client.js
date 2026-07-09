@@ -22,6 +22,18 @@ socket.on("displayLobby", (players) => {
     displayLobby(players);
 })
 
+socket.on("playerJoiend", (newPlayer) => {
+    displayPlayerInLobby(newPlayer);
+});
+
+socket.on("playerModified", (modifiedPlayer) => {
+    const name = document.querySelector(`.${modifiedPlayer.playerID} .name`)
+    name.textContent = modifiedPlayer.playerName;
+
+    const img = document.querySelector(`.${modifiedPlayer.playerID} .pfp`)
+    img.src = modifiedPlayer.playerImg;
+});
+
 socket.on("sendQuestion", (question) => {
     const questionText = document.querySelector(`p.question`);
     questionText.textContent = question;
@@ -97,21 +109,24 @@ function firstTimePlayerSetup(){
 
 function displayLobby(players){
     bodyElement.textContent = "";
-    // !! display ALL players in lobby
     for (let i = 0; i < players.length; i++){
-        const player = document.createElement("div");
-        player.classList.add(i);
-
-        const name = document.createElement("p");
-        name.textContent = players[i].playerName;
-
-        const img = document.createElement("img");
-        img.src = players[i].playerImg;
-        img.classList.add("pfp");
-
-        player.appendChild(name);
-        player.appendChild(img);
-        bodyElement.appendChild(player);
+        displayPlayerInLobby(players[i])
     }
-    //console.log(players);
+}
+
+function displayPlayerInLobby(displayedPlayer){
+    const player = document.createElement("div");
+    player.classList.add(displayedPlayer.playerID);
+
+    const name = document.createElement("p");
+    name.textContent = displayedPlayer.playerName;
+    name.classList.add("name");
+
+    const img = document.createElement("img");
+    img.src = displayedPlayer.playerImg;
+    img.classList.add("pfp");
+
+    player.appendChild(name);
+    player.appendChild(img);
+    bodyElement.appendChild(player);
 }

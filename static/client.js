@@ -121,7 +121,7 @@ function firstTimePlayerSetup(){
     joinBtn.addEventListener("click", () => {
         if (nameEntry.value != "" && imgEntry.value != "") {
             console.log(myID);
-            console.log(pfpPreview.src);
+            socket.emit("test", pfpPreview.src);
             socket.emit("playerJoined", nameEntry.value, myID, pfpPreview.src);
             socket.emit("waitingInLobby");
         }

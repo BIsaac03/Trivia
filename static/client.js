@@ -1,7 +1,8 @@
 if (document.cookie == ""){
     document.cookie = "userID=p"+crypto.randomUUID();
 }
-let userIDCookie = document.cookie;
+const userIDCookie = document.cookie;
+const myID = userIDCookie.slice(7);
 
 //const socket = io("https://trivia-k294.onrender.com/", {
 const socket = io("http://localhost:3000", {
@@ -14,15 +15,38 @@ const bodyElement = document.body;
 
 socket.on("connect", () => {  
     bodyElement.textContent = "";
+    socket.emit("playerConnected", myID);
+    //console.log("connected");
+});
+
+socket.on("newConnection", () => {
     firstTimePlayerSetup();
-    console.log("connected");
+});
+
+socket.on("reconnection", (gameState, players) => {
+    console.log(players)
+    // joining a lobby
+    if (!gameState.gameHasStarted){
+        const alreadyJoined = players.find(player => player.playerID = myID);
+        if (alreadyJoined == undefined){
+            firstTimePlayerSetup();
+        }
+        else{
+            displayLobby(players);
+        }
+    }
+    // joining an ongoing game
+    else{
+        // !! apply current game state if user is an active player
+        // !! otherwise, restrict all functionality
+    }
 });
 
 socket.on("displayLobby", (players) => {
     displayLobby(players);
-})
+});
 
-socket.on("playerJoiend", (newPlayer) => {
+socket.on("playerJoined", (newPlayer) => {
     displayPlayerInLobby(newPlayer);
 });
 
@@ -94,7 +118,7 @@ function firstTimePlayerSetup(){
     joinBtn.textContent = "Submit";
     joinBtn.addEventListener("click", () => {
         if (nameEntry.value != "" && imgEntry.value != "") {
-            socket.emit("playerJoined", nameEntry.value, userIDCookie.slice(7), pfpPreview.src);
+            socket.emit("playerJoined", nameEntry.value, myID, pfpPreview.src);
             socket.emit("waitingInLobby");
         }
     })

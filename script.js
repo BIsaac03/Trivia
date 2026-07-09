@@ -38,8 +38,25 @@ io.use((socket, next) => {
 });
 
 const players = [];
+const gameState = {
+    gameHasStarted: false,
+    question: "",
+    answer: "",
+    questionNum: 0,
+    powersToUse: {'50/50': false, '2nd selection': true, 'double pts': false}
+}
 
 io.on("connection", (socket) => {
+    socket.on("playerConnected", (ID) => {
+        const returningPlayer = players.find(player => player.playerID = ID)
+        if (returningPlayer == undefined){
+            socket.emit("newConnection");
+        }
+        else{
+            socket.emit("reconnection", gameState, players);
+        }
+    })
+
     socket.on("playerJoined", (name, ID, img) => {
         const existingPlayer = players.find(player => player.playerID == ID);
         if (existingPlayer == undefined){

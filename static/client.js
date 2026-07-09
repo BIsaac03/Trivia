@@ -1,5 +1,5 @@
 if (document.cookie == ""){
-    document.cookie = "userID="+crypto.randomUUID();
+    document.cookie = "userID=p"+crypto.randomUUID();
 }
 let userIDCookie = document.cookie;
 

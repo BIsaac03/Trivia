@@ -14,7 +14,7 @@ const socket = io("https://trivia-k294.onrender.com/", {
 const bodyElement = document.body;
 
 socket.on("connect", () => {  
-    bodyElement.textContent = "";
+    document.body.innerHTML = "";
     socket.emit("playerConnected", myID);
     //console.log("connected");
 });
@@ -119,7 +119,9 @@ function firstTimePlayerSetup(){
     joinBtn.classList.add("submit");
     joinBtn.textContent = "Submit";
     joinBtn.addEventListener("click", () => {
+        console.log("attempted join")
         if (nameEntry.value != "" && imgEntry.value != "") {
+            console.log("join successful!")
             socket.emit("playerJoined", nameEntry.value, myID, pfpPreview.src);
             socket.emit("waitingInLobby");
         }

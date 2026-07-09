@@ -136,6 +136,8 @@ function firstTimePlayerSetup(){
 }
 
 function displayLobby(players){
+    console.log("lobby display");
+    console.log(players);
     document.body.innerHTML = "";
     
     const lobby = document.createElement("div");

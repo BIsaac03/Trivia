@@ -1,4 +1,4 @@
-import questions from "./static/questions.json" assert { type: "json" }
+import questions from "./static/questions.json" with { type: "json" }
 
 import express from "express";
 import { createServer } from "http";

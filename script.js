@@ -77,6 +77,10 @@ io.on("connection", (socket) => {
     })
     
     //io.emit("sendQuestion", questions[0].questionText);
+
+    socket.on("testPrint", () => {
+        console.log("hello world");
+    })
 });
 
 httpServer.listen(port, function () {

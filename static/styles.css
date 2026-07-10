@@ -4,7 +4,6 @@
 }
 body{
     display: grid;
-    padding: 50px 75px;
     grid-template-rows: auto auto;
     gap: 40px;
 }
@@ -37,16 +36,32 @@ div.answers{
 div.me{
     display: grid;
     justify-items: center;
-    gap: 20px;
+    padding-top: 48px;
+    gap: 32px;
 }
 input[type="file"]{
     display: none;
 }
-.imgEntry.pfp{
-    display: block;
+.me input.name{
+    border-radius: 10px;
+    padding: 3px 10px;
+    font-size: 24px;
+}
+label.imgEntry.pfp{
+    display: grid;
     width: 200px;
     height: 200px;
-    background-color: aquamarine;
+    border: 2px solid black;
+    background-color: whitesmoke;
+}
+.imgEntry.pfp img{
+    width: 200px;
+    height: 200px;
+    align-self: center;
+    justify-self: center;
+}
+.imgEntry.pfp img.icon{
+    width: 50px;
 }
 .pfp{
     width: 75px;
@@ -54,9 +69,11 @@ input[type="file"]{
     border-radius: 50%;
     object-fit: cover;
 }
-button.submit{
-    width: 80px;
-    height: 50px;
+.me button.submit{
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-size: 32px;
+    background-color: lightgoldenrodyellow;
 }
 
 #lobby{

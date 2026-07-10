@@ -4,8 +4,8 @@ if (document.cookie == ""){
 const userIDCookie = document.cookie;
 const myID = userIDCookie.slice(7);
 
-const socket = io("https://trivia-k294.onrender.com/", {
-//const socket = io("http://localhost:3000", {
+//const socket = io("https://trivia-k294.onrender.com/", {
+const socket = io("http://localhost:3000", {
     auth: {
         token: userIDCookie
     }
@@ -115,20 +115,27 @@ function firstTimePlayerSetup(){
     const imgEntryUI = document.createElement("label");
     imgEntryUI.setAttribute("for", "imgEntry");
     imgEntryUI.classList.add("imgEntry", "pfp");
+    const imgEntryPromptIcon = document.createElement("img");
+    imgEntryPromptIcon.src = "/static/icons/cameraIcon.svg";
+    imgEntryPromptIcon.classList.add("icon");
+    imgEntryUI.appendChild(imgEntryPromptIcon);
 
     imgEntry.addEventListener('change', (event) => {
         const file = event.target.files[0];
         if (file) {
+            imgEntryPromptIcon.remove();
             displayPfp(file);
         }
     });
 
     const nameEntry = document.createElement("input");
+    nameEntry.classList.add("name");
     nameEntry.type = "text";
+    nameEntry.maxLength = 30;
 
     const joinBtn = document.createElement("button");
     joinBtn.classList.add("submit");
-    joinBtn.textContent = "Submit";
+    joinBtn.textContent = "Join";
     joinBtn.addEventListener("click", () => {
         const pfpPreview = document.querySelector(`.me img.preview`);
         if (nameEntry.value != "" && pfpPreview.src != "") {

@@ -4,8 +4,8 @@ if (document.cookie == ""){
 const userIDCookie = document.cookie;
 const myID = userIDCookie.slice(7);
 
-//const socket = io("https://trivia-k294.onrender.com/", {
-const socket = io("http://localhost:3000", {
+const socket = io("https://trivia-k294.onrender.com/", {
+//const socket = io("http://localhost:3000", {
     auth: {
         token: userIDCookie
     }
@@ -60,7 +60,15 @@ socket.on("playerModified", (modifiedPlayer) => {
     img.src = modifiedPlayer.playerImg;
 });
 
-socket.on("sendQuestion", (question) => {
+socket.on("startTrivia", () => {
+    document.body.innerHTML = ""
+
+    const questionText = document.createElement("p");
+    questionText.classList.add("question");
+    bodyElement.appendChild(questionText);
+})
+
+socket.on("nextQuestion", (question) => {
     const questionText = document.querySelector(`p.question`);
     questionText.textContent = question;
 });
@@ -87,8 +95,8 @@ async function displayPfp(file) {
     pfpPreview.classList.add("preview");
 
     const compressedFile = await imageCompression(file, {maxSizeMB: 0.5});
-    console.log(file);
-    console.log(compressedFile);
+    //console.log(file);
+    //console.log(compressedFile);
 
     const reader = new FileReader();
     reader.addEventListener("load", () => {
@@ -166,6 +174,18 @@ function displayLobby(players){
     for (let i = 0; i < players.length; i++){
         displayPlayerInLobby(players[i], lobby)
     }
+
+    const startTriviaButton = document.createElement("button");
+    startTriviaButton.classList.add("startTrivia");
+    startTriviaButton.textContent = "Trivia Time!";
+    startTriviaButton.addEventListener("click", () => {
+        const attemptStart = confirm("Are you sure? Additional players cannot be added later.");
+        if (attemptStart){
+            socket.emit("attemptStart");
+        }
+    })
+
+    lobby.appendChild(startTriviaButton);
 }
 
 function displayPlayerInLobby(displayedPlayer, lobby){

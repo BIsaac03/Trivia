@@ -29,7 +29,7 @@ app.use("/static", express.static('./static/'));
 const io = new Server(httpServer, {
     cors: {
         origin: "http://trivia-k294.onrender.com",
-        //origin: "http://localhost:5501",
+        //origin: "http://localhost:5500",
     }
 });
 
@@ -43,7 +43,12 @@ const gameState = {
     question: "",
     answer: "",
     questionNum: 0,
-    powersToUse: {'50/50': false, '2nd selection': true, 'double pts': false}
+    powersToUse: {'50/50': false, '2nd selection': true, 'double pts': false},
+    loadNextQuestion(question) {
+        this.question = question.questionText;
+        this.answer = question.answer;
+        this.questionNum++;
+    }
 }
 
 io.on("connection", (socket) => {
@@ -63,7 +68,6 @@ io.on("connection", (socket) => {
             const newPlayer = makePlayer(name, ID, img);
             players.push(newPlayer) 
             socket.broadcast.emit("playerJoined", newPlayer);
-            // console.log(players[0]);
         }
         else{
             existingPlayer.playerName = name;
@@ -74,6 +78,17 @@ io.on("connection", (socket) => {
 
     socket.on("waitingInLobby", () => {
         socket.emit("displayLobby", players);
+    })
+
+    socket.on("attemptStart", () => {
+        if (players.length > 1){
+            gameState.gameHasStarted = true;
+            io.emit("startTrivia");
+            sendNextQuesetion();
+        }
+        else{
+            // !! send 'too few players' message
+        }
     })
     
     //io.emit("sendQuestion", questions[0].questionText);
@@ -97,5 +112,11 @@ function makePlayer(name, ID, img){
     let finalSelection = '';
     let pts = 0;
     let abilities = {'50/50': true, '2nd selection': true, 'double pts': true};
-    return {playerName, playerID, playerImg, firstGuess, finalSelection, pts, abilities}
+    let isReady = false;
+    return {playerName, playerID, playerImg, firstGuess, finalSelection, pts, abilities, isReady}
+}
+
+function sendNextQuesetion(){
+    gameState.loadNextQuestion(questions[gameState.questionNum]);
+    io.emit("nextQuestion", gameState.question)
 }

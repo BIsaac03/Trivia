@@ -37,6 +37,11 @@ io.use((socket, next) => {
     next();
 });
 
+// point values for good guesses
+const FIRSTTRYPTS = 5;
+const SECONDGUESSPTS = 3;
+const FOOLPTS = 1;
+
 const players = [];
 const gameState = {
     gameHasStarted: false,
@@ -119,4 +124,33 @@ function makePlayer(name, ID, img){
 function sendNextQuesetion(){
     gameState.loadNextQuestion(questions[gameState.questionNum]);
     io.emit("nextQuestion", gameState.question)
+}
+
+function resetPlayers(){
+    for (let i = 0; i < players.length; i++){
+        players[i].firstGuess = "";
+        players[i].finalSelection = "";
+        players[i].isReady = false;
+    }
+}
+
+function adjustPts(){
+    for (let i = 0; i < players.length; i++){
+        if (players[i].firstGuess == gameState.answer){
+            players[i].pts += FIRSTTRYPTS;
+        }
+        if (players[i].finalSelection == gameState.answer){
+            players[i].pts += SECONDGUESSPTS;
+        }
+        // award fooling points only if opponents pick "YOUR" answer 
+        // no points if they pick their own answer, which happens to also be yours
+        for (let j = 0; j < players.length; j++){
+            if (players[j].finalSelection == players[i].firstGuess){
+                if (players[j].finalSelection != players[j].firstGuess){
+                    players[i].pts += FOOLPTS;
+                }
+            }
+        }
+        console.log(players[i].playerName, players[i].pts);
+    }
 }

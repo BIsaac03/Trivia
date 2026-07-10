@@ -98,7 +98,7 @@ async function displayPfp(file) {
         const imgEntryUI = document.querySelector(`label.imgEntry`);
         imgEntryUI.appendChild(pfpPreview);
     });
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(compressedFile);
 }
 
 function firstTimePlayerSetup(){

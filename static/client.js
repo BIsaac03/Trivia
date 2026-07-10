@@ -82,6 +82,24 @@ submitBtn.addEventListener("click", () => {
     }
 })
 */
+async function displayPfp(file) {
+    const pfpPreview = document.createElement("img");
+    pfpPreview.classList.add("preview");
+
+    const compressedFile = await imageCompression(file, {maxSizeMB: 0.5});
+    console.log(file);
+    console.log(compressedFile);
+
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+        pfpPreview.src = reader.result;
+        pfpPreview.classList.add("imgEntry", "pfp");
+
+        const imgEntryUI = document.querySelector(`label.imgEntry`);
+        imgEntryUI.appendChild(pfpPreview);
+    });
+    reader.readAsDataURL(file);
+}
 
 function firstTimePlayerSetup(){
 
@@ -98,17 +116,10 @@ function firstTimePlayerSetup(){
     imgEntryUI.setAttribute("for", "imgEntry");
     imgEntryUI.classList.add("imgEntry", "pfp");
 
-    const pfpPreview = document.createElement("img");
     imgEntry.addEventListener('change', (event) => {
         const file = event.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.addEventListener("load", () => {
-                pfpPreview.src = reader.result;
-                pfpPreview.classList.add("imgEntry", "pfp");
-                imgEntryUI.appendChild(pfpPreview);
-            });
-            reader.readAsDataURL(file);
+            displayPfp(file);
         }
     });
 
@@ -119,9 +130,10 @@ function firstTimePlayerSetup(){
     joinBtn.classList.add("submit");
     joinBtn.textContent = "Submit";
     joinBtn.addEventListener("click", () => {
-        if (nameEntry.value != "" && imgEntry.value != "") {
+        const pfpPreview = document.querySelector(`.me img.preview`);
+        if (nameEntry.value != "" && pfpPreview.src != "") {
             console.log(myID);
-            socket.emit("test", pfpPreview.src);
+            //socket.emit("test", pfpPreview.src);
             socket.emit("playerJoined", nameEntry.value, myID, pfpPreview.src);
             socket.emit("waitingInLobby");
         }
@@ -136,8 +148,8 @@ function firstTimePlayerSetup(){
 }
 
 function displayLobby(players){
-    console.log("lobby display");
-    console.log(players);
+    //console.log("lobby display");
+    //console.log(players);
     document.body.innerHTML = "";
     
     const lobby = document.createElement("div");

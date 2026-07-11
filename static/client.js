@@ -46,9 +46,9 @@ socket.on("displayLobby", (players) => {
 });
 
 socket.on("playerJoined", (newPlayer) => {
-    const lobby = document.getElementById("lobby");
-    if (lobby != undefined){
-        displayPlayerInLobby(newPlayer, lobby);
+    const playersDiv = document.getElementById("playersDiv");
+    if (playersDiv != undefined){
+        displayPlayerInLobby(newPlayer, playersDiv);
     } 
 });
 
@@ -188,9 +188,13 @@ function displayLobby(players){
     const lobby = document.createElement("div");
     lobby.id = "lobby";
     bodyElement.appendChild(lobby);
+    
+    const playersDiv = document.createElement("div");
+    playersDiv.id = "playersDiv"
+    lobby.appendChild(playersDiv);
 
     for (let i = 0; i < players.length; i++){
-        displayPlayerInLobby(players[i], lobby)
+        displayPlayerInLobby(players[i], playersDiv)
     }
 
     const startTriviaButton = document.createElement("button");
@@ -206,7 +210,7 @@ function displayLobby(players){
     lobby.appendChild(startTriviaButton);
 }
 
-function displayPlayerInLobby(displayedPlayer, lobby){
+function displayPlayerInLobby(displayedPlayer, playersDiv){
     const player = document.createElement("div");
     player.classList.add("player", displayedPlayer.playerID);
 
@@ -220,5 +224,5 @@ function displayPlayerInLobby(displayedPlayer, lobby){
 
     player.appendChild(img);
     player.appendChild(name);
-    lobby.appendChild(player);
+    playersDiv.appendChild(player);
 }

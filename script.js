@@ -96,7 +96,34 @@ io.on("connection", (socket) => {
         }
     })
     
-    //io.emit("sendQuestion", questions[0].questionText);
+    socket.on("madeFirstGuess", (ID, guess) => {
+        const player = players.find(player => player.playerID == ID);
+        player.initialGuess = guess;
+        player.isReady = true;
+
+        // all players have submitted their initial guess
+        if (allPlayersAreReady()){
+            for (let i = 0; i < players.length; i++){
+                players[i].isReady = false;
+            }
+            const answers = compileAnswers();
+            io.emit("sendAnswerChoices", answers);
+        }
+    })
+
+    socket.on("choseFinalAnswer", (ID, guess) => {
+        const player = players.find(player => player.playerID == ID);
+        player.finalAnswer = guess;
+        player.isReady = true;
+
+        // all players have submitted their final answer
+        if (allPlayersAreReady()){
+            for (let i = 0; i < players.length; i++){
+                players[i].isReady = false;
+            }
+            adjustPts();
+        }
+    })
 
     socket.on("test", (data) => {
         console.log(data);
@@ -113,12 +140,20 @@ function makePlayer(name, ID, img){
     let playerName = name;
     const playerID = ID;
     let playerImg = img;
-    let firstGuess = '';
-    let finalSelection = '';
+    let initialGuess = '';
+    let finalAnswer = '';
     let pts = 0;
     let abilities = {'50/50': true, '2nd selection': true, 'double pts': true};
     let isReady = false;
-    return {playerName, playerID, playerImg, firstGuess, finalSelection, pts, abilities, isReady}
+    return {playerName, playerID, playerImg, initialGuess, finalAnswer, pts, abilities, isReady}
+}
+
+function allPlayersAreReady(){
+    const waitingOnPlayer = players.find(player => player.isReady == false);
+    if (waitingOnPlayer == undefined){
+        return true;
+    }
+    else{ return false }
 }
 
 function sendNextQuesetion(){
@@ -126,27 +161,36 @@ function sendNextQuesetion(){
     io.emit("nextQuestion", gameState.question)
 }
 
+function compileAnswers(){
+    const answers = []
+    answers.push(gameState.answer);
+    for (let i = 0; i < players.length; i++){
+        answers.push(players[i].answer);
+    }
+    return answers.sort();
+}
+
 function resetPlayers(){
     for (let i = 0; i < players.length; i++){
-        players[i].firstGuess = "";
-        players[i].finalSelection = "";
+        players[i].initialGuess = "";
+        players[i].finalAnswer = "";
         players[i].isReady = false;
     }
 }
 
 function adjustPts(){
     for (let i = 0; i < players.length; i++){
-        if (players[i].firstGuess == gameState.answer){
+        if (players[i].initialGuess == gameState.answer){
             players[i].pts += FIRSTTRYPTS;
         }
-        if (players[i].finalSelection == gameState.answer){
+        if (players[i].finalAnswer == gameState.answer){
             players[i].pts += SECONDGUESSPTS;
         }
         // award fooling points only if opponents pick "YOUR" answer 
         // no points if they pick their own answer, which happens to also be yours
         for (let j = 0; j < players.length; j++){
-            if (players[j].finalSelection == players[i].firstGuess){
-                if (players[j].finalSelection != players[j].firstGuess){
+            if (players[j].finalAnswer == players[i].initialGuess){
+                if (players[j].finalAnswer != players[j].initialGuess){
                     players[i].pts += FOOLPTS;
                 }
             }

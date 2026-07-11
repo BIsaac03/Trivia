@@ -66,6 +66,28 @@ socket.on("startTrivia", () => {
     const questionText = document.createElement("p");
     questionText.classList.add("question");
     bodyElement.appendChild(questionText);
+
+    const guessDiv = document.createElement("div");
+    guessDiv.classList.add("guess");
+    const userGuess = document.createElement("input");
+    userGuess.type = "text";
+    const submitBtn = document.createElement("button");
+
+    submitBtn.addEventListener("click", () => {
+        socket.emit("madeFirstGuess", myID, userGuess.value);
+        userGuess.placeholder = "Submitted!";
+        userGuess.disabled = true;
+        userGuess.value = "";  
+    })
+
+    const answersDiv = document.createElement("div");
+    answersDiv.classList.add("answers");
+    answersDiv.style.display = "hidden";
+
+    guessDiv.appendChild(userGuess);
+    guessDiv.appendChild(submitBtn);
+    bodyElement.appendChild(guessDiv);
+    bodyElement.appendChild(answersDiv);
 })
 
 socket.on("nextQuestion", (question) => {
@@ -73,23 +95,19 @@ socket.on("nextQuestion", (question) => {
     questionText.textContent = question;
 });
 
-/*
-let hasSubmitted = false;
-const submitBtn = document.querySelector(`.guess .submit`);
-submitBtn.addEventListener("click", () => {
-    if (!hasSubmitted){
-        const userGuess = document.querySelector(`.guess .guess`);
-        hasSubmitted = true;
-        console.log(userGuess.value);
-        userGuess.placeholder = "Submitted!";
-        userGuess.disabled = true;
-        userGuess.value = "";
-
-        const answers = document.getElementsByClassName("answers")[0];
-        answers.style.display = "grid";
+socket.on("sendAnswerChoices", (answers) => {
+    const answersDiv = document.querySelector(`div.answers`);
+    for (let i = 0; i < answers.length; i++){
+        const answer = document.createElement("button");
+        answer.textContent = answers[i];
+        answer.addEventListener("click", () => {
+            socket.emit("choseFinalAnswer", myID, answers[i]);
+        })
+        answersDiv.appendChild(answer);
     }
+    answersDiv.style.display = "grid";
 })
-*/
+
 async function displayPfp(file) {
     const pfpPreview = document.createElement("img");
     pfpPreview.classList.add("preview");

@@ -67,6 +67,13 @@ align-items: center;
 font-size: 30px;
 }
 
+#statuses{
+    padding: 30px;
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    opacity: 0.75;
+}
 #trivia{
     display: grid;
     padding: 25px;
@@ -77,7 +84,7 @@ font-size: 30px;
     text-align: center;
 }
 #trivia .guess{
-    display: flex;
+    display: grid;
     gap: 25px;
     justify-self: center;
 }
@@ -87,9 +94,15 @@ font-size: 30px;
     font-size: 30px;
     text-align: center;
 }
+.guess button{
+    font-size: 25px;
+}
 
-div.answers{
+#trivia .answers{
     display: none;
+    grid-template: 75px 75px / 75px 75px 75px;
+    gap: 25px;
+    justify-content: center;
     font-size: 50px;
     list-style-position: inside;
 }

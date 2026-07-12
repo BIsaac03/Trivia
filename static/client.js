@@ -60,8 +60,18 @@ socket.on("playerModified", (modifiedPlayer) => {
     img.src = modifiedPlayer.playerImg;
 });
 
-socket.on("startTrivia", () => {
+socket.on("startTrivia", (players) => {
     document.body.innerHTML = ""
+
+    const playerStatuses = document.createElement("div");
+    playerStatuses.id = "statuses";
+    for (let i = 0; i < players.length; i++){
+        const statusIcon = document.createElement("img");
+        statusIcon.classList.add(`status ${players[i].playerID}`);
+        statusIcon.src = players[i].playerImg;
+        playerStatuses.appendChild(statusIcon);
+    }
+
     const trivia = document.createElement("div");
     trivia.id = "trivia";
 
@@ -91,8 +101,9 @@ socket.on("startTrivia", () => {
     trivia.appendChild(guessDiv);
     trivia.appendChild(answersDiv);
 
+    bodyElement.appendChild(playerStatuses);
     bodyElement.appendChild(trivia);
-})
+});
 
 socket.on("nextQuestion", (question) => {
     const questionText = document.querySelector(`p.question`);
@@ -111,7 +122,7 @@ socket.on("sendAnswerChoices", (answers) => {
         answersDiv.appendChild(answer);
     }
     answersDiv.style.display = "grid";
-})
+});
 
 async function displayPfp(file) {
     const pfpPreview = document.createElement("img");

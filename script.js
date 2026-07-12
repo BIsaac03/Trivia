@@ -88,7 +88,7 @@ io.on("connection", (socket) => {
     socket.on("attemptStart", () => {
         if (players.length > 1){
             gameState.gameHasStarted = true;
-            io.emit("startTrivia");
+            io.emit("startTrivia", players);
             sendNextQuesetion();
         }
         else{

@@ -67,7 +67,8 @@ socket.on("startTrivia", (players) => {
     playerStatuses.id = "statuses";
     for (let i = 0; i < players.length; i++){
         const statusIcon = document.createElement("img");
-        statusIcon.classList.add(`status ${players[i].playerID}`);
+        statusIcon.classList.add("pfp");
+        statusIcon.id = players[i].playerID
         statusIcon.src = players[i].playerImg;
         playerStatuses.appendChild(statusIcon);
     }
@@ -84,12 +85,15 @@ socket.on("startTrivia", (players) => {
     const userGuess = document.createElement("input");
     userGuess.type = "text";
     const submitBtn = document.createElement("button");
+    submitBtn.id = ""
+    submitBtn.textContent = "Lock in";
 
     submitBtn.addEventListener("click", () => {
         socket.emit("madeFirstGuess", myID, userGuess.value);
         userGuess.placeholder = "Submitted!";
         userGuess.disabled = true;
         userGuess.value = "";  
+        submitBtn.disabled = true;
     })
 
     const answersDiv = document.createElement("div");
@@ -108,6 +112,7 @@ socket.on("startTrivia", (players) => {
 socket.on("nextQuestion", (question) => {
     const questionText = document.querySelector(`p.question`);
     questionText.textContent = question;
+    toggleVisibleSelections();
 });
 
 socket.on("sendAnswerChoices", (answers) => {
@@ -121,7 +126,8 @@ socket.on("sendAnswerChoices", (answers) => {
         })
         answersDiv.appendChild(answer);
     }
-    answersDiv.style.display = "grid";
+    const guessDiv = document.querySelector(`div.guess`);
+    toggleVisibleSelections();
 });
 
 async function displayPfp(file) {
@@ -241,4 +247,18 @@ function displayPlayerInLobby(displayedPlayer, playersDiv){
     player.appendChild(img);
     player.appendChild(name);
     playersDiv.appendChild(player);
+}
+
+function toggleVisibleSelections(){
+    const guessDiv = document.querySelector(`div.guess`);
+    const answersDiv = document.querySelector(`div.answers`);
+
+    if (guessDiv.style.display == "none"){
+        guessDiv.style.display = "grid";
+        answersDiv.style.display = "none";
+    }
+    else{
+        guessDiv.style.display = "none";
+        answersDiv.style.display = "grid";
+    }
 }

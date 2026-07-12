@@ -165,7 +165,7 @@ function compileAnswers(){
     const answers = []
     answers.push(gameState.answer);
     for (let i = 0; i < players.length; i++){
-        answers.push(players[i].answer);
+        answers.push(players[i].initialGuess);
     }
     return answers.sort();
 }

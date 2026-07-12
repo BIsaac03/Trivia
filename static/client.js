@@ -62,10 +62,12 @@ socket.on("playerModified", (modifiedPlayer) => {
 
 socket.on("startTrivia", () => {
     document.body.innerHTML = ""
+    const trivia = document.createElement("div");
+    trivia.id = "trivia";
 
     const questionText = document.createElement("p");
     questionText.classList.add("question");
-    bodyElement.appendChild(questionText);
+    trivia.appendChild(questionText);
 
     const guessDiv = document.createElement("div");
     guessDiv.classList.add("guess");
@@ -86,8 +88,10 @@ socket.on("startTrivia", () => {
 
     guessDiv.appendChild(userGuess);
     guessDiv.appendChild(submitBtn);
-    bodyElement.appendChild(guessDiv);
-    bodyElement.appendChild(answersDiv);
+    trivia.appendChild(guessDiv);
+    trivia.appendChild(answersDiv);
+
+    bodyElement.appendChild(trivia);
 })
 
 socket.on("nextQuestion", (question) => {
@@ -96,6 +100,7 @@ socket.on("nextQuestion", (question) => {
 });
 
 socket.on("sendAnswerChoices", (answers) => {
+    console.log(answers);
     const answersDiv = document.querySelector(`div.answers`);
     for (let i = 0; i < answers.length; i++){
         const answer = document.createElement("button");

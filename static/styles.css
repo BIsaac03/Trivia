@@ -51,6 +51,30 @@ label.imgEntry.pfp{
     background-color: lightgoldenrodyellow;
 }
 
+#header{
+    padding: 25px;
+    display: grid;
+    grid-template: 2fr 1fr / 1fr 1fr 1fr;
+    grid-template-areas: 
+        "leftQuote title rightQuote"
+        "btmQuote btmQuote btmQuote";
+        gap: 15px;
+    justify-items: center;
+    align-items: center;
+}
+#header .title{
+    grid-area: title;
+    font-size: 64px;
+}
+.quote.left{
+    grid-area: leftQuote;
+    rotate: -30deg;
+}
+.quote.right{
+    grid-area: rightQuote;
+    rotate: 30deg;
+}
+
 #lobby{
     display: grid;
     padding: 40px 20px;

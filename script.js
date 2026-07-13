@@ -91,7 +91,7 @@ io.on("connection", (socket) => {
     socket.on("attemptStart", () => {
         if (players.length > 1){
             gameState.gameHasStarted = true;
-            io.emit("startTrivia", players);
+            io.emit("startTrivia", players, hostID);
             sendNextQuesetion();
         }
         else{
@@ -110,7 +110,7 @@ io.on("connection", (socket) => {
                 players[i].isReady = false;
             }
             const answers = compileAnswers();
-            io.emit("sendAnswerChoices", answers);
+            io.emit("sendAnswerChoices", answers, hostID);
         }
     })
 
@@ -161,7 +161,7 @@ function allPlayersAreReady(){
 
 function sendNextQuesetion(){
     gameState.loadNextQuestion(questions[gameState.questionNum]);
-    io.emit("nextQuestion", gameState.question)
+    io.emit("nextQuestion", gameState.question, hostID)
 }
 
 function compileAnswers(){

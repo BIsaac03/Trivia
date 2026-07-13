@@ -26,7 +26,7 @@ socket.on("reconnection", (hostID, gameState, players) => {
             displayLobby(players);
         }
         else{
-            setUpTriviaDisplay(players);
+            setUpHostDisplay(players);
             displayQuestion(gameState.question);
             // !! display answers if submitted
         }
@@ -64,7 +64,7 @@ socket.on("reconnection", (hostID, gameState, players) => {
 });
 
 
-// PLAYER events
+////// PLAYER events
 socket.on("newConnection", () => {
     firstTimePlayerSetup();
 });
@@ -73,7 +73,7 @@ socket.on("waitingInLobby", (me, isFirstTimeJoin) => {
     waitingInLobby(me);
 })
 
-// HOST events
+////// HOST events
 socket.on("hostSetUp", () => {
     displayLobby([]);
 })
@@ -95,16 +95,32 @@ socket.on("playerModified", (modifiedPlayer, hostID) => {
     }
 });
 
-socket.on("startTrivia", (players) => {
-    setUpTriviaDisplay(players);
+////// HOST & PLAYER events
+socket.on("startTrivia", (players, hostID) => {
+    if (hostID == myID){
+        setUpHostDisplay(players);
+    }
+    else{
+        setUpPlayerDisplay()
+    }
 });
 
-socket.on("nextQuestion", (question) => {
-    displayQuestion(question);
+socket.on("nextQuestion", (question, hostID) => {
+    if (hostID == myID){
+        displayQuestion(question);
+    }
+    else{
+        // !! allow players to submit new answer
+    }
 });
 
-socket.on("sendAnswerChoices", (answers) => {
-    displayAnswers(answers)
+socket.on("sendAnswerChoices", (answers, hostID) => {
+    if (hostID == myID){
+        hostDisplayAnswers(answers);
+    }
+    else{
+        playerDisplayAnswers(answers);
+    }
 });
 
 ////// PLAYER functions
@@ -195,6 +211,60 @@ function waitingInLobby(me){
     } 
 }
 
+function setUpPlayerDisplay(){
+    document.body.innerHTML = "";
+
+    const guessDiv = document.createElement("div");
+    guessDiv.classList.add("guess");
+    const userGuess = document.createElement("input");
+    userGuess.type = "text";
+    userGuess.maxLength = 30;
+    const submitBtn = document.createElement("button");
+    submitBtn.id = ""
+    submitBtn.textContent = "Lock in";
+
+    submitBtn.addEventListener("click", () => {
+        socket.emit("madeFirstGuess", myID, userGuess.value);
+        userGuess.placeholder = "Submitted!";
+        userGuess.disabled = true;
+        userGuess.value = "";  
+        submitBtn.disabled = true;
+    })
+
+    guessDiv.appendChild(userGuess);
+    guessDiv.appendChild(submitBtn);
+    bodyElement.appendChild(guessDiv);
+    toggleVisibleSelections();
+}
+
+function playerDisplayAnswers(answers){
+    const answersDiv = document.querySelector(`div.answers`);
+    for (let i = 0; i < answers.length; i++){
+        const answer = document.createElement("button");
+        answer.textContent = i+1;
+        answer.addEventListener("click", () => {
+            socket.emit("choseFinalAnswer", myID, answers[i]);
+        })
+        answersDiv.appendChild(answer);
+    }
+    toggleVisibleSelections();
+}
+
+function toggleVisibleSelections(){
+    const guessDiv = document.querySelector(`div.guess`);
+    const answersDiv = document.querySelector(`div.answers`);
+        console.log(guessDiv.style.display);
+
+    if (guessDiv.style.display == "grid"){
+        guessDiv.style.display = "none";
+        answersDiv.style.display = "grid";
+    }
+    else{
+        guessDiv.style.display = "grid";
+        answersDiv.style.display = "none";
+    }
+}
+
 ////// HOST functions
 function displayLobby(players){
     document.body.innerHTML = "";
@@ -257,8 +327,8 @@ function displayPlayerInLobby(displayedPlayer, playersDiv){
     playersDiv.appendChild(player);
 }
 
-function setUpTriviaDisplay(players){
-    document.body.innerHTML = ""
+function setUpHostDisplay(players){
+    document.body.innerHTML = "";
 
     const playerStatuses = document.createElement("div");
     playerStatuses.id = "statuses";
@@ -277,33 +347,12 @@ function setUpTriviaDisplay(players){
     questionText.classList.add("question");
     trivia.appendChild(questionText);
 
-    const guessDiv = document.createElement("div");
-    guessDiv.classList.add("guess");
-    const userGuess = document.createElement("input");
-    userGuess.type = "text";
-    userGuess.maxLength = 30;
-    const submitBtn = document.createElement("button");
-    submitBtn.id = ""
-    submitBtn.textContent = "Lock in";
-
-    submitBtn.addEventListener("click", () => {
-        socket.emit("madeFirstGuess", myID, userGuess.value);
-        userGuess.placeholder = "Submitted!";
-        userGuess.disabled = true;
-        userGuess.value = "";  
-        submitBtn.disabled = true;
-    })
-
     const answersDiv = document.createElement("div");
     answersDiv.classList.add("answers");
-    guessDiv.appendChild(userGuess);
-    guessDiv.appendChild(submitBtn);
-    trivia.appendChild(guessDiv);
     trivia.appendChild(answersDiv);
 
     bodyElement.appendChild(playerStatuses);
     bodyElement.appendChild(trivia);
-    toggleVisibleSelections()
 }
 
 function displayQuestion(question){
@@ -311,32 +360,12 @@ function displayQuestion(question){
     questionText.textContent = question;
 }
 
-function displayAnswers(answers){
+function hostDisplayAnswers(answers){
     const answersDiv = document.querySelector(`div.answers`);
     for (let i = 0; i < answers.length; i++){
-        const answer = document.createElement("button");
+        const answer = document.createElement("p");
         answer.textContent = answers[i];
-        answer.addEventListener("click", () => {
-            socket.emit("choseFinalAnswer", myID, answers[i]);
-        })
         answersDiv.appendChild(answer);
-    }
-    const guessDiv = document.querySelector(`div.guess`);
-    toggleVisibleSelections();
-}
-
-function toggleVisibleSelections(){
-    const guessDiv = document.querySelector(`div.guess`);
-    const answersDiv = document.querySelector(`div.answers`);
-        console.log(guessDiv.style.display);
-
-    if (guessDiv.style.display == "grid"){
-        guessDiv.style.display = "none";
-        answersDiv.style.display = "grid";
-    }
-    else{
-        guessDiv.style.display = "grid";
-        answersDiv.style.display = "none";
     }
 }
 

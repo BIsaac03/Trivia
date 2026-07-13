@@ -4,8 +4,8 @@ if (document.cookie == ""){
 const userIDCookie = document.cookie;
 const myID = userIDCookie.slice(7);
 
-const socket = io("https://trivia-k294.onrender.com/", {
-//const socket = io("http://localhost:3000", {
+//const socket = io("https://trivia-k294.onrender.com/", {
+const socket = io("http://localhost:3000", {
     auth: {
         token: userIDCookie
     }
@@ -15,59 +15,83 @@ const bodyElement = document.body;
 
 socket.on("connect", () => {  
     document.body.innerHTML = "";
-    socket.emit("playerConnected", myID);
+    socket.emit("userConnected", myID);
     //console.log("connected");
 });
 
+socket.on("reconnection", (hostID, gameState, players) => {
+    // restore HOST state
+    if (hostID == myID){
+        if (!gameState.gameHasStarted){
+            displayLobby(players);
+        }
+        else{
+            setUpTriviaDisplay(players);
+            displayQuestion(gameState.question);
+            // !! display answers if submitted
+        }
+    }
+    // retore PLAYER state
+    else{
+        // joining a lobby
+        if (!gameState.gameHasStarted){
+            const alreadyJoined = players.find(player => player.playerID == myID);
+            if (alreadyJoined == undefined){
+                firstTimePlayerSetup();
+            }
+            else{
+                waitingInLobby(alreadyJoined);
+                // !! allow player to update profile
+            }
+        }
+
+        // joining an ongoing game
+        else{
+            // !! apply current game state if user is an active player
+            const me = players.find(player => player.playerID == myID);
+            if (me != undefined){
+                // !! allow user to answer question if not yet submitted
+                // !! display answers if all have submitted
+            }
+
+            // !! otherwise, restrict all functionality
+            else{
+
+            }
+        }
+    }   
+});
+
+
+// PLAYER events
 socket.on("newConnection", () => {
     firstTimePlayerSetup();
 });
 
-socket.on("reconnection", (gameState, players) => {
-    // joining a lobby
-    if (!gameState.gameHasStarted){
-        const alreadyJoined = players.find(player => player.playerID == myID);
-        if (alreadyJoined == undefined){
-            firstTimePlayerSetup();
-        }
-        else{
-            displayLobby(players);
-        }
-    }
-    // joining an ongoing game
-    else{
-        // !! apply current game state if user is an active player
-        const me = players.find(player => player.playerID == myID);
-        if (me != undefined){
-            setUpTriviaDisplay(players);
-            displayQuestion(gameState.question);
-            // !! display answers if all have submitted
-        }
+socket.on("waitingInLobby", (me, isFirstTimeJoin) => {
+    waitingInLobby(me);
+})
 
-        // !! otherwise, restrict all functionality
-        else{
+// HOST events
+socket.on("hostSetUp", () => {
+    displayLobby([]);
+})
 
-        }
-    }
-});
-
-socket.on("displayLobby", (players) => {
-    displayLobby(players);
-});
-
-socket.on("playerJoined", (newPlayer) => {
-    const playersDiv = document.getElementById("playersDiv");
-    if (playersDiv != undefined){
+socket.on("playerJoined", (newPlayer, hostID) => {
+    if (hostID == myID){
+        const playersDiv = document.getElementById("playersDiv");
         displayPlayerInLobby(newPlayer, playersDiv);
-    } 
+    }
 });
 
-socket.on("playerModified", (modifiedPlayer) => {
-    const name = document.querySelector(`.${modifiedPlayer.playerID} .name`)
-    name.textContent = modifiedPlayer.playerName;
+socket.on("playerModified", (modifiedPlayer, hostID) => {
+    if (hostID == myID){
+        const name = document.querySelector(`.${modifiedPlayer.playerID} .name`)
+        name.textContent = modifiedPlayer.playerName;
 
-    const img = document.querySelector(`.${modifiedPlayer.playerID} .pfp`)
-    img.src = modifiedPlayer.playerImg;
+        const img = document.querySelector(`.${modifiedPlayer.playerID} .pfp`)
+        img.src = modifiedPlayer.playerImg;
+    }
 });
 
 socket.on("startTrivia", (players) => {
@@ -82,27 +106,20 @@ socket.on("sendAnswerChoices", (answers) => {
     displayAnswers(answers)
 });
 
+////// PLAYER functions
 async function displayPfp(file) {
-    const pfpPreview = document.createElement("img");
-    pfpPreview.classList.add("preview");
-
     const compressedFile = await imageCompression(file, {maxSizeMB: 0.5});
-    //console.log(file);
-    //console.log(compressedFile);
-
+    const pfpPreview = document.querySelector(`.preview.imgEntry.pfp`);
+    
     const reader = new FileReader();
     reader.addEventListener("load", () => {
-        pfpPreview.src = reader.result;
-        pfpPreview.classList.add("imgEntry", "pfp");
-
-        const imgEntryUI = document.querySelector(`label.imgEntry`);
-        imgEntryUI.appendChild(pfpPreview);
+        pfpPreview.src = reader.result;  
     });
     reader.readAsDataURL(compressedFile);
 }
 
 function firstTimePlayerSetup(){
-
+    document.body.innerHTML = "";
     const playerSetup = document.createElement("div");
     playerSetup.classList.add("me")
 
@@ -118,7 +135,11 @@ function firstTimePlayerSetup(){
     const imgEntryPromptIcon = document.createElement("img");
     imgEntryPromptIcon.src = "/static/icons/cameraIcon.svg";
     imgEntryPromptIcon.classList.add("icon");
+    const pfpPreview = document.createElement("img");
+    pfpPreview.classList.add("preview", "imgEntry", "pfp");
+
     imgEntryUI.appendChild(imgEntryPromptIcon);
+    imgEntryUI.appendChild(pfpPreview);
 
     imgEntry.addEventListener('change', (event) => {
         const file = event.target.files[0];
@@ -139,10 +160,8 @@ function firstTimePlayerSetup(){
     joinBtn.addEventListener("click", () => {
         const pfpPreview = document.querySelector(`.me img.preview`);
         if (nameEntry.value != "" && pfpPreview.src != "") {
-            console.log(myID);
-            //socket.emit("test", pfpPreview.src);
+            joinBtn.textContent = "Update"
             socket.emit("playerJoined", nameEntry.value, myID, pfpPreview.src);
-            socket.emit("waitingInLobby");
         }
     })
 
@@ -154,11 +173,35 @@ function firstTimePlayerSetup(){
     bodyElement.appendChild(playerSetup);
 }
 
+function waitingInLobby(me){
+    const existingMessage = document.querySelector(`.inLobbyMessage`);
+    if (existingMessage == undefined){
+        const message = document.createElement("p");
+        message.textContent = "You have successfully connected to the lobby. Remain here until trivia starts."
+        message.classList.add("inLobbyMessage");
+        bodyElement.appendChild(message);
+    } 
+}
+
+////// HOST functions
 function displayLobby(players){
-    //console.log("lobby display");
-    //console.log(players);
     document.body.innerHTML = "";
-    
+
+    const header = document.createElement("div");
+    header.id = "header";
+    bodyElement.appendChild(header);
+
+    const title = document.createElement("p")
+    title.classList.add("title");
+    title.textContent = "Trivia"
+    header.appendChild(title);
+
+    addQuote("\"Totally unfair\"", 1);
+    addQuote("\"I was cheated\"", 2);
+    addQuote("\"Game is rigged\"", 3);
+    addQuote("\"A trivial experience\"", 4);
+    addQuote("\"Biased beyond belief\"", 5);
+
     const lobby = document.createElement("div");
     lobby.id = "lobby";
     bodyElement.appendChild(lobby);
@@ -225,6 +268,7 @@ function setUpTriviaDisplay(players){
     guessDiv.classList.add("guess");
     const userGuess = document.createElement("input");
     userGuess.type = "text";
+    userGuess.maxLength = 30;
     const submitBtn = document.createElement("button");
     submitBtn.id = ""
     submitBtn.textContent = "Lock in";
@@ -281,4 +325,24 @@ function toggleVisibleSelections(){
         guessDiv.style.display = "grid";
         answersDiv.style.display = "none";
     }
+}
+
+function addQuote(quoteText, quoteNum){
+    const header = document.querySelector(`#header`);
+    const quote = document.createElement("p");
+    quote.classList.add("quote");
+    
+    if (quoteNum == 1){
+        quote.classList.add("left");
+    }
+    else if (quoteNum == 2){
+        quote.classList.add("right");
+    }
+    else{
+        quote.classList.add("bottom");
+    }
+
+    quote.textContent = quoteText;
+    header.appendChild(quote);
+    //quote.style.rotate = `${Math.random()*45}deg`
 }

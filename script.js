@@ -28,8 +28,8 @@ app.use("/static", express.static('./static/'));
 
 const io = new Server(httpServer, {
     cors: {
-        origin: "http://trivia-k294.onrender.com",
-        //origin: "http://localhost:5500",
+        //origin: "http://trivia-k294.onrender.com",
+        origin: "http://localhost:5500",
     }
 });
 
@@ -55,15 +55,20 @@ const gameState = {
         this.questionNum++;
     }
 }
+let hostID = undefined;
 
 io.on("connection", (socket) => {
-    socket.on("playerConnected", (ID) => {
+    socket.on("userConnected", (ID) => {
         const returningPlayer = players.find(player => player.playerID == ID)
-        if (returningPlayer == undefined){
+        if (hostID == undefined){
+            hostID = ID;
+            socket.emit("hostSetUp");
+        }
+        else if (returningPlayer == undefined && ID != hostID){
             socket.emit("newConnection");
         }
         else{
-            socket.emit("reconnection", gameState, players);
+            socket.emit("reconnection", hostID, gameState, players);
         }
     })
 
@@ -71,19 +76,17 @@ io.on("connection", (socket) => {
         const existingPlayer = players.find(player => player.playerID == ID);
         if (existingPlayer == undefined){
             const newPlayer = makePlayer(name, ID, img);
-            players.push(newPlayer) 
-            socket.broadcast.emit("playerJoined", newPlayer);
+            players.push(newPlayer);
+            socket.broadcast.emit("playerJoined", newPlayer, hostID);
+            socket.emit("waitingInLobby", true);
         }
         else{
             existingPlayer.playerName = name;
             existingPlayer.playerImg = img;
-            socket.broadcast.emit("playerModified", existingPlayer);
+            socket.broadcast.emit("playerModified", existingPlayer, hostID);
+            socket.emit("waitingInLobby", false);
         }
     });
-
-    socket.on("waitingInLobby", () => {
-        socket.emit("displayLobby", players);
-    })
 
     socket.on("attemptStart", () => {
         if (players.length > 1){

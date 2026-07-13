@@ -167,7 +167,7 @@ function compileAnswers(){
     for (let i = 0; i < players.length; i++){
         answers.push(players[i].initialGuess);
     }
-    return answers.sort();
+    return [...new Set(answers.sort())];
 }
 
 function resetPlayers(){

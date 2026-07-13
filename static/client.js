@@ -76,7 +76,6 @@ socket.on("startTrivia", (players) => {
 
 socket.on("nextQuestion", (question) => {
     displayQuestion(question);
-    toggleVisibleSelections();
 });
 
 socket.on("sendAnswerChoices", (answers) => {

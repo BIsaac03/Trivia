@@ -100,11 +100,17 @@ font-size: 30px;
 
 #trivia .answers{
     display: none;
-    grid-template: 75px 75px / 75px 75px 75px;
+    grid-template-columns: 1fr 1fr;
     gap: 25px;
-    justify-content: center;
+    justify-self: center;
     font-size: 50px;
     list-style-position: inside;
+}
+.answers button{
+    width: 25vw;
+    height: 25vw;
+    justify-self: center;
+    font-size: 48px;
 }
 .answers li{
     padding-bottom: 10px;

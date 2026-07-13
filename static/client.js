@@ -4,8 +4,8 @@ if (document.cookie == ""){
 const userIDCookie = document.cookie;
 const myID = userIDCookie.slice(7);
 
-//const socket = io("https://trivia-k294.onrender.com/", {
-const socket = io("http://localhost:3000", {
+const socket = io("https://trivia-k294.onrender.com/", {
+//const socket = io("http://localhost:3000", {
     auth: {
         token: userIDCookie
     }
@@ -40,8 +40,9 @@ socket.on("reconnection", (hostID, gameState, players) => {
                 firstTimePlayerSetup();
             }
             else{
+                firstTimePlayerSetup();
+                fillInPlayerInfo(alreadyJoined);
                 waitingInLobby(alreadyJoined);
-                // !! allow player to update profile
             }
         }
 
@@ -173,6 +174,17 @@ function firstTimePlayerSetup(){
     bodyElement.appendChild(playerSetup);
 }
 
+function fillInPlayerInfo(player){
+    const imageEntryPromptIcon = document.querySelector(`.me .icon`);
+    imageEntryPromptIcon.remove();
+    const pfpPreview = document.querySelector(`.preview.imgEntry.pfp`);
+    pfpPreview.src = player.playerImg;
+    const name = document.querySelector(`.me .name`);
+    name.value = player.playerName;
+    const joinButton = document.querySelector(`.me .submit`);
+    joinButton.textContent = "Update";
+}
+
 function waitingInLobby(me){
     const existingMessage = document.querySelector(`.inLobbyMessage`);
     if (existingMessage == undefined){
@@ -214,6 +226,7 @@ function displayLobby(players){
         displayPlayerInLobby(players[i], playersDiv)
     }
 
+    // !! have button appear only after 2+ players have joined
     const startTriviaButton = document.createElement("button");
     startTriviaButton.classList.add("startTrivia");
     startTriviaButton.textContent = "Trivia Time!";

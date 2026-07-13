@@ -37,7 +37,17 @@ socket.on("reconnection", (gameState, players) => {
     // joining an ongoing game
     else{
         // !! apply current game state if user is an active player
+        const me = players.find(player => player.playerID == myID);
+        if (me != undefined){
+            setUpTriviaDisplay(players);
+            displayQuestion(gameState.question);
+            // !! display answers if all have submitted
+        }
+
         // !! otherwise, restrict all functionality
+        else{
+
+        }
     }
 });
 
@@ -61,73 +71,16 @@ socket.on("playerModified", (modifiedPlayer) => {
 });
 
 socket.on("startTrivia", (players) => {
-    document.body.innerHTML = ""
-
-    const playerStatuses = document.createElement("div");
-    playerStatuses.id = "statuses";
-    for (let i = 0; i < players.length; i++){
-        const statusIcon = document.createElement("img");
-        statusIcon.classList.add("pfp");
-        statusIcon.id = players[i].playerID
-        statusIcon.src = players[i].playerImg;
-        playerStatuses.appendChild(statusIcon);
-    }
-
-    const trivia = document.createElement("div");
-    trivia.id = "trivia";
-
-    const questionText = document.createElement("p");
-    questionText.classList.add("question");
-    trivia.appendChild(questionText);
-
-    const guessDiv = document.createElement("div");
-    guessDiv.classList.add("guess");
-    const userGuess = document.createElement("input");
-    userGuess.type = "text";
-    const submitBtn = document.createElement("button");
-    submitBtn.id = ""
-    submitBtn.textContent = "Lock in";
-
-    submitBtn.addEventListener("click", () => {
-        socket.emit("madeFirstGuess", myID, userGuess.value);
-        userGuess.placeholder = "Submitted!";
-        userGuess.disabled = true;
-        userGuess.value = "";  
-        submitBtn.disabled = true;
-    })
-
-    const answersDiv = document.createElement("div");
-    answersDiv.classList.add("answers");
-    answersDiv.style.display = "hidden";
-
-    guessDiv.appendChild(userGuess);
-    guessDiv.appendChild(submitBtn);
-    trivia.appendChild(guessDiv);
-    trivia.appendChild(answersDiv);
-
-    bodyElement.appendChild(playerStatuses);
-    bodyElement.appendChild(trivia);
+    setUpTriviaDisplay(players);
 });
 
 socket.on("nextQuestion", (question) => {
-    const questionText = document.querySelector(`p.question`);
-    questionText.textContent = question;
+    displayQuestion(question);
     toggleVisibleSelections();
 });
 
 socket.on("sendAnswerChoices", (answers) => {
-    console.log(answers);
-    const answersDiv = document.querySelector(`div.answers`);
-    for (let i = 0; i < answers.length; i++){
-        const answer = document.createElement("button");
-        answer.textContent = answers[i];
-        answer.addEventListener("click", () => {
-            socket.emit("choseFinalAnswer", myID, answers[i]);
-        })
-        answersDiv.appendChild(answer);
-    }
-    const guessDiv = document.querySelector(`div.guess`);
-    toggleVisibleSelections();
+    displayAnswers(answers)
 });
 
 async function displayPfp(file) {
@@ -249,16 +202,84 @@ function displayPlayerInLobby(displayedPlayer, playersDiv){
     playersDiv.appendChild(player);
 }
 
+function setUpTriviaDisplay(players){
+    document.body.innerHTML = ""
+
+    const playerStatuses = document.createElement("div");
+    playerStatuses.id = "statuses";
+    for (let i = 0; i < players.length; i++){
+        const statusIcon = document.createElement("img");
+        statusIcon.classList.add("pfp");
+        statusIcon.id = players[i].playerID
+        statusIcon.src = players[i].playerImg;
+        playerStatuses.appendChild(statusIcon);
+    }
+
+    const trivia = document.createElement("div");
+    trivia.id = "trivia";
+
+    const questionText = document.createElement("p");
+    questionText.classList.add("question");
+    trivia.appendChild(questionText);
+
+    const guessDiv = document.createElement("div");
+    guessDiv.classList.add("guess");
+    const userGuess = document.createElement("input");
+    userGuess.type = "text";
+    const submitBtn = document.createElement("button");
+    submitBtn.id = ""
+    submitBtn.textContent = "Lock in";
+
+    submitBtn.addEventListener("click", () => {
+        socket.emit("madeFirstGuess", myID, userGuess.value);
+        userGuess.placeholder = "Submitted!";
+        userGuess.disabled = true;
+        userGuess.value = "";  
+        submitBtn.disabled = true;
+    })
+
+    const answersDiv = document.createElement("div");
+    answersDiv.classList.add("answers");
+    guessDiv.appendChild(userGuess);
+    guessDiv.appendChild(submitBtn);
+    trivia.appendChild(guessDiv);
+    trivia.appendChild(answersDiv);
+
+    bodyElement.appendChild(playerStatuses);
+    bodyElement.appendChild(trivia);
+    toggleVisibleSelections()
+}
+
+function displayQuestion(question){
+    const questionText = document.querySelector(`p.question`);
+    questionText.textContent = question;
+}
+
+function displayAnswers(answers){
+    const answersDiv = document.querySelector(`div.answers`);
+    for (let i = 0; i < answers.length; i++){
+        const answer = document.createElement("button");
+        answer.textContent = answers[i];
+        answer.addEventListener("click", () => {
+            socket.emit("choseFinalAnswer", myID, answers[i]);
+        })
+        answersDiv.appendChild(answer);
+    }
+    const guessDiv = document.querySelector(`div.guess`);
+    toggleVisibleSelections();
+}
+
 function toggleVisibleSelections(){
     const guessDiv = document.querySelector(`div.guess`);
     const answersDiv = document.querySelector(`div.answers`);
+        console.log(guessDiv.style.display);
 
-    if (guessDiv.style.display == "none"){
-        guessDiv.style.display = "grid";
-        answersDiv.style.display = "none";
-    }
-    else{
+    if (guessDiv.style.display == "grid"){
         guessDiv.style.display = "none";
         answersDiv.style.display = "grid";
+    }
+    else{
+        guessDiv.style.display = "grid";
+        answersDiv.style.display = "none";
     }
 }

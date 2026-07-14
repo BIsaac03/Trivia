@@ -48,11 +48,21 @@ socket.on("reconnection", (hostID, gameState, players) => {
 
         // joining an ongoing game
         else{
-            // !! apply current game state if user is an active player
             const me = players.find(player => player.playerID == myID);
             if (me != undefined){
-                // !! allow user to answer question if not yet submitted
-                // !! display answers if all have submitted
+                setUpPlayerDisplay();
+                if (me.initialGuess != ''){
+                    const userGuess = document.querySelector(`.guess input`);
+                    const submitBtn = document.querySelector(`#madeInitialGuess`);
+
+                    userGuess.placeholder = "Submitted!";
+                    userGuess.disabled = true;
+                    userGuess.value = "";  
+                    submitBtn.disabled = true;
+                }
+                else if (me.finalAnswer == ''){
+                    playerDisplayAnswers(gameState.answers);
+                }
             }
 
             // !! otherwise, restrict all functionality
@@ -94,6 +104,13 @@ socket.on("playerModified", (modifiedPlayer, hostID) => {
         img.src = modifiedPlayer.playerImg;
     }
 });
+
+socket.on("revealAnswer", (players, answer, hostID) => {
+    if (hostID == myID){
+        // !! display all guesses and answers; wait ~2 secs
+        socket.emit("finishedRound");
+    }
+})
 
 ////// HOST & PLAYER events
 socket.on("startTrivia", (players, hostID) => {
@@ -214,13 +231,16 @@ function waitingInLobby(me){
 function setUpPlayerDisplay(){
     document.body.innerHTML = "";
 
+    const trivia = document.createElement("div");
+    trivia.id = "trivia";
+
     const guessDiv = document.createElement("div");
     guessDiv.classList.add("guess");
     const userGuess = document.createElement("input");
     userGuess.type = "text";
     userGuess.maxLength = 30;
     const submitBtn = document.createElement("button");
-    submitBtn.id = ""
+    submitBtn.id = "makeInitialGuess";
     submitBtn.textContent = "Lock in";
 
     submitBtn.addEventListener("click", () => {
@@ -231,9 +251,14 @@ function setUpPlayerDisplay(){
         submitBtn.disabled = true;
     })
 
+    const answersDiv = document.createElement("div");
+    answersDiv.classList.add("answers");
+
     guessDiv.appendChild(userGuess);
     guessDiv.appendChild(submitBtn);
-    bodyElement.appendChild(guessDiv);
+    trivia.appendChild(guessDiv);
+    trivia.appendChild(answersDiv);
+    bodyElement.appendChild(trivia);
     toggleVisibleSelections();
 }
 

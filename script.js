@@ -5,6 +5,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { Socket } from "dgram";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -124,9 +125,19 @@ io.on("connection", (socket) => {
             for (let i = 0; i < players.length; i++){
                 players[i].isReady = false;
             }
+            io.emit("revealAnswer", players, gameState.answer, hostID);
             adjustPts();
         }
     })
+
+    socket.on("finishedRound", () => {
+        if (gameState.questionNum == questions.length){
+            // !! end questions; display final scores on HOST
+        }
+        else{
+            sendNextQuesetion();
+        }
+    });
 
     socket.on("test", (data) => {
         console.log(data);

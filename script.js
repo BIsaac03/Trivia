@@ -213,7 +213,7 @@ function adjustPts(){
         // award fooling points only if opponents pick "YOUR" answer 
         // no points if they pick their own answer, which happens to also be yours
         for (let j = 0; j < players.length; j++){
-            if (players[j].finalAnswer == players[i].initialGuess){
+            if (players[j].finalAnswer == players[i].initialGuess && players[j].finalAnswer != gameState.answer){
                 if (players[j].finalAnswer != players[j].initialGuess){
                     players[i].pts += FOOLPTS;
                 }

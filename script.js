@@ -48,6 +48,7 @@ const gameState = {
     gameHasStarted: false,
     question: "",
     answer: "",
+    allAnswers: [],
     questionNum: 0,
     powersToUse: {'50/50': false, '2nd selection': true, 'double pts': false},
     loadNextQuestion(question) {
@@ -114,13 +115,14 @@ io.on("connection", (socket) => {
             }
             io.emit("unreadyAllPlayers", hostID);
             const answers = compileAnswers();
+            gameState.allAnswers = answers;
             io.emit("sendAnswerChoices", answers, hostID);
         }
     })
 
-    socket.on("choseFinalAnswer", (ID, guess) => {
+    socket.on("choseFinalAnswer", (ID, guessNum) => {
         const player = players.find(player => player.playerID == ID);
-        player.finalAnswer = guess;
+        player.finalAnswer = gameState.allAnswers[guessNum];
         player.isReady = true;
         io.emit("playerReady", player.playerID, hostID);
 
@@ -141,6 +143,7 @@ io.on("connection", (socket) => {
         }
         else{
             resetPlayers();
+            gameState.allAnswers = [];
             io.emit("unreadyAllPlayers", hostID);
             sendNextQuesetion();
         }

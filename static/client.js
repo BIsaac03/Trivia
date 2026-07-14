@@ -20,6 +20,7 @@ socket.on("connect", () => {
 });
 
 socket.on("reconnection", (hostID, gameState, players) => {
+    console.log(players);
     // restore HOST state
     if (hostID == myID){
         if (!gameState.gameHasStarted){
@@ -27,8 +28,11 @@ socket.on("reconnection", (hostID, gameState, players) => {
         }
         else{
             setUpHostDisplay(players);
+            updateStatuses(players);
             displayQuestion(gameState.question);
-            // !! display answers if submitted
+            if (gameState.allAnswers.length > 0){
+                hostDisplayAnswers(gameState.allAnswers);
+            }
         }
     }
     // retore PLAYER state
@@ -52,19 +56,28 @@ socket.on("reconnection", (hostID, gameState, players) => {
             if (me != undefined){
                 setUpPlayerDisplay();
                 if (me.initialGuess == ''){
+                    console.log("empty");
                     readyNewSubmission();
                 }
                 else if (me.finalAnswer == ''){
-                    playerDisplayAnswers(gameState.answers);
+                    if (gameState.allAnswers.length == 0){
+                        const userGuess = document.querySelector(`.guess input`);
+                        const submitBtn = document.querySelector(`#makeInitialGuess`);
+
+                        userGuess.placeholder = "Submitted!";
+                        userGuess.disabled = true;
+                        userGuess.value = "";  
+                        submitBtn.disabled = true;
+                    }
+                    else{
+                        console.log(gameState.allAnswers);
+                        playerDisplayAnswers(gameState.allAnswers);
+                        toggleVisibleSelections();
+                    }
+                    
                 }
                 else{
-                    const userGuess = document.querySelector(`.guess input`);
-                    const submitBtn = document.querySelector(`#makeInitialGuess`);
-
-                    userGuess.placeholder = "Submitted!";
-                    userGuess.disabled = true;
-                    userGuess.value = "";  
-                    submitBtn.disabled = true;
+                    // !! display 'final answer received' message 
                 }
             }
 
@@ -274,6 +287,17 @@ function setUpPlayerDisplay(){
     answersDiv.classList.add("answers");
     const answerChoices = document.createElement("div");
     answerChoices.classList.add("answerChoices");
+
+    const confirmFinalAnswer = document.createElement("button");
+    confirmFinalAnswer.textContent = "Confirm";
+    confirmFinalAnswer.classList.add("confirm");
+    confirmFinalAnswer.addEventListener("click", () => {
+        const selectedAnswer = document.getElementById("finalAnswer");
+        if (selectedAnswer != undefined){
+            socket.emit("choseFinalAnswer", myID, selectedAnswer.textContent-1);
+        }
+    })
+    answersDiv.appendChild(confirmFinalAnswer);
     answersDiv.appendChild(answerChoices);
 
     guessDiv.appendChild(userGuess);
@@ -312,23 +336,12 @@ function playerDisplayAnswers(answers){
         answerChoices.appendChild(answer);
     }
 
-    const confirmFinalAnswer = document.createElement("button");
-    confirmFinalAnswer.textContent = "Confirm";
-    confirmFinalAnswer.addEventListener("click", () => {
-        const selectedAnswer = document.getElementById("finalAnswer");
-        if (selectedAnswer != undefined){
-            socket.emit("choseFinalAnswer", myID, answers[selectedAnswer.textContent-1]);
-        }
-    })
-    answersDiv.appendChild(confirmFinalAnswer);
-
     toggleVisibleSelections();
 }
 
 function toggleVisibleSelections(){
     const guessDiv = document.querySelector(`div.guess`);
     const answersDiv = document.querySelector(`div.answers`);
-        console.log(guessDiv.style.display);
 
     if (guessDiv.style.display == "grid"){
         guessDiv.style.display = "none";
@@ -447,6 +460,15 @@ function hostDisplayAnswers(answers){
         answersDiv.appendChild(answer);
     }
     answersDiv.style.display = "grid";
+}
+
+function updateStatuses(players){
+    const statuses = document.querySelectorAll(`#statuses .pfp`)
+    for (let i = 0; i < players.length; i++){
+        if (!players[i].isReady){
+            statuses[i].style.opacity = 0.4;
+        }
+    }
 }
 
 function addQuote(quoteText, quoteNum){

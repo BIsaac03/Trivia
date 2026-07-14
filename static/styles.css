@@ -158,6 +158,9 @@ font-size: 30px;
     justify-self: center;
     font-size: 48px;
 }
+.answers .confirm{
+    grid-row: 2 / 3;
+}
 
 #finalAnswer{
     border: 4px solid lightgreen;

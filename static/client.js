@@ -112,6 +112,20 @@ socket.on("revealAnswer", (players, answer, hostID) => {
     }
 })
 
+socket.on("playerReady", (playerID, hostID) => {
+    if (hostID == myID){
+        const status = document.querySelector(`#${playerID}`);
+        status.style.opacity = 1;
+    }
+})
+
+socket.on("unreadyAllPlayers", (hostID) => {
+    if (hostID == myID){
+        const statuses = document.querySelectorAll(`#statuses .pfp`)
+        statuses.forEach((status) => status.style.opacity = 0.75);
+    }
+})
+
 ////// HOST & PLAYER events
 socket.on("startTrivia", (players, hostID) => {
     if (hostID == myID){

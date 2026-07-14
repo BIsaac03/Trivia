@@ -104,12 +104,14 @@ io.on("connection", (socket) => {
         const player = players.find(player => player.playerID == ID);
         player.initialGuess = guess;
         player.isReady = true;
+        io.emit("playerReady", ID, hostID);
 
         // all players have submitted their initial guess
         if (allPlayersAreReady()){
             for (let i = 0; i < players.length; i++){
                 players[i].isReady = false;
             }
+            io.emit("unreadyAllPlayers", hostID);
             const answers = compileAnswers();
             io.emit("sendAnswerChoices", answers, hostID);
         }
@@ -119,11 +121,13 @@ io.on("connection", (socket) => {
         const player = players.find(player => player.playerID == ID);
         player.finalAnswer = guess;
         player.isReady = true;
+        io.emit("playerReady", player.playerID, hostID);
 
         // all players have submitted their final answer
         if (allPlayersAreReady()){
             for (let i = 0; i < players.length; i++){
                 players[i].isReady = false;
+                io.emit("unreadyAllPlayers", hostID);
             }
             io.emit("revealAnswer", players, gameState.answer, hostID);
             adjustPts();
@@ -135,6 +139,8 @@ io.on("connection", (socket) => {
             // !! end questions; display final scores on HOST
         }
         else{
+            resetPlayers();
+            io.emit("unreadyAllPlayers", hostID);
             sendNextQuesetion();
         }
     });

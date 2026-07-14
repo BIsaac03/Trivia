@@ -29,8 +29,8 @@ app.use("/static", express.static('./static/'));
 
 const io = new Server(httpServer, {
     cors: {
-        origin: "http://trivia-k294.onrender.com",
-        //origin: "http://localhost:5500",
+        //origin: "http://trivia-k294.onrender.com",
+        origin: "http://localhost:5500",
     }
 });
 
@@ -93,6 +93,7 @@ io.on("connection", (socket) => {
         if (players.length > 1){
             gameState.gameHasStarted = true;
             io.emit("startTrivia", players, hostID);
+            io.emit("unreadyAllPlayers", hostID);
             sendNextQuesetion();
         }
         else{

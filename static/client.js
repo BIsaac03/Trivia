@@ -4,8 +4,8 @@ if (document.cookie == ""){
 const userIDCookie = document.cookie;
 const myID = userIDCookie.slice(7);
 
-const socket = io("https://trivia-k294.onrender.com/", {
-//const socket = io("http://localhost:3000", {
+//const socket = io("https://trivia-k294.onrender.com/", {
+const socket = io("http://localhost:3000", {
     auth: {
         token: userIDCookie
     }
@@ -51,7 +51,13 @@ socket.on("reconnection", (hostID, gameState, players) => {
             const me = players.find(player => player.playerID == myID);
             if (me != undefined){
                 setUpPlayerDisplay();
-                if (me.initialGuess != ''){
+                if (me.initialGuess == ''){
+                    readyNewSubmission();
+                }
+                else if (me.finalAnswer == ''){
+                    playerDisplayAnswers(gameState.answers);
+                }
+                else{
                     const userGuess = document.querySelector(`.guess input`);
                     const submitBtn = document.querySelector(`#makeInitialGuess`);
 
@@ -59,9 +65,6 @@ socket.on("reconnection", (hostID, gameState, players) => {
                     userGuess.disabled = true;
                     userGuess.value = "";  
                     submitBtn.disabled = true;
-                }
-                else if (me.finalAnswer == ''){
-                    playerDisplayAnswers(gameState.answers);
                 }
             }
 
@@ -141,7 +144,7 @@ socket.on("nextQuestion", (question, hostID) => {
         displayQuestion(question);
     }
     else{
-        // !! allow players to submit new answer
+        readyNewSubmission();
     }
 });
 
@@ -267,25 +270,56 @@ function setUpPlayerDisplay(){
 
     const answersDiv = document.createElement("div");
     answersDiv.classList.add("answers");
+    const answerChoices = document.createElement("div");
+    answerChoices.classList.add("answerChoices");
+    answersDiv.appendChild(answerChoices);
 
     guessDiv.appendChild(userGuess);
     guessDiv.appendChild(submitBtn);
     trivia.appendChild(guessDiv);
     trivia.appendChild(answersDiv);
     bodyElement.appendChild(trivia);
+}
+
+function readyNewSubmission(){
+    const userGuess = document.querySelector(`.guess input`);
+    const submitBtn = document.querySelector(`#makeInitialGuess`);
+
+    userGuess.placeholder = "";
+    userGuess.disabled = false;
+    submitBtn.disabled = false;
+
     toggleVisibleSelections();
 }
 
 function playerDisplayAnswers(answers){
     const answersDiv = document.querySelector(`div.answers`);
+    const answerChoices = document.querySelector(`div.answerChoices`)
+    answerChoices.replaceChildren();
+    
     for (let i = 0; i < answers.length; i++){
         const answer = document.createElement("button");
         answer.textContent = i+1;
         answer.addEventListener("click", () => {
-            socket.emit("choseFinalAnswer", myID, answers[i]);
+            const previousSelection = document.getElementById("finalAnswer");
+            if (previousSelection != undefined){
+                previousSelection.id = "";
+            }
+            answer.id = "finalAnswer";
         })
-        answersDiv.appendChild(answer);
+        answerChoices.appendChild(answer);
     }
+
+    const confirmFinalAnswer = document.createElement("button");
+    confirmFinalAnswer.textContent = "Confirm";
+    confirmFinalAnswer.addEventListener("click", () => {
+        const selectedAnswer = document.getElementById("finalAnswer");
+        if (selectedAnswer != undefined){
+            socket.emit("choseFinalAnswer", myID, answers[selectedAnswer.textContent-1]);
+        }
+    })
+    answersDiv.appendChild(confirmFinalAnswer);
+
     toggleVisibleSelections();
 }
 
@@ -404,6 +438,7 @@ function displayQuestion(question){
 
 function hostDisplayAnswers(answers){
     const answersDiv = document.querySelector(`div.answers`);
+    answersDiv.replaceChildren();
     for (let i = 0; i < answers.length; i++){
         const answer = document.createElement("p");
         answer.textContent = `${i+1}.  ${answers[i]}`;

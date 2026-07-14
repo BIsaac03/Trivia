@@ -347,9 +347,9 @@ function setUpHostDisplay(players){
     questionText.classList.add("question");
     trivia.appendChild(questionText);
 
-    const answersDiv = document.createElement("div");
-    answersDiv.classList.add("answers");
-    trivia.appendChild(answersDiv);
+    const answersList = document.createElement("ol");
+    answersList.classList.add("answers");
+    trivia.appendChild(answersList);
 
     bodyElement.appendChild(playerStatuses);
     bodyElement.appendChild(trivia);
@@ -361,11 +361,11 @@ function displayQuestion(question){
 }
 
 function hostDisplayAnswers(answers){
-    const answersDiv = document.querySelector(`div.answers`);
+    const answersList = document.querySelector(`ol.answers`);
     for (let i = 0; i < answers.length; i++){
-        const answer = document.createElement("p");
+        const answer = document.createElement("li");
         answer.textContent = answers[i];
-        answersDiv.appendChild(answer);
+        answersList.appendChild(answer);
     }
 }
 

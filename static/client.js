@@ -53,7 +53,7 @@ socket.on("reconnection", (hostID, gameState, players) => {
                 setUpPlayerDisplay();
                 if (me.initialGuess != ''){
                     const userGuess = document.querySelector(`.guess input`);
-                    const submitBtn = document.querySelector(`#madeInitialGuess`);
+                    const submitBtn = document.querySelector(`#makeInitialGuess`);
 
                     userGuess.placeholder = "Submitted!";
                     userGuess.disabled = true;
@@ -372,26 +372,30 @@ function setUpHostDisplay(players){
     questionText.classList.add("question");
     trivia.appendChild(questionText);
 
-    const answersList = document.createElement("ol");
-    answersList.classList.add("answers");
-    trivia.appendChild(answersList);
+    const answersDiv = document.createElement("div");
+    answersDiv.classList.add("answers");
+    trivia.appendChild(answersDiv);
 
     bodyElement.appendChild(playerStatuses);
     bodyElement.appendChild(trivia);
 }
 
 function displayQuestion(question){
+    const answersDiv = document.querySelector(`div.answers`);
+    answersDiv.style.display = "none";
+
     const questionText = document.querySelector(`p.question`);
     questionText.textContent = question;
 }
 
 function hostDisplayAnswers(answers){
-    const answersList = document.querySelector(`ol.answers`);
+    const answersDiv = document.querySelector(`div.answers`);
     for (let i = 0; i < answers.length; i++){
-        const answer = document.createElement("li");
-        answer.textContent = answers[i];
-        answersList.appendChild(answer);
+        const answer = document.createElement("p");
+        answer.textContent = `${i}. ${answers[i]}`;
+        answersDiv.appendChild(answer);
     }
+    answersDiv.style.display = "grid";
 }
 
 function addQuote(quoteText, quoteNum){

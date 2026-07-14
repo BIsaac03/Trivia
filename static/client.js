@@ -160,7 +160,7 @@ socket.on("sendAnswerChoices", (answers, hostID) => {
 ////// PLAYER functions
 async function displayPfp(file) {
     const compressedFile = await imageCompression(file, {maxSizeMB: 0.5});
-    const pfpPreview = document.querySelector(`.preview.imgEntry.pfp`);
+    const pfpPreview = document.querySelector(`.preview.pfp`);
     
     const reader = new FileReader();
     reader.addEventListener("load", () => {
@@ -187,7 +187,8 @@ function firstTimePlayerSetup(){
     imgEntryPromptIcon.src = "/static/icons/cameraIcon.svg";
     imgEntryPromptIcon.classList.add("icon");
     const pfpPreview = document.createElement("img");
-    pfpPreview.classList.add("preview", "imgEntry", "pfp");
+    pfpPreview.classList.add("preview", "pfp");
+    pfpPreview.style.display = "none";
 
     imgEntryUI.appendChild(imgEntryPromptIcon);
     imgEntryUI.appendChild(pfpPreview);
@@ -196,6 +197,7 @@ function firstTimePlayerSetup(){
         const file = event.target.files[0];
         if (file) {
             imgEntryPromptIcon.remove();
+            pfpPreview.style.display = "block";
             displayPfp(file);
         }
     });
@@ -296,7 +298,7 @@ function playerDisplayAnswers(answers){
     const answersDiv = document.querySelector(`div.answers`);
     const answerChoices = document.querySelector(`div.answerChoices`)
     answerChoices.replaceChildren();
-    
+
     for (let i = 0; i < answers.length; i++){
         const answer = document.createElement("button");
         answer.textContent = i+1;

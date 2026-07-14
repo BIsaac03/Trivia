@@ -29,14 +29,17 @@ label.imgEntry.pfp{
     border: 2px solid black;
     background-color: whitesmoke;
 }
-.imgEntry.pfp img{
+.preview.pfp{
     width: 200px;
     height: 200px;
     align-self: center;
     justify-self: center;
 }
-.imgEntry.pfp img.icon{
+.imgEntry .icon{
     width: 50px;
+    height: 50px;
+    align-self: center;
+    justify-self: center;
 }
 .pfp{
     width: 75px;
@@ -95,7 +98,7 @@ font-size: 30px;
 }
 
 #statuses{
-    padding: 30px;
+    padding: 30px 30px 0px 30px;
     display: flex;
     gap: 30px;
     justify-content: center;
@@ -126,27 +129,36 @@ font-size: 30px;
 
 #trivia .answers{
     display: none;
-    gap: 50px;
+    justify-content: center;
+    gap: 30px;
+    font-size: 48px;
+}
+
+@media (orientation: landscape) {
+  #trivia .answerChoices{
+    grid-template-rows: 1fr 1fr;
+    grid-auto-flow: column;
+  }
+}
+@media (orientation: portrait) {
+  #trivia .answerChoices{
+    grid-template-columns: 1fr 1fr;
+    grid-auto-flow: row;
+  }
 }
 #trivia .answerChoices{
     display: grid;
-    grid-template-columns: 1fr 1fr;
     gap: 25px;
     justify-self: center;
     font-size: 50px;
-    list-style-position: inside;
 }
 .answers button{
-    width: 25vw;
-    height: 25vw;
+    width: min(35vw, 25vh);
+    height: min(35vw, 25vh);
     justify-self: center;
     font-size: 48px;
 }
 
 #finalAnswer{
     border: 4px solid lightgreen;
-}
-
-.answers li{
-    padding-bottom: 10px;
 }

@@ -122,7 +122,7 @@ socket.on("playerReady", (playerID, hostID) => {
 socket.on("unreadyAllPlayers", (hostID) => {
     if (hostID == myID){
         const statuses = document.querySelectorAll(`#statuses .pfp`)
-        statuses.forEach((status) => status.style.opacity = 0.75);
+        statuses.forEach((status) => status.style.opacity = 0.4);
     }
 })
 
@@ -406,7 +406,7 @@ function hostDisplayAnswers(answers){
     const answersDiv = document.querySelector(`div.answers`);
     for (let i = 0; i < answers.length; i++){
         const answer = document.createElement("p");
-        answer.textContent = `${i}. ${answers[i]}`;
+        answer.textContent = `${i+1}.  ${answers[i]}`;
         answersDiv.appendChild(answer);
     }
     answersDiv.style.display = "grid";

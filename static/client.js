@@ -123,8 +123,7 @@ socket.on("playerModified", (modifiedPlayer, hostID) => {
 
 socket.on("revealAnswer", (players, answer, hostID) => {
     if (hostID == myID){
-        // !! display all guesses and answers; wait ~2 secs
-        socket.emit("finishedRound");
+        revealAnswers(players, answer);
     }
 })
 
@@ -242,8 +241,9 @@ function firstTimePlayerSetup(){
 function fillInPlayerInfo(player){
     const imageEntryPromptIcon = document.querySelector(`.me .icon`);
     imageEntryPromptIcon.remove();
-    const pfpPreview = document.querySelector(`.preview.imgEntry.pfp`);
+    const pfpPreview = document.querySelector(`.preview.pfp`);
     pfpPreview.src = player.playerImg;
+    pfpPreview.style.display = "block";
     const name = document.querySelector(`.me .name`);
     name.value = player.playerName;
     const joinButton = document.querySelector(`.me .submit`);
@@ -452,14 +452,17 @@ function displayQuestion(question){
 }
 
 function hostDisplayAnswers(answers){
-    const answersDiv = document.querySelector(`div.answers`);
-    answersDiv.replaceChildren();
+    const allAnswers = document.querySelector(`div.answers`);
+    allAnswers.replaceChildren();
     for (let i = 0; i < answers.length; i++){
-        const answer = document.createElement("p");
-        answer.textContent = `${i+1}.  ${answers[i]}`;
-        answersDiv.appendChild(answer);
+        const answerDiv = document.createElement("div");
+        answerDiv.classList.add("answerChoice");
+        const answerText = document.createElement("p");
+        answerText.textContent = `${i+1}. ${answers[i]}`;
+        answerDiv.appendChild(answerText);
+        allAnswers.appendChild(answerDiv)
     }
-    answersDiv.style.display = "grid";
+    allAnswers.style.display = "grid";
 }
 
 function updateStatuses(players){
@@ -469,6 +472,37 @@ function updateStatuses(players){
             statuses[i].style.opacity = 0.4;
         }
     }
+}
+
+function revealAnswers(players, answer){
+    const answersDOM = document.querySelectorAll(`div.answers .answerChoice p`);
+    const answers = [...answersDOM];
+
+    // display players' final answers
+    for (let icons = 0; icons < players.length; icons++){
+            const guessedIcon = document.createElement("img");
+            guessedIcon.src = players[icons].playerImg;
+            guessedIcon.classList.add("pfp");
+            const chosenAnswer = answers.find(selectedAnswer => selectedAnswer.textContent.slice(3) == players[icons].finalAnswer);
+            chosenAnswer.parentElement.appendChild(guessedIcon);
+    }
+
+    // display who wrote each guess
+    for (let authors = 0; authors < players.length; authors++){
+            const author = document.createElement("p");
+            author.textContent = players[authors].playerName;
+            author.classList.add("author");
+            const initialGuess = answers.find(writtenAnswer => writtenAnswer.textContent.slice(3) == players[authors].initialGuess);
+            initialGuess.parentElement.appendChild(author);
+    }
+    const correctLabel = document.createElement("p");
+    correctLabel.textContent = "ANSWER";
+    correctLabel.classList.add("author");
+    const correctAnswer = answers.find(correctAnswer => correctAnswer.textContent.slice(3) == answer);
+    correctAnswer.parentElement.classList.add("correctAnswer");
+    correctAnswer.parentElement.appendChild(correctLabel);
+
+    //socket.emit("finishedRound");
 }
 
 function addQuote(quoteText, quoteNum){

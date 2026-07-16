@@ -99,6 +99,17 @@ socket.on("waitingInLobby", (me, isFirstTimeJoin) => {
     waitingInLobby(me);
 })
 
+socket.on("displayAbilities", (myAbilities) => {
+    const abilityPopUp = document.createElement("div");
+    abilityPopUp.id = "abilityPopUp";
+    
+    // !! display remaining abilities, highlighting possible ones
+
+    // !! close out of popup if user taps off of it
+
+    bodyElement.appendChild(abilityPopUp);
+})
+
 ////// HOST events
 socket.on("hostSetUp", () => {
     displayLobby([]);
@@ -263,6 +274,13 @@ function waitingInLobby(me){
 function setUpPlayerDisplay(){
     document.body.innerHTML = "";
 
+    const abilities = document.createElement("img");
+    abilities.src = "/static/icons/abilities.svg";
+    abilities.id = "abilities";
+    abilities.addEventListener("click", () => {
+        socket.emit("requestAbilities", myID);
+    })
+
     const trivia = document.createElement("div");
     trivia.id = "trivia";
 
@@ -304,6 +322,8 @@ function setUpPlayerDisplay(){
     guessDiv.appendChild(submitBtn);
     trivia.appendChild(guessDiv);
     trivia.appendChild(answersDiv);
+
+    bodyElement.append(abilities);
     bodyElement.appendChild(trivia);
 }
 

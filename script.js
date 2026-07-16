@@ -149,6 +149,11 @@ io.on("connection", (socket) => {
         }
     });
 
+    socket.on("requestAbilites", (ID) => {
+        const player = players.find(player => player.playerID = ID);
+        socket.emit("displayAbilities", player.abilities);
+    })
+
     socket.on("test", (data) => {
         console.log(data);
     })

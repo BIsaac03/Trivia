@@ -5,7 +5,7 @@
 body{
     display: grid;
     grid-template-rows: auto auto;
-    gap: 40px;
+    gap: 25px;
 }
 
 div.me{
@@ -135,8 +135,8 @@ font-size: 30px;
 }
 .answers .answerChoice{
     display: grid;
-    grid-template: auto auto / 30px auto auto;
-    gap: 10px;
+    grid-template: auto auto / 35px auto auto;
+    column-gap: 10px;
 }
 .answers .answerChoice .authors{
     grid-area: 2 / 2 / 3 / 3;
@@ -167,9 +167,19 @@ font-size: 30px;
     grid-auto-flow: row;
   }
 }
+
+#abilities{
+    position: absolute;
+    top: 1vh;
+    left: 87vw;
+    width: 10vw;
+    height: 10vw;
+}
+
 #trivia .answerChoices{
+    padding-top: 30px;
     display: grid;
-    gap: 25px;
+    gap: 4vw;
     justify-self: center;
     font-size: 50px;
 }

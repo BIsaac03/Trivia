@@ -496,6 +496,7 @@ function revealAnswers(players, answer){
 
     // display players' final answers
     for (let icons = 0; icons < players.length; icons++){
+        setTimeout(() => {
             const guessedIcon = document.createElement("img");
             guessedIcon.src = players[icons].playerImg;
             guessedIcon.classList.add("pfp");
@@ -503,6 +504,7 @@ function revealAnswers(players, answer){
             const chosenByDiv = chosenAnswer.parentElement.querySelector(`.chosenBy`);
             console.log(chosenByDiv);
             chosenByDiv.appendChild(guessedIcon);
+        }, icons*1000);            
     }
 
     // display who wrote each guess

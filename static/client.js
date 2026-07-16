@@ -199,6 +199,9 @@ socket.on("unreadyAllPlayers", (hostID) => {
 socket.on("sendHostSound", (soundDescription, hostID) => {
     if (hostID == myID){
         // !! play appropriate sound
+        const utterance = new SpeechSynthesisUtterance(soundDescription);
+        window.speechSynthesis.speak(utterance);
+        console.log(soundDescription);
     }
 })
 

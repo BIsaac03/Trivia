@@ -162,11 +162,15 @@ io.on("connection", (socket) => {
     socket.on("requestSounds", (ID) => {
         const player = players.find(player => player.playerID = ID);
         socket.emit("displaySounds", player.sounds);
+        console.log(player.sounds);
     });
 
     socket.on("playSound", (soundDescription, ID) => {
-        // remove player's sound
-        socket.emit("sendHostSound", soundDescription, hostID);
+        console.log("script ready to play sound")
+        const player = players.find(player => player.playerID = ID);
+        console.log(player);
+        player.removeSound(soundDescription);
+        socket.broadcast.emit("sendHostSound", soundDescription, hostID);
     })
 
     socket.on("test", (data) => {
@@ -187,10 +191,31 @@ function makePlayer(name, ID, img){
     let initialGuess = '';
     let finalAnswer = '';
     let pts = 0;
+    let ptsThisRound = 0;
     let abilities = {eliminateOne: true, secondSelection: true, doublePts: true};
     let sounds = []; // [[soundName, numSounds], ...]
     let isReady = false;
-    return {playerName, playerID, playerImg, initialGuess, finalAnswer, pts, abilities, sounds, isReady}
+    const addSound = (soundDescription) => {
+        const existingSound = sounds.find(sound => sound[0] == soundDescription);
+        if (existingSound == undefined){
+            sounds.push([soundDescription, 1]);
+        }
+        else{
+            existingSound[1]++;
+        }
+        console.log(sounds);
+    }
+    const removeSound = (soundDescription) => {
+        const sound = sounds.find(sound => sound[0] == soundDescription);
+        if (sound[1] > 1){
+            sounds[1]--;
+        }
+        else{
+            const index = sounds.indexOf(sound);
+            sounds.splice(index, 1);
+        }
+    }
+    return {playerName, playerID, playerImg, initialGuess, finalAnswer, pts, ptsThisRound, abilities, sounds, isReady, addSound, removeSound}
 }
 
 function allPlayersAreReady(){
@@ -217,6 +242,7 @@ function compileAnswers(){
 
 function resetPlayers(){
     for (let i = 0; i < players.length; i++){
+        players[i].ptsThisRound = 0;
         players[i].initialGuess = "";
         players[i].finalAnswer = "";
         players[i].isReady = false;
@@ -226,20 +252,27 @@ function resetPlayers(){
 function adjustPts(){
     for (let i = 0; i < players.length; i++){
         if (players[i].initialGuess == gameState.answer){
-            players[i].pts += FIRSTTRYPTS;
+            players[i].ptsThisRound += FIRSTTRYPTS;
         }
         if (players[i].finalAnswer == gameState.answer){
-            players[i].pts += SECONDGUESSPTS;
+            players[i].ptsThisRound += SECONDGUESSPTS;
         }
         // award fooling points only if opponents pick "YOUR" answer 
         // no points if they pick their own answer, which happens to also be yours
         for (let j = 0; j < players.length; j++){
             if (players[j].finalAnswer == players[i].initialGuess && players[j].finalAnswer != gameState.answer){
                 if (players[j].finalAnswer != players[j].initialGuess){
-                    players[i].pts += FOOLPTS;
+                    players[i].ptsThisRound += FOOLPTS;
                 }
             }
         }
-        console.log(players[i].playerName, players[i].pts);
+        players[i].pts += players[i].ptsThisRound
+        console.log(`this round ${players[i].playerName} got ${players[i].ptsThisRound} pts`);
+        console.log(`${players[i].playerName} has ${players[i].pts} total`);
+    }
+
+    const noPtsThisRound = players.filter(player => player.ptsThisRound == 0);
+    if (noPtsThisRound.length == 1){
+        players[0].addSound("noPts");
     }
 }

@@ -154,9 +154,19 @@ io.on("connection", (socket) => {
         socket.emit("displayAbilities", player.abilities, gameState.abilitiesToUse);
     });
 
-    socket.on("useAbility", (abilityName) => {
+    socket.on("useAbility", (abilityName, ID) => {
         // !! perform actions based on ability used
-        console.log(abilityName);
+        // !! set player's ability to used
+    });
+
+    socket.on("requestSounds", (ID) => {
+        const player = players.find(player => player.playerID = ID);
+        socket.emit("displaySounds", player.sounds);
+    });
+
+    socket.on("playSound", (soundDescription, ID) => {
+        // remove player's sound
+        socket.emit("sendHostSound", soundDescription, hostID);
     })
 
     socket.on("test", (data) => {
@@ -178,8 +188,9 @@ function makePlayer(name, ID, img){
     let finalAnswer = '';
     let pts = 0;
     let abilities = {eliminateOne: true, secondSelection: true, doublePts: true};
+    let sounds = []; // [[soundName, numSounds], ...]
     let isReady = false;
-    return {playerName, playerID, playerImg, initialGuess, finalAnswer, pts, abilities, isReady}
+    return {playerName, playerID, playerImg, initialGuess, finalAnswer, pts, abilities, sounds, isReady}
 }
 
 function allPlayersAreReady(){

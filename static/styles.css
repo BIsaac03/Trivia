@@ -170,7 +170,7 @@ font-size: 30px;
 
 #abilities{
     position: absolute;
-    top: 1vh;
+    top: 2vh;
     left: 87vw;
     width: 10vw;
     height: 10vw;
@@ -179,7 +179,7 @@ font-size: 30px;
     position: absolute;
     top: min(20vw, 10vh);
     justify-self:center;
-    width: min(85vw, 70vh);
+    width: min(80vw, 60vh);
     height: min(85vw, 70vh);
     background-color: lightcyan;
     display: grid;
@@ -201,6 +201,25 @@ font-size: 30px;
     width: 60px;
     height: 30px;
 }
+
+#sounds{
+    position: absolute;
+    top: 12vh;
+    left: 88vw;
+    width: 9vw;
+    height: 9vw;
+}
+#soundsPopUp{
+    position: absolute;
+    top: min(20vw, 10vh);
+    justify-self:center;
+    width: min(80vw, 60vh);
+    height: min(85vw, 70vh);
+    background-color: lightgoldenrodyellow;
+    display: grid;
+    grid-template-rows: repeat(3, 33%);
+}
+
 #trivia .answerChoices{
     padding-top: 30px;
     display: grid;

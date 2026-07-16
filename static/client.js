@@ -116,6 +116,44 @@ socket.on("displayAbilities", (myAbilities, currentlyAvailableAbilities) => {
     bodyElement.appendChild(abilityPopUp);
 })
 
+socket.on("displaySounds", (mySounds) => {
+    const soundsPopUp = document.createElement("div");
+    soundsPopUp.id = "soundsPopUp";
+
+    mySounds.forEach(sound => {
+        const soundDiv = document.createElement("div");
+        const soundDescription = document.createElement("p");
+        const soundNum = document.createElement("p");
+        const soundButton = document.createElement("button");
+
+        soundDescription.textContent = sound[0];
+        soundNum.textContent = sound[1];
+
+        soundButton.addEventListener("click", () => {
+            socket.emit("playSound", sound[0], myID);
+
+            if (Number(soundNum.textContent) > 1){
+                soundNum.textContent = `${Number(soundNum.textContent) - 1}`;
+            }
+            else{
+                soundDiv.remove();
+            }
+        })
+
+        soundDiv.appendChild(soundDescription);
+        soundDiv.appendChild(soundButton);
+        soundsPopUp.appendChild(soundDiv);
+    });
+
+    document.addEventListener("click", (event) => {
+        if (!soundsPopUp.contains(event.target)) {
+            soundsPopUp.remove();
+        }
+    });
+
+    bodyElement.appendChild(soundsPopUp);
+});
+
 ////// HOST events
 socket.on("hostSetUp", () => {
     displayLobby([]);
@@ -155,6 +193,12 @@ socket.on("unreadyAllPlayers", (hostID) => {
     if (hostID == myID){
         const statuses = document.querySelectorAll(`#statuses .pfp`)
         statuses.forEach((status) => status.style.opacity = 0.4);
+    }
+})
+
+socket.on("sendHostSound", (soundDescription, hostID) => {
+    if (hostID == myID){
+        // !! play appropriate sound
     }
 })
 
@@ -287,6 +331,13 @@ function setUpPlayerDisplay(){
         socket.emit("requestAbilities", myID);
     })
 
+    const sounds = document.createElement("img");
+    sounds.src = "/static/icons/sounds.svg"
+    sounds.id = "sounds";
+    sounds.addEventListener("click", () => {
+        socket.emit("requestSounds", myID);
+    })
+
     const trivia = document.createElement("div");
     trivia.id = "trivia";
 
@@ -330,6 +381,7 @@ function setUpPlayerDisplay(){
     trivia.appendChild(answersDiv);
 
     bodyElement.append(abilities);
+    bodyElement.appendChild(sounds);
     bodyElement.appendChild(trivia);
 }
 
@@ -387,7 +439,7 @@ function displayAbility(abilityName, hasAbility, canUseAbility, abilityPopUp){
     const abilityButton = document.createElement("button");
 
     abilityButton.addEventListener("click", () => {
-        socket.emit("useAbility", abilityName);
+        socket.emit("useAbility", abilityName, myID);
     })
 
     if (!hasAbility){

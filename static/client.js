@@ -457,9 +457,25 @@ function hostDisplayAnswers(answers){
     for (let i = 0; i < answers.length; i++){
         const answerDiv = document.createElement("div");
         answerDiv.classList.add("answerChoice");
+
+        const answerNum = document.createElement("p");
+        answerNum.textContent = `${i+1}.`;
+        answerNum.classList.add("answerNum");
+        answerDiv.appendChild(answerNum);
+
         const answerText = document.createElement("p");
-        answerText.textContent = `${i+1}. ${answers[i]}`;
+        answerText.textContent = `${answers[i]}`;
+        answerText.classList.add("answer");
         answerDiv.appendChild(answerText);
+
+        const chosenByDiv = document.createElement("div");
+        chosenByDiv.classList.add("chosenBy");
+        answerDiv.appendChild(chosenByDiv);
+
+        const authors = document.createElement("div");
+        authors.classList.add("authors");
+        answerDiv.appendChild(authors);
+
         allAnswers.appendChild(answerDiv)
     }
     allAnswers.style.display = "grid";
@@ -475,7 +491,7 @@ function updateStatuses(players){
 }
 
 function revealAnswers(players, answer){
-    const answersDOM = document.querySelectorAll(`div.answers .answerChoice p`);
+    const answersDOM = document.querySelectorAll(`div.answers .answerChoice p.answer`);
     const answers = [...answersDOM];
 
     // display players' final answers
@@ -483,24 +499,26 @@ function revealAnswers(players, answer){
             const guessedIcon = document.createElement("img");
             guessedIcon.src = players[icons].playerImg;
             guessedIcon.classList.add("pfp");
-            const chosenAnswer = answers.find(selectedAnswer => selectedAnswer.textContent.slice(3) == players[icons].finalAnswer);
-            chosenAnswer.parentElement.appendChild(guessedIcon);
+            const chosenAnswer = answers.find(selectedAnswer => selectedAnswer.textContent == players[icons].finalAnswer);
+            const chosenByDiv = chosenAnswer.parentElement.querySelector(`.chosenBy`);
+            console.log(chosenByDiv);
+            chosenByDiv.appendChild(guessedIcon);
     }
 
     // display who wrote each guess
     for (let authors = 0; authors < players.length; authors++){
             const author = document.createElement("p");
             author.textContent = players[authors].playerName;
-            author.classList.add("author");
-            const initialGuess = answers.find(writtenAnswer => writtenAnswer.textContent.slice(3) == players[authors].initialGuess);
-            initialGuess.parentElement.appendChild(author);
+            const initialGuess = answers.find(writtenAnswer => writtenAnswer.textContent == players[authors].initialGuess);
+            const authorsDiv = initialGuess.parentElement.querySelector(`.authors`);
+            authorsDiv.appendChild(author);
     }
     const correctLabel = document.createElement("p");
     correctLabel.textContent = "ANSWER";
-    correctLabel.classList.add("author");
-    const correctAnswer = answers.find(correctAnswer => correctAnswer.textContent.slice(3) == answer);
+    const correctAnswer = answers.find(correctAnswer => correctAnswer.textContent == answer);
     correctAnswer.parentElement.classList.add("correctAnswer");
-    correctAnswer.parentElement.appendChild(correctLabel);
+    const authorsDiv = correctAnswer.parentElement.querySelector(`.authors`);
+    authorsDiv.appendChild(correctLabel);
 
     //socket.emit("finishedRound");
 }

@@ -99,13 +99,19 @@ socket.on("waitingInLobby", (me, isFirstTimeJoin) => {
     waitingInLobby(me);
 })
 
-socket.on("displayAbilities", (myAbilities) => {
+socket.on("displayAbilities", (myAbilities, currentlyAvailableAbilities) => {
     const abilityPopUp = document.createElement("div");
     abilityPopUp.id = "abilityPopUp";
-    
-    // !! display remaining abilities, highlighting possible ones
 
-    // !! close out of popup if user taps off of it
+    displayAbility("eliminateOne", myAbilities.eliminateOne, currentlyAvailableAbilities.eliminateOne, abilityPopUp);
+    displayAbility("secondSelection", myAbilities.secondSelection, currentlyAvailableAbilities.secondSelection, abilityPopUp);
+    displayAbility("doublePts", myAbilities.doublePts, currentlyAvailableAbilities.doublePts, abilityPopUp);
+
+    document.addEventListener("click", (event) => {
+        if (!abilityPopUp.contains(event.target)) {
+            abilityPopUp.remove();
+        }
+    });
 
     bodyElement.appendChild(abilityPopUp);
 })
@@ -371,6 +377,37 @@ function toggleVisibleSelections(){
         guessDiv.style.display = "grid";
         answersDiv.style.display = "none";
     }
+}
+
+function displayAbility(abilityName, hasAbility, canUseAbility, abilityPopUp){
+    const abilityDiv = document.createElement("div");
+    const abilityIcon = document.createElement("img");
+    // !! add icons 
+    const abilityStatus = document.createElement("p");
+    const abilityButton = document.createElement("button");
+
+    abilityButton.addEventListener("click", () => {
+        socket.emit("useAbility", abilityName);
+    })
+
+    if (!hasAbility){
+        abilityStatus.textContent = "Used";
+        abilityDiv.classList.add("used");
+    }
+    else if (!canUseAbility){
+        abilityStatus.textContent = "Inactive";
+        abilityDiv.classList.add("inactive")
+    }
+    else{
+        abilityStatus.textContent = "Active";
+        abilityDiv.classList.add("active");
+    }
+
+    abilityDiv.appendChild(abilityIcon);
+    abilityDiv.appendChild(abilityStatus);
+    abilityDiv.appendChild(abilityButton);
+
+    abilityPopUp.appendChild(abilityDiv);
 }
 
 ////// HOST functions

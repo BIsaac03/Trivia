@@ -50,7 +50,7 @@ const gameState = {
     answer: "",
     allAnswers: [],
     questionNum: 0,
-    powersToUse: {'50/50': false, '2nd selection': true, 'double pts': false},
+    abilitiesToUse: {eliminateOne: false, secondSelection: true, doublePts: false},
     loadNextQuestion(question) {
         this.question = question.questionText;
         this.answer = question.answer;
@@ -149,9 +149,14 @@ io.on("connection", (socket) => {
         }
     });
 
-    socket.on("requestAbilites", (ID) => {
+    socket.on("requestAbilities", (ID) => {
         const player = players.find(player => player.playerID = ID);
-        socket.emit("displayAbilities", player.abilities);
+        socket.emit("displayAbilities", player.abilities, gameState.abilitiesToUse);
+    });
+
+    socket.on("useAbility", (abilityName) => {
+        // !! perform actions based on ability used
+        console.log(abilityName);
     })
 
     socket.on("test", (data) => {
@@ -172,7 +177,7 @@ function makePlayer(name, ID, img){
     let initialGuess = '';
     let finalAnswer = '';
     let pts = 0;
-    let abilities = {'50/50': true, '2nd selection': true, 'double pts': true};
+    let abilities = {eliminateOne: true, secondSelection: true, doublePts: true};
     let isReady = false;
     return {playerName, playerID, playerImg, initialGuess, finalAnswer, pts, abilities, isReady}
 }

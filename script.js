@@ -6,6 +6,7 @@ import { Server } from "socket.io";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { Socket } from "dgram";
+import e from "express";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -250,6 +251,8 @@ function resetPlayers(){
 }
 
 function adjustPts(){
+    const lastPlayer = players.reduce((loser, current) => current.pts < loser.pts ? current : loser);
+    // calculate points earned by each player
     for (let i = 0; i < players.length; i++){
         if (players[i].initialGuess == gameState.answer){
             players[i].ptsThisRound += FIRSTTRYPTS;
@@ -266,7 +269,14 @@ function adjustPts(){
                 }
             }
         }
-        players[i].pts += players[i].ptsThisRound
+
+        // players who picked cursed answer give ALL their points that round to the losing player
+        if (players[i].finalAnswer == lastPlayer.initialGuess && lastPlayer.initialGuess != gameState.answer && players[i].finalAnswer != players[i].initialGuess){
+            lastPlayer.pts += players[i].ptsThisRound;
+            players[i].ptsThisRound = 0;
+        }
+    
+        players[i].pts += players[i].ptsThisRound;
         console.log(`this round ${players[i].playerName} got ${players[i].ptsThisRound} pts`);
         console.log(`${players[i].playerName} has ${players[i].pts} total`);
     }

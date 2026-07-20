@@ -350,9 +350,13 @@ function waitingInLobby(me){
 function setUpPlayerDisplay(){
     document.body.innerHTML = "";
 
+    const menus = document.createElement("div");
+    menus.id = "menus";
+
     const abilities = document.createElement("img");
     abilities.src = "/static/icons/abilities.svg";
     abilities.id = "abilities";
+    abilities.classList.add("icon");
     abilities.addEventListener("click", () => {
         socket.emit("requestAbilities", myID);
     })
@@ -360,6 +364,7 @@ function setUpPlayerDisplay(){
     const sounds = document.createElement("img");
     sounds.src = "/static/icons/sounds.svg"
     sounds.id = "sounds";
+    sounds.classList.add("icon");
     sounds.addEventListener("click", () => {
         socket.emit("requestSounds", myID);
     })
@@ -406,8 +411,10 @@ function setUpPlayerDisplay(){
     trivia.appendChild(guessDiv);
     trivia.appendChild(answersDiv);
 
-    bodyElement.append(abilities);
-    bodyElement.appendChild(sounds);
+    menus.appendChild(abilities);
+    menus.appendChild(sounds);
+
+    bodyElement.appendChild(menus);
     bodyElement.appendChild(trivia);
 }
 

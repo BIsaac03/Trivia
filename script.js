@@ -163,13 +163,13 @@ io.on("connection", (socket) => {
     socket.on("requestSounds", (ID) => {
         const player = players.find(player => player.playerID = ID);
         socket.emit("displaySounds", player.sounds);
-        console.log(player.sounds);
+        //console.log(player.sounds);
     });
 
     socket.on("playSound", (soundDescription, ID) => {
-        console.log("script ready to play sound")
+        //console.log("script ready to play sound")
         const player = players.find(player => player.playerID = ID);
-        console.log(player);
+        //console.log(player);
         player.removeSound(soundDescription);
         socket.broadcast.emit("sendHostSound", soundDescription, hostID);
     })
@@ -204,7 +204,7 @@ function makePlayer(name, ID, img){
         else{
             existingSound[1]++;
         }
-        console.log(sounds);
+        //console.log(sounds);
     }
     const removeSound = (soundDescription) => {
         const sound = sounds.find(sound => sound[0] == soundDescription);
@@ -278,8 +278,8 @@ function adjustPts(){
         }
     
         players[i].pts += players[i].ptsThisRound;
-        console.log(`this round ${players[i].playerName} got ${players[i].ptsThisRound} pts`);
-        console.log(`${players[i].playerName} has ${players[i].pts} total`);
+        //console.log(`this round ${players[i].playerName} got ${players[i].ptsThisRound} pts`);
+        //console.log(`${players[i].playerName} has ${players[i].pts} total`);
     }
 
     const noPtsThisRound = players.filter(player => player.ptsThisRound == 0);

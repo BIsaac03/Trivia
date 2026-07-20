@@ -3,6 +3,8 @@
     padding: 0px;
 }
 body{
+    width: 100vw;
+    height: 100vh;
     display: grid;
     grid-template-rows: auto auto;
     gap: 25px;
@@ -18,6 +20,7 @@ input[type="file"]{
     display: none;
 }
 .me input.name{
+    height: 32px;
     border-radius: 10px;
     padding: 3px 10px;
     font-size: 24px;
@@ -48,6 +51,7 @@ label.imgEntry.pfp{
     object-fit: cover;
 }
 .me button.submit{
+    height: 50px;
     border-radius: 5px;
     padding: 4px 10px;
     font-size: 32px;
@@ -113,21 +117,25 @@ font-size: 30px;
     text-align: center;
 }
 #trivia .guess{
+    align-self: center;
     display: grid;
     gap: 25px;
     justify-self: center;
 }
 .guess input{
+    height: 40px;
     border-radius: 10px;
     padding: 5px 10px;
     font-size: 30px;
     text-align: center;
 }
 .guess button{
+    height: 35px;
     font-size: 25px;
 }
 
 #trivia .answers{
+    align-self: center;
     display: none;
     justify-content: center;
     gap: 30px;
@@ -168,12 +176,16 @@ font-size: 30px;
   }
 }
 
-#abilities{
+#menus{
     position: absolute;
-    top: 2vh;
-    left: 87vw;
-    width: 10vw;
-    height: 10vw;
+    top: max(2vw, 2vh);
+    right: max(2vw, 2vh);
+    display: grid;
+    gap: max(2vw, 2vh);
+}
+#menus .icon{
+    width: min(8vw, 8vh);
+    height: min(8vw, 8vh);
 }
 #abilityPopUp{
     position: absolute;
@@ -202,13 +214,7 @@ font-size: 30px;
     height: 30px;
 }
 
-#sounds{
-    position: absolute;
-    top: 12vh;
-    left: 88vw;
-    width: 9vw;
-    height: 9vw;
-}
+
 #soundsPopUp{
     position: absolute;
     top: min(20vw, 10vh);

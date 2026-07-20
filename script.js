@@ -274,6 +274,7 @@ function adjustPts(){
         if (players[i].finalAnswer == lastPlayer.initialGuess && lastPlayer.initialGuess != gameState.answer && players[i].finalAnswer != players[i].initialGuess){
             lastPlayer.pts += players[i].ptsThisRound;
             players[i].ptsThisRound = 0;
+            players[i].addSound("complain");
         }
     
         players[i].pts += players[i].ptsThisRound;
@@ -283,6 +284,6 @@ function adjustPts(){
 
     const noPtsThisRound = players.filter(player => player.ptsThisRound == 0);
     if (noPtsThisRound.length == 1){
-        players[0].addSound("noPts");
+        players[0].addSound("encourage");
     }
 }

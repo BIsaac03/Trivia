@@ -198,10 +198,33 @@ socket.on("unreadyAllPlayers", (hostID) => {
 
 socket.on("sendHostSound", (soundDescription, hostID) => {
     if (hostID == myID){
-        // !! play appropriate sound
-        const utterance = new SpeechSynthesisUtterance(soundDescription);
-        window.speechSynthesis.speak(utterance);
         console.log(soundDescription);
+        // play appropriate sound
+        let path = undefined;
+        if (soundDescription == "complain"){
+            const soundNum = Math.floor(Math.random()*4);
+            switch (soundNum){
+                case 0:
+                    path = "/static/audios/biasedBeyondBelief.m4a";
+                case 1:
+                    path = "/static/audios/gameIsRigged.m4a";
+                case 2:
+                    path = "/static/audios/iWasCheated.m4a";
+                case 3:
+                    path = "/static/audios/totallyUnfair.m4a";
+            }
+        }
+        else if (soundDescription == "encourage"){
+            path = "/static/audios/saveMe.mp3";
+        }
+
+        if (path != undefined){
+            const audio = new Audio(path);
+            audio.play();
+        }
+
+        //const utterance = new SpeechSynthesisUtterance(soundDescription);
+        //window.speechSynthesis.speak(utterance);
     }
 })
 

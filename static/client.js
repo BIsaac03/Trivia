@@ -271,7 +271,7 @@ async function displayPfp(file) {
 function firstTimePlayerSetup(){
     document.body.innerHTML = "";
     const playerSetup = document.createElement("div");
-    playerSetup.classList.add("me")
+    playerSetup.id = "me";
 
     const imgEntry = document.createElement("input");
     imgEntry.type = "file";
@@ -310,7 +310,7 @@ function firstTimePlayerSetup(){
     joinBtn.classList.add("submit");
     joinBtn.textContent = "Join";
     joinBtn.addEventListener("click", () => {
-        const pfpPreview = document.querySelector(`.me img.preview`);
+        const pfpPreview = document.querySelector(`#me img.preview`);
         if (nameEntry.value != "" && pfpPreview.src != "") {
             joinBtn.textContent = "Update"
             socket.emit("playerJoined", nameEntry.value, myID, pfpPreview.src);
@@ -326,14 +326,14 @@ function firstTimePlayerSetup(){
 }
 
 function fillInPlayerInfo(player){
-    const imageEntryPromptIcon = document.querySelector(`.me .icon`);
+    const imageEntryPromptIcon = document.querySelector(`#me .icon`);
     imageEntryPromptIcon.remove();
     const pfpPreview = document.querySelector(`.preview.pfp`);
     pfpPreview.src = player.playerImg;
     pfpPreview.style.display = "block";
-    const name = document.querySelector(`.me .name`);
+    const name = document.querySelector(`#me .name`);
     name.value = player.playerName;
-    const joinButton = document.querySelector(`.me .submit`);
+    const joinButton = document.querySelector(`#me .submit`);
     joinButton.textContent = "Update";
 }
 
@@ -343,7 +343,8 @@ function waitingInLobby(me){
         const message = document.createElement("p");
         message.textContent = "You have successfully connected to the lobby. Remain here until trivia starts."
         message.classList.add("inLobbyMessage");
-        bodyElement.appendChild(message);
+        const me = document.getElementById("me");
+        me.appendChild(message);
     } 
 }
 
@@ -560,6 +561,9 @@ function displayPlayerInLobby(displayedPlayer, playersDiv){
 function setUpHostDisplay(players){
     document.body.innerHTML = "";
 
+    const activeAbilities = document.createElement("div");
+    activeAbilities.id = "activeAbilities";
+
     const playerStatuses = document.createElement("div");
     playerStatuses.id = "statuses";
     for (let i = 0; i < players.length; i++){
@@ -581,6 +585,7 @@ function setUpHostDisplay(players){
     answersDiv.classList.add("answers");
     trivia.appendChild(answersDiv);
 
+    bodyElement.appendChild(activeAbilities);
     bodyElement.appendChild(playerStatuses);
     bodyElement.appendChild(trivia);
 }

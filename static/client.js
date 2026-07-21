@@ -402,6 +402,12 @@ function setUpPlayerDisplay(){
         const selectedAnswer = document.getElementById("finalAnswer");
         if (selectedAnswer != undefined){
             socket.emit("choseFinalAnswer", myID, selectedAnswer.textContent-1);
+            const answersDOM = answerChoices.children;
+            const answers = [...answersDOM];
+            answers.forEach((answer) => {
+                answer.disabled = true;
+            });
+            confirmFinalAnswer.disabled = true;
         }
     })
     answersDiv.appendChild(confirmFinalAnswer);

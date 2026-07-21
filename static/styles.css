@@ -155,6 +155,9 @@ font-size: 30px;
     gap: 4vh;
     font-size: 48px;
 }
+.correctAnswer .answer{
+    color: darkgoldenrod;
+}
 .answers .answerChoice{
     display: grid;
     grid-template: repeat(2, min-content) / 35px min-content 1fr;

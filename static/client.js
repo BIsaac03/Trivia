@@ -397,7 +397,7 @@ function setUpPlayerDisplay(){
 
     const confirmFinalAnswer = document.createElement("button");
     confirmFinalAnswer.textContent = "Confirm";
-    confirmFinalAnswer.classList.add("confirm");
+    confirmFinalAnswer.id = "confirmFinalAnswer"
     confirmFinalAnswer.addEventListener("click", () => {
         const selectedAnswer = document.getElementById("finalAnswer");
         if (selectedAnswer != undefined){
@@ -428,10 +428,12 @@ function setUpPlayerDisplay(){
 function readyNewSubmission(){
     const userGuess = document.querySelector(`.guess input`);
     const submitBtn = document.querySelector(`#makeInitialGuess`);
+    const confirmFinalAnswer = document.querySelector(`#confirmFinalAnswer`);
 
     userGuess.placeholder = "";
     userGuess.disabled = false;
     submitBtn.disabled = false;
+    confirmFinalAnswer.disabled = false;
 
     toggleVisibleSelections();
 }
@@ -646,6 +648,7 @@ function updateStatuses(players){
 function revealAnswers(players, answer){
     const answersDOM = document.querySelectorAll(`div.answers .answerChoice p.answer`);
     const answers = [...answersDOM];
+    const stall = players.length;
 
     // display players' final answers
     for (let icons = 0; icons < players.length; icons++){
@@ -662,20 +665,28 @@ function revealAnswers(players, answer){
 
     // display who wrote each guess
     for (let authors = 0; authors < players.length; authors++){
+        setTimeout(() => {
             const author = document.createElement("p");
             author.textContent = players[authors].playerName;
             const initialGuess = answers.find(writtenAnswer => writtenAnswer.textContent == players[authors].initialGuess);
             const authorsDiv = initialGuess.parentElement.querySelector(`.authors`);
             authorsDiv.appendChild(author);
+        }, stall*1000 + authors*1000);     
     }
-    const correctLabel = document.createElement("p");
-    correctLabel.textContent = "ANSWER";
-    const correctAnswer = answers.find(correctAnswer => correctAnswer.textContent == answer);
-    correctAnswer.parentElement.classList.add("correctAnswer");
-    const authorsDiv = correctAnswer.parentElement.querySelector(`.authors`);
-    authorsDiv.appendChild(correctLabel);
 
-    //socket.emit("finishedRound");
+    // highlight correct answer
+    setTimeout(() => {
+        const correctLabel = document.createElement("p");
+        correctLabel.textContent = "ANSWER";
+        correctLabel.classList.add("correctLabel");
+        const correctAnswer = answers.find(correctAnswer => correctAnswer.textContent == answer);
+        const authorsDiv = correctAnswer.parentElement.querySelector(`.authors`);
+        authorsDiv.appendChild(correctLabel);
+    }, stall*2000); 
+
+    setTimeout(() => {
+        //socket.emit("finishedRound");
+    }, 2000 + stall*2000); 
 }
 
 function addQuote(quoteText, quoteNum){

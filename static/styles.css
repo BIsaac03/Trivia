@@ -155,12 +155,12 @@ font-size: 30px;
     gap: 4vh;
     font-size: 48px;
 }
-.correctAnswer .answer{
+.correctLabel{
     color: darkgoldenrod;
 }
 .answers .answerChoice{
     display: grid;
-    grid-template: repeat(2, min-content) / 35px min-content 1fr;
+    grid-template: auto 14px / 35px min-content 0px;
     column-gap: 10px;
 }
 .answers .answerChoice .authors{
@@ -256,7 +256,7 @@ font-size: 30px;
     justify-self: center;
     font-size: 48px;
 }
-.answers .confirm{
+#confirmFinalAnswer{
     grid-row: 2 / 3;
 }
 #finalAnswer{

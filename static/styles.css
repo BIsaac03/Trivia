@@ -121,7 +121,7 @@ font-size: 30px;
     grid-area: 2 / 2 / 3 / 3;
     display: grid;
     padding: 25px;
-    gap: 50px;
+    gap: 10px;
 }
 #trivia .question{
     font-size: 30px;
@@ -149,7 +149,7 @@ font-size: 30px;
 }
 
 #trivia .answers{
-    align-self: baseline;
+    align-self: center;
     display: none;
     justify-content: center;
     gap: 4vh;
@@ -182,14 +182,12 @@ font-size: 30px;
 
 @media (orientation: landscape) {
   #trivia .answerChoices{
-    grid-template-rows: 1fr 1fr;
-    grid-auto-flow: column;
+    grid-template-columns: 1fr 1fr 1fr;
   }
 }
 @media (orientation: portrait) {
   #trivia .answerChoices{
     grid-template-columns: 1fr 1fr;
-    grid-auto-flow: row;
   }
 }
 
@@ -204,15 +202,17 @@ font-size: 30px;
     width: min(8vw, 8vh);
     height: min(8vw, 8vh);
 }
-#abilityPopUp{
+#abilityPopUp, #soundsPopUp{
     position: absolute;
-    top: min(20vw, 10vh);
+    top: min(30vw, 15vh);
     justify-self:center;
     width: min(80vw, 60vh);
     height: min(85vw, 70vh);
-    background-color: lightcyan;
     display: grid;
     grid-template-rows: repeat(3, 33%);
+}
+#abilityPopUp{
+    background-color: lightcyan;
 }
 #abilityPopUp div{
     display: grid;
@@ -231,22 +231,13 @@ font-size: 30px;
     height: 30px;
 }
 
-
 #soundsPopUp{
-    position: absolute;
-    top: min(20vw, 10vh);
-    justify-self:center;
-    width: min(80vw, 60vh);
-    height: min(85vw, 70vh);
     background-color: lightgoldenrodyellow;
-    display: grid;
-    grid-template-rows: repeat(3, 33%);
 }
 
 #trivia .answerChoices{
-    padding-top: 30px;
     display: grid;
-    gap: 4vw;
+    gap: min(4vw, 2vh);
     justify-self: center;
     font-size: 50px;
 }
@@ -254,10 +245,13 @@ font-size: 30px;
     width: min(35vw, 25vh);
     height: min(35vw, 25vh);
     justify-self: center;
-    font-size: 48px;
+    border-radius: min(8vw, 4vh);
+    font-size: min(14vw, 10vh);
 }
 #confirmFinalAnswer{
     grid-row: 2 / 3;
+    height: min(20vw, 15vh);
+    font-size: min(7vw, 5vh);
 }
 #finalAnswer{
     border: 4px solid lightgreen;

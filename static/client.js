@@ -571,6 +571,9 @@ function setUpHostDisplay(players){
 
     const activeAbilities = document.createElement("div");
     activeAbilities.id = "activeAbilities";
+    addAbility("eliminateOne", activeAbilities);
+    addAbility("secondSelection", activeAbilities);
+    addAbility("doublePts", activeAbilities);
 
     const playerStatuses = document.createElement("div");
     playerStatuses.id = "statuses";
@@ -649,6 +652,7 @@ function revealAnswers(players, answer){
     const answersDOM = document.querySelectorAll(`div.answers .answerChoice p.answer`);
     const answers = [...answersDOM];
     const stall = players.length;
+    const popAudio = new Audio("/static/audios/pop.mp3");
 
     // display players' final answers
     for (let icons = 0; icons < players.length; icons++){
@@ -659,6 +663,7 @@ function revealAnswers(players, answer){
             const chosenAnswer = answers.find(selectedAnswer => selectedAnswer.textContent == players[icons].finalAnswer);
             const chosenByDiv = chosenAnswer.parentElement.querySelector(`.chosenBy`);
             console.log(chosenByDiv);
+            popAudio.play();
             chosenByDiv.appendChild(guessedIcon);
         }, icons*1000);            
     }
@@ -707,4 +712,20 @@ function addQuote(quoteText, quoteNum){
     quote.textContent = quoteText;
     header.appendChild(quote);
     //quote.style.rotate = `${Math.random()*45}deg`
+}
+
+function addAbility(abilityName, abilitiesDiv){
+    const ability = document.createElement("div");
+    ability.classList.add("ability");
+
+    const abilityIcon = document.createElement("img");
+    abilityIcon.src = `/static/icons/${abilityName}.svg`;
+
+    const abilityRounds = document.createElement("p");
+    // !! display rounds abilities can be used
+    abilityRounds.textContent = "0";
+
+    ability.appendChild(abilityIcon);
+    ability.appendChild(abilityRounds);
+    abilitiesDiv.appendChild(ability);
 }

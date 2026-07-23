@@ -58,7 +58,7 @@ label.imgEntry.pfp{
     font-size: 32px;
     background-color: lightgoldenrodyellow;
 }
-.inLobbyMessage{
+.inLobbyMsg .needUserInfoMsg{
     text-align: center;
 }
 

@@ -418,7 +418,27 @@ function firstTimePlayerSetup(){
     joinBtn.textContent = "Join";
     joinBtn.addEventListener("click", () => {
         const pfpPreview = document.querySelector(`#me img.preview`);
-        if (nameEntry.value != "" && pfpPreview.src != "") {
+        const me = document.getElementById("me");
+        if (pfpPreview.src == ""){
+            const noImgMsg = document.createElement("p");
+            noImgMsg.textContent = "Add a profile picture first!";
+            noImgMsg.classList.add("needUserInfoMsg");
+            me.appendChild(noImgMsg);
+            setTimeout(() => {
+                noImgMsg.remove();
+            }, 1000);
+        }
+        else if (nameEntry.value == ""){
+            const noNameMsg = document.createElement("p");
+            noNameMsg.textContent = "Enter a name first!";
+            noNameMsg.classList.add("needUserInfoMsg");
+            me.appendChild(noNameMsg);
+            setTimeout(() => {
+                noNameMsg.remove();
+            }, 1000);
+
+        }
+        else {
             joinBtn.textContent = "Update"
             socket.emit("playerJoined", nameEntry.value, myID, pfpPreview.src);
         }
@@ -445,11 +465,11 @@ function fillInPlayerInfo(player){
 }
 
 function waitingInLobby(me){
-    const existingMessage = document.querySelector(`.inLobbyMessage`);
+    const existingMessage = document.querySelector(`.inLobbyMsg`);
     if (existingMessage == undefined){
         const message = document.createElement("p");
         message.textContent = "You have successfully connected to the lobby. Remain here until trivia starts."
-        message.classList.add("inLobbyMessage");
+        message.classList.add("inLobbyMsg");
         const me = document.getElementById("me");
         me.appendChild(message);
     } 

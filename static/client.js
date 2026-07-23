@@ -146,6 +146,16 @@ socket.on("displaySounds", (mySounds) => {
         soundsPopUp.appendChild(soundDiv);
     });
 
+    if (mySounds.length == 0){
+        const noSoundsMessage = document.createElement("p");
+        noSoundsMessage.textContent = "You have no sounds! Do cool things to earn more.";
+        soundsPopUp.appendChild(noSoundsMessage);
+
+        setTimeout(() => {
+            soundsPopUp.remove();
+        }, 3000);
+    }
+
     document.addEventListener("click", (event) => {
         if (!soundsPopUp.contains(event.target)) {
             soundsPopUp.remove();

@@ -77,7 +77,23 @@ socket.on("reconnection", (hostID, gameState, players) => {
                     
                 }
                 else{
-                    // !! display 'final answer received' message 
+                    playerDisplayAnswers(gameState.allAnswers);
+                    toggleVisibleSelections();
+                    const answerChoices = document.querySelector(`.answerChoices`);
+                    const confirmFinalAnswer = document.getElementById("confirmFinalAnswer");
+
+                    const answersDOM = answerChoices.children;
+                    const answers = [...answersDOM];
+                    answers.forEach((answer) => {
+                        answer.disabled = true;
+                        console.log(me.finalAnswer);
+                        console.log(answer.textContent);
+                        if (gameState.allAnswers[answer.textContent-1] == me.finalAnswer){
+                            console.log("match")
+                            answer.id = "finalAnswer";
+                        }
+                    });
+                    confirmFinalAnswer.disabled = true;
                 }
             }
 

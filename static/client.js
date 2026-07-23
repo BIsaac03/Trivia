@@ -360,7 +360,13 @@ function setUpPlayerDisplay(){
     abilities.id = "abilities";
     abilities.classList.add("icon");
     abilities.addEventListener("click", () => {
-        socket.emit("requestAbilities", myID);
+        const abilityPopUp = document.querySelector(`#abilityPopUp`)
+        if (abilityPopUp == undefined){
+            socket.emit("requestAbilities", myID);
+        } 
+        else{
+            abilityPopUp.remove();
+        }
     })
 
     const sounds = document.createElement("img");
@@ -368,7 +374,13 @@ function setUpPlayerDisplay(){
     sounds.id = "sounds";
     sounds.classList.add("icon");
     sounds.addEventListener("click", () => {
-        socket.emit("requestSounds", myID);
+        const soundsPopUp = document.querySelector(`#soundsPopUp`)
+        if (soundsPopUp == undefined){
+            socket.emit("requestSounds", myID);
+        }
+        else{
+            soundsPopUp.remove();
+        }
     })
 
     const trivia = document.createElement("div");

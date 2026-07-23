@@ -198,7 +198,14 @@ socket.on("showAllSubmissions", () => {
 });
 
 socket.on("illegalAbilityUse", () => {
-    // !! inform user of ability failure
+    const timingErrorPopUp = document.createElement("p");
+    timingErrorPopUp.textContent = "You cannot use this ability until all players have submitted their initial guesses.";
+    timingErrorPopUp.classList.add("abilityError");
+    bodyElement.appendChild(timingErrorPopUp);
+    setTimeout(() => {
+        timingErrorPopUp.remove();
+    }, 4000); 
+    
 });
 ////// HOST events
 socket.on("hostSetUp", () => {

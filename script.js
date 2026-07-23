@@ -106,6 +106,9 @@ io.on("connection", (socket) => {
     
     socket.on("madeFirstGuess", (ID, guess) => {
         const player = players.find(player => player.playerID == ID);
+        if (player == undefined){
+            console.log("undefined player; signal from previous session")
+        }
         player.initialGuess = guess;
         player.isReady = true;
         io.emit("playerReady", ID, hostID);
@@ -159,9 +162,13 @@ io.on("connection", (socket) => {
     socket.on("useAbility", (abilityName, ID) => {
         const player = players.find(player => player.playerID = ID);
 
-        // !! additionally, ensure all user's have submitted initial guesses
-        if (gameState.abilitiesToUse[abilityName] == false || player.abilities[abilityName] == false){
+        // ensure all users have submitted initial guesses
+        if (gameState.allAnswers.length == 0){
             socket.emit("illegalAbilityUse");
+        }
+
+        else if (gameState.abilitiesToUse[abilityName] == false || player.abilities[abilityName] == false){
+            console.log("User should not have been allowed to activate ability");
         }
 
         else{

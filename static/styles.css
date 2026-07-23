@@ -298,6 +298,11 @@ font-size: 30px;
 #abilityPopUp div.used{
     background-color: gray;
 }
+.abilityError{
+    position: absolute;
+    top: min(3vw, 3vh);
+    right: min(13vw, 13vh);
+}
 
 #soundsPopUp{
     background-color: lightgoldenrodyellow;

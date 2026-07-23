@@ -52,7 +52,7 @@ const gameState = {
     allAnswers: [],
     questionNum: 0,
     totalQuestions: questions.length,
-    abilitiesToUse: {eliminateOne: false, secondSelection: true, doublePts: false, seeAllSubmissions: false},
+    abilitiesToUse: {eliminateOne: true, secondSelection: true, doublePts: false, seeAllSubmissions: false},
     loadNextQuestion(question) {
         this.question = question.questionText;
         this.answer = question.answer;
@@ -172,7 +172,8 @@ io.on("connection", (socket) => {
         }
 
         else{
-            player.abilities[abilityName] = false;
+            // !! SIMPLIFIED FOR TESTING, ENSURE ABILITIES ARE USED ONCE TESTED
+            // player.abilities[abilityName] = false;
 
             switch (abilityName){
                 case "eliminateOne":
@@ -188,6 +189,25 @@ io.on("connection", (socket) => {
             }       socket.emit("showAllSubmissions");
         }
     });
+
+    socket.on("requestedEliminationTargets", (index1, index2) => {
+        let eliminatedAnswer = undefined;
+        if (gameState.answer == gameState.allAnswers[index1]){
+            eliminatedAnswer = index2;
+        }
+        else if (gameState.answer == gameState.allAnswers[index2]){
+            eliminatedAnswer = index1;
+        }
+        else{
+            if (Math.random() < 0.5){
+                eliminatedAnswer = index1;
+            }
+            else{
+                eliminatedAnswer = index2;
+            }
+        }
+        socket.emit("eliminateAnswer", eliminatedAnswer);
+    })
 
     socket.on("requestSounds", (ID) => {
         const player = players.find(player => player.playerID = ID);
@@ -315,8 +335,8 @@ function adjustPts(){
             players[i].pts += players[i].ptsThisRound;
             players[i].doubleMyPts = false;
         }
-        //console.log(`this round ${players[i].playerName} got ${players[i].ptsThisRound} pts`);
-        //console.log(`${players[i].playerName} has ${players[i].pts} total`);
+        console.log(`this round ${players[i].playerName} got ${players[i].ptsThisRound} pts`);
+        console.log(`${players[i].playerName} has ${players[i].pts} total`);
     }
 
     const noPtsThisRound = players.filter(player => player.ptsThisRound == 0);

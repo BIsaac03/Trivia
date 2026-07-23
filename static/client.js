@@ -186,8 +186,60 @@ socket.on("displaySounds", (mySounds) => {
 });
 
 socket.on("eliminateAnAnswer", () => {
-    // !! let user pick two answers, eliminate an incorrect one
+    const answersContainer = document.querySelector(`#trivia .answers`);
+
+    const tinyAnswers = answersContainer.cloneNode(true);
+    tinyAnswers.classList.add("tiny");
+    bodyElement.appendChild(tinyAnswers);
+
+    // !! submit button is current first child; swap order and change following lines
+    const submitButton = tinyAnswers.firstChild;
+    const answerChoices = tinyAnswers.lastChild;
+
+    submitButton.addEventListener("click", () => {
+        const selectedAnswers = document.querySelectorAll(`.tiny .selected`);
+        if (selectedAnswers.length == 2){
+            const answerIndex1 = Number(selectedAnswers[0].textContent) - 1;
+            const answerIndex2 = Number(selectedAnswers[1].textContent) - 1;
+            socket.emit("requestedEliminationTargets", answerIndex1, answerIndex2);
+            tinyAnswers.remove();
+        }
+        else{
+            // !! prompt player to select exactly two answers
+        }
+    })
+
+    const answersDOM = answerChoices.children;
+    const answers = [...answersDOM];
+    // prevent autoselection of element under 'USE' button
+    setTimeout(() => {
+        answers.forEach((answer) => {
+            answer.addEventListener("click", () => {
+                if (answer.classList.contains("selected")){
+                    answer.classList.remove("selected");
+                }
+                else{
+                    answer.classList.add("selected");
+                }
+            })
+        });
+    }, 50); 
+
+    document.addEventListener("click", (event) => {
+        if (!tinyAnswers.contains(event.target)) {
+            tinyAnswers.remove();
+        }
+    });
 });
+
+socket.on("eliminateAnswer", (eliminatedAnswerIndex) => {
+    console.log(eliminatedAnswerIndex);
+    const answerChoices = document.querySelector(`#trivia .answers .answerChoices`);
+    const answersDOM = answerChoices.children;
+    const answers = [...answersDOM];
+    const answerButton = answers.find(answer => answer.textContent == eliminatedAnswerIndex + 1);
+    answerButton.disabled = true;
+})
 
 socket.on("forceSelectTwoAnswers", () => {
     // !! make user select a second answer
@@ -507,7 +559,7 @@ function readyNewSubmission(){
 
 function playerDisplayAnswers(answers){
     const answersDiv = document.querySelector(`div.answers`);
-    const answerChoices = document.querySelector(`div.answerChoices`)
+    const answerChoices = document.querySelector(`div.answerChoices`);
     answerChoices.replaceChildren();
 
     for (let i = 0; i < answers.length; i++){

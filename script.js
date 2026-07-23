@@ -156,8 +156,29 @@ io.on("connection", (socket) => {
     });
 
     socket.on("useAbility", (abilityName, ID) => {
-        // !! perform actions based on ability used
-        // !! set player's ability to used
+        const player = players.find(player => player.playerID = ID);
+
+        // !! additionally, ensure all user's have submitted initial guesses
+        if (gameState.abilitiesToUse[abilityName] == false || player.abilities[abilityName] == false){
+            socket.emit("illegalAbilityUse");
+        }
+
+        else{
+            player.abilities[abilityName] = false;
+
+            switch (abilityName){
+                case "eliminateOne":
+                    socket.emit("eliminateAnAnswer");
+
+                case "secondSelection":
+                    socket.emit("forceSelectTwoAnswers");
+
+                case "doublePts":
+                    player.doubleMyPts = true;
+
+                case "seeAllSubmission":
+            }       socket.emit("showAllSubmissions");
+        }
     });
 
     socket.on("requestSounds", (ID) => {
@@ -193,6 +214,7 @@ function makePlayer(name, ID, img){
     let finalAnswer = '';
     let pts = 0;
     let ptsThisRound = 0;
+    let doubleMyPts = false;
     let abilities = {eliminateOne: true, secondSelection: true, doublePts: true, seeAllSubmissions: true};
     let sounds = []; // [[soundName, numSounds], ...]
     let isReady = false;
@@ -216,7 +238,7 @@ function makePlayer(name, ID, img){
             sounds.splice(index, 1);
         }
     }
-    return {playerName, playerID, playerImg, initialGuess, finalAnswer, pts, ptsThisRound, abilities, sounds, isReady, addSound, removeSound}
+    return {playerName, playerID, playerImg, initialGuess, finalAnswer, pts, ptsThisRound, doubleMyPts, abilities, sounds, isReady, addSound, removeSound}
 }
 
 function allPlayersAreReady(){
@@ -253,6 +275,7 @@ function resetPlayers(){
 function adjustPts(){
     const lastPlayer = players.reduce((loser, current) => current.pts < loser.pts ? current : loser);
     // calculate points earned by each player
+    // !! account for players who used second selection ability
     for (let i = 0; i < players.length; i++){
         if (players[i].initialGuess == gameState.answer){
             players[i].ptsThisRound += FIRSTTRYPTS;
@@ -278,6 +301,12 @@ function adjustPts(){
         }
     
         players[i].pts += players[i].ptsThisRound;
+
+        // double points ability NOT STOLEN BY CURSES
+        if (players[i].doubleMyPts){
+            players[i].pts += players[i].ptsThisRound;
+            players[i].doubleMyPts = false;
+        }
         //console.log(`this round ${players[i].playerName} got ${players[i].ptsThisRound} pts`);
         //console.log(`${players[i].playerName} has ${players[i].pts} total`);
     }

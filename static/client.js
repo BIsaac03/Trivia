@@ -165,6 +165,21 @@ socket.on("displaySounds", (mySounds) => {
     bodyElement.appendChild(soundsPopUp);
 });
 
+socket.on("eliminateAnAnswer", () => {
+    // !! let user pick two answers, eliminate an incorrect one
+});
+
+socket.on("forceSelectTwoAnswers", () => {
+    // !! make user select a second answer
+});
+
+socket.on("showAllSubmissions", () => {
+    // !! reveal unedited list of all initial guesses (+ correct answer)
+});
+
+socket.on("illegalAbilityUse", () => {
+    // !! inform user of ability failure
+});
 ////// HOST events
 socket.on("hostSetUp", () => {
     displayLobby([]);
@@ -684,6 +699,7 @@ function revealAnswers(players, answer){
             const guessedIcon = document.createElement("img");
             guessedIcon.src = players[icons].playerImg;
             guessedIcon.classList.add("pfp");
+            // !! account for players who used second selection ability
             const chosenAnswer = answers.find(selectedAnswer => selectedAnswer.textContent == players[icons].finalAnswer);
             const chosenByDiv = chosenAnswer.parentElement.querySelector(`.chosenBy`);
             console.log(chosenByDiv);

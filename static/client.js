@@ -287,8 +287,8 @@ socket.on("startTrivia", (players, gameState, hostID) => {
 socket.on("nextQuestion", (question, hostID) => {
     if (hostID == myID){
         displayQuestion(question);
-        const questionNum = document.getElementById("progress");
-        questionNum.textContent = Number(questionNum.textContent + 1);
+        const questionNum = document.querySelector(`#progress .currentNum`);
+        questionNum.textContent = Number(questionNum.textContent) + 1;
     }
     else{
         readyNewSubmission();
@@ -544,6 +544,8 @@ function displayAbility(abilityName, hasAbility, canUseAbility, abilityPopUp, de
 
     abilityButton.addEventListener("click", () => {
         socket.emit("useAbility", abilityName, myID);
+        const abilityPopUp = document.getElementById("abilityPopUp");
+        abilityPopUp.remove();
     })
 
     if (!hasAbility){

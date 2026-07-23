@@ -746,10 +746,14 @@ function revealAnswers(players, answer){
     }
 
     // display who wrote each guess
+    const lastPlayer = players.reduce((loser, current) => current.pts < loser.pts ? current : loser);
     for (let authors = 0; authors < players.length; authors++){
         setTimeout(() => {
             const author = document.createElement("p");
             author.textContent = players[authors].playerName;
+            if (players[authors] == lastPlayer){
+                author.id = "cursedLabel";
+            }
             const initialGuess = answers.find(writtenAnswer => writtenAnswer.textContent == players[authors].initialGuess);
             const authorsDiv = initialGuess.parentElement.querySelector(`.authors`);
             authorsDiv.appendChild(author);
@@ -760,15 +764,15 @@ function revealAnswers(players, answer){
     setTimeout(() => {
         const correctLabel = document.createElement("p");
         correctLabel.textContent = "ANSWER";
-        correctLabel.classList.add("correctLabel");
+        correctLabel.id = "correctLabel";
         const correctAnswer = answers.find(correctAnswer => correctAnswer.textContent == answer);
         const authorsDiv = correctAnswer.parentElement.querySelector(`.authors`);
         authorsDiv.appendChild(correctLabel);
     }, stall*2000); 
 
     setTimeout(() => {
-        socket.emit("finishedRound");
-    }, 2000 + stall*2000); 
+        //socket.emit("finishedRound");
+    }, 4000 + stall*2000); 
 }
 
 function addQuote(quoteText, quoteNum){

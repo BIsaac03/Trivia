@@ -292,6 +292,12 @@ font-size: 30px;
     width: 60px;
     height: 30px;
 }
+#abilityPopUp div.inactive{
+    background-color: lightgrey;
+}
+#abilityPopUp div.used{
+    background-color: gray;
+}
 
 #soundsPopUp{
     background-color: lightgoldenrodyellow;

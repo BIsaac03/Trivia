@@ -551,14 +551,19 @@ function displayAbility(abilityName, hasAbility, canUseAbility, abilityPopUp, de
     if (!hasAbility){
         abilityStatus.textContent = "Used";
         abilityDiv.classList.add("used");
+        abilityButton.textContent = "USED";
+        abilityButton.disabled = true;
     }
     else if (!canUseAbility){
         abilityStatus.textContent = "Inactive";
         abilityDiv.classList.add("inactive")
+        abilityButton.textContent = "USE";
+        abilityButton.disabled = true;
     }
     else{
         abilityStatus.textContent = "Active";
         abilityDiv.classList.add("active");
+        abilityButton.textContent = "USE";
     }
 
     abilityDiv.appendChild(abilityIcon);

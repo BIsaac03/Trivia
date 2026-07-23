@@ -111,6 +111,17 @@ socket.on("newConnection", () => {
     firstTimePlayerSetup();
 });
 
+socket.on("nameInUse", (name) => {
+    const existingNameMsg = document.createElement("p");
+    existingNameMsg.textContent = `Another player has already claimed the name: ${name}`;
+    existingNameMsg.classList.add("needUserInfoMsg");
+    const me = document.getElementById("me");
+    me.appendChild(existingNameMsg);
+    setTimeout(() => {
+        existingNameMsg.remove();
+    }, 2000);
+});
+
 socket.on("waitingInLobby", (me, isFirstTimeJoin) => {
     waitingInLobby(me);
 })
@@ -439,7 +450,6 @@ function firstTimePlayerSetup(){
 
         }
         else {
-            joinBtn.textContent = "Update"
             socket.emit("playerJoined", nameEntry.value, myID, pfpPreview.src);
         }
     })
@@ -460,11 +470,12 @@ function fillInPlayerInfo(player){
     pfpPreview.style.display = "block";
     const name = document.querySelector(`#me .name`);
     name.value = player.playerName;
-    const joinButton = document.querySelector(`#me .submit`);
-    joinButton.textContent = "Update";
 }
 
 function waitingInLobby(me){
+    const joinButton = document.querySelector(`#me .submit`);
+    joinButton.textContent = "Update";
+
     const existingMessage = document.querySelector(`.inLobbyMsg`);
     if (existingMessage == undefined){
         const message = document.createElement("p");

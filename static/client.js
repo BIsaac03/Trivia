@@ -27,7 +27,7 @@ socket.on("reconnection", (hostID, gameState, players) => {
             displayLobby(players);
         }
         else{
-            setUpHostDisplay(players);
+            setUpHostDisplay(players, gameState);
             updateStatuses(players);
             displayQuestion(gameState.question);
             if (gameState.allAnswers.length > 0){
@@ -119,10 +119,14 @@ socket.on("displayAbilities", (myAbilities, currentlyAvailableAbilities) => {
     const abilityPopUp = document.createElement("div");
     abilityPopUp.id = "abilityPopUp";
 
-    displayAbility("eliminateOne", myAbilities.eliminateOne, currentlyAvailableAbilities.eliminateOne, abilityPopUp);
-    displayAbility("secondSelection", myAbilities.secondSelection, currentlyAvailableAbilities.secondSelection, abilityPopUp);
-    displayAbility("doublePts", myAbilities.doublePts, currentlyAvailableAbilities.doublePts, abilityPopUp);
-    displayAbility("seeAllSubmissions", myAbilities.seeAllSubmissions, currentlyAvailableAbilities.seeAllSubmissions, abilityPopUp)
+    displayAbility("eliminateOne", myAbilities.eliminateOne, currentlyAvailableAbilities.eliminateOne, abilityPopUp,
+                    "Pick two answers. An incorrect one is removed.");
+    displayAbility("secondSelection", myAbilities.secondSelection, currentlyAvailableAbilities.secondSelection, abilityPopUp,
+                    "Select a second answer. If EITHER is cursed, you will earn no points.");
+    displayAbility("doublePts", myAbilities.doublePts, currentlyAvailableAbilities.doublePts, abilityPopUp,
+                    "Double the points you earn this round.\nPoints earned/lost from cursing are not doubled.");
+    displayAbility("seeAllSubmissions", myAbilities.seeAllSubmissions, currentlyAvailableAbilities.seeAllSubmissions, abilityPopUp,
+                    "See ALL players' answers (along with the correct one), unedited.");
 
     document.addEventListener("click", (event) => {
         if (!abilityPopUp.contains(event.target)) {
@@ -271,9 +275,9 @@ socket.on("sendHostSound", (soundDescription, hostID) => {
 })
 
 ////// HOST & PLAYER events
-socket.on("startTrivia", (players, hostID) => {
+socket.on("startTrivia", (players, gameState, hostID) => {
     if (hostID == myID){
-        setUpHostDisplay(players);
+        setUpHostDisplay(players, gameState);
     }
     else{
         setUpPlayerDisplay()
@@ -283,6 +287,8 @@ socket.on("startTrivia", (players, hostID) => {
 socket.on("nextQuestion", (question, hostID) => {
     if (hostID == myID){
         displayQuestion(question);
+        const questionNum = document.getElementById("progress");
+        questionNum.textContent = Number(questionNum.textContent + 1);
     }
     else{
         readyNewSubmission();
@@ -527,8 +533,10 @@ function toggleVisibleSelections(){
     }
 }
 
-function displayAbility(abilityName, hasAbility, canUseAbility, abilityPopUp){
+function displayAbility(abilityName, hasAbility, canUseAbility, abilityPopUp, description){
     const abilityDiv = document.createElement("div");
+    abilityDiv.setAttribute("title", description);
+
     const abilityIcon = document.createElement("img");
     abilityIcon.src = `/static/icons/${abilityName}.svg`;
     const abilityStatus = document.createElement("p");
@@ -620,8 +628,18 @@ function displayPlayerInLobby(displayedPlayer, playersDiv){
     playersDiv.appendChild(player);
 }
 
-function setUpHostDisplay(players){
+function setUpHostDisplay(players, gameState){
     document.body.innerHTML = "";
+
+    const progress = document.createElement("div");
+    progress.id = "progress";
+    const questionNum = document.createElement("p");
+    questionNum.textContent = gameState.questionNum;
+    questionNum.classList.add("currentNum");
+    const totalNum = document.createElement("p");
+    totalNum.textContent = ` / ${gameState.totalQuestions}`;
+    progress.appendChild(questionNum);
+    progress.appendChild(totalNum);
 
     const activeAbilities = document.createElement("div");
     activeAbilities.id = "activeAbilities";
@@ -651,6 +669,7 @@ function setUpHostDisplay(players){
     answersDiv.classList.add("answers");
     trivia.appendChild(answersDiv);
 
+    bodyElement.appendChild(progress);
     bodyElement.appendChild(activeAbilities);
     bodyElement.appendChild(playerStatuses);
     bodyElement.appendChild(trivia);
@@ -746,7 +765,7 @@ function revealAnswers(players, answer){
     }, stall*2000); 
 
     setTimeout(() => {
-        //socket.emit("finishedRound");
+        socket.emit("finishedRound");
     }, 2000 + stall*2000); 
 }
 

@@ -51,6 +51,7 @@ const gameState = {
     answer: "",
     allAnswers: [],
     questionNum: 0,
+    totalQuestions: questions.length,
     abilitiesToUse: {eliminateOne: false, secondSelection: true, doublePts: false, seeAllSubmissions: false},
     loadNextQuestion(question) {
         this.question = question.questionText;
@@ -94,7 +95,7 @@ io.on("connection", (socket) => {
     socket.on("attemptStart", () => {
         if (players.length > 1){
             gameState.gameHasStarted = true;
-            io.emit("startTrivia", players, hostID);
+            io.emit("startTrivia", players, gameState, hostID);
             io.emit("unreadyAllPlayers", hostID);
             sendNextQuesetion();
         }

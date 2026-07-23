@@ -111,6 +111,14 @@ font-size: 30px;
     justify-self: center;
 }
 
+#progress{
+    position: absolute;
+    display: flex;
+    justify-self: right;
+    padding: 10px 20px;
+    font-size: 32px;
+    white-space: pre;
+}
 #statuses{
     grid-area: 1 / 2 / 2 / 3;
     height: min-content;
@@ -171,7 +179,7 @@ font-size: 30px;
 }
 
 #trivia .answers{
-    align-self: center;
+    align-self: baseline;
     display: none;
     justify-content: center;
     gap: 4vh;

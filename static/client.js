@@ -106,6 +106,7 @@ socket.on("displayAbilities", (myAbilities, currentlyAvailableAbilities) => {
     displayAbility("eliminateOne", myAbilities.eliminateOne, currentlyAvailableAbilities.eliminateOne, abilityPopUp);
     displayAbility("secondSelection", myAbilities.secondSelection, currentlyAvailableAbilities.secondSelection, abilityPopUp);
     displayAbility("doublePts", myAbilities.doublePts, currentlyAvailableAbilities.doublePts, abilityPopUp);
+    displayAbility("seeAllSubmissions", myAbilities.seeAllSubmissions, currentlyAvailableAbilities.seeAllSubmissions, abilityPopUp)
 
     document.addEventListener("click", (event) => {
         if (!abilityPopUp.contains(event.target)) {
@@ -476,7 +477,7 @@ function toggleVisibleSelections(){
 function displayAbility(abilityName, hasAbility, canUseAbility, abilityPopUp){
     const abilityDiv = document.createElement("div");
     const abilityIcon = document.createElement("img");
-    // !! add icons 
+    abilityIcon.src = `/static/icons/${abilityName}.svg`;
     const abilityStatus = document.createElement("p");
     const abilityButton = document.createElement("button");
 
@@ -574,6 +575,7 @@ function setUpHostDisplay(players){
     addAbility("eliminateOne", activeAbilities);
     addAbility("secondSelection", activeAbilities);
     addAbility("doublePts", activeAbilities);
+    addAbility("seeAllSubmissions", activeAbilities);
 
     const playerStatuses = document.createElement("div");
     playerStatuses.id = "statuses";

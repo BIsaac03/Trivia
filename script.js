@@ -51,7 +51,7 @@ const gameState = {
     answer: "",
     allAnswers: [],
     questionNum: 0,
-    abilitiesToUse: {eliminateOne: false, secondSelection: true, doublePts: false},
+    abilitiesToUse: {eliminateOne: false, secondSelection: true, doublePts: false, seeAllSubmissions: false},
     loadNextQuestion(question) {
         this.question = question.questionText;
         this.answer = question.answer;
@@ -193,7 +193,7 @@ function makePlayer(name, ID, img){
     let finalAnswer = '';
     let pts = 0;
     let ptsThisRound = 0;
-    let abilities = {eliminateOne: true, secondSelection: true, doublePts: true};
+    let abilities = {eliminateOne: true, secondSelection: true, doublePts: true, seeAllSubmissions: true};
     let sounds = []; // [[soundName, numSounds], ...]
     let isReady = false;
     const addSound = (soundDescription) => {

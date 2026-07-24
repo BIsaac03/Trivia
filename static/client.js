@@ -157,31 +157,6 @@ socket.on("displaySounds", (mySounds) => {
     const soundsPopUp = document.createElement("div");
     soundsPopUp.id = "soundsPopUp";
 
-    mySounds.forEach(sound => {
-        const soundDiv = document.createElement("div");
-        const soundDescription = document.createElement("p");
-        const soundNum = document.createElement("p");
-        const soundButton = document.createElement("button");
-
-        soundDescription.textContent = sound[0];
-        soundNum.textContent = sound[1];
-
-        soundButton.addEventListener("click", () => {
-            socket.emit("playSound", sound[0], myID);
-
-            if (Number(soundNum.textContent) > 1){
-                soundNum.textContent = `${Number(soundNum.textContent) - 1}`;
-            }
-            else{
-                soundDiv.remove();
-            }
-        })
-
-        soundDiv.appendChild(soundDescription);
-        soundDiv.appendChild(soundButton);
-        soundsPopUp.appendChild(soundDiv);
-    });
-
     if (mySounds.length == 0){
         const noSoundsMessage = document.createElement("p");
         noSoundsMessage.textContent = "You have no sounds! Do cool things to earn more.";
@@ -192,13 +167,41 @@ socket.on("displaySounds", (mySounds) => {
         }, 3000);
     }
 
+    else{
+        mySounds.forEach(sound => {
+            const soundDiv = document.createElement("div");
+            const soundDescription = document.createElement("p");
+            const soundNum = document.createElement("p");
+            const soundButton = document.createElement("button");
+
+            soundDescription.textContent = sound[0];
+            soundNum.textContent = sound[1];
+
+            soundButton.addEventListener("click", () => {
+                socket.emit("playSound", sound[0], myID);
+
+                if (Number(soundNum.textContent) > 1){
+                    soundNum.textContent = `${Number(soundNum.textContent) - 1}`;
+                }
+                else{
+                    soundDiv.remove();
+                }
+            })
+
+            soundDiv.appendChild(soundDescription);
+            soundDiv.appendChild(soundNum);
+            soundDiv.appendChild(soundButton);
+            soundsPopUp.appendChild(soundDiv);
+        });
+        bodyElement.appendChild(soundsPopUp);
+    }
+
     document.addEventListener("click", (event) => {
         if (!soundsPopUp.contains(event.target)) {
             soundsPopUp.remove();
         }
     });
 
-    bodyElement.appendChild(soundsPopUp);
 });
 
 socket.on("eliminateAnAnswer", () => {

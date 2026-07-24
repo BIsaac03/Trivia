@@ -239,9 +239,9 @@ io.on("connection", (socket) => {
     });
 
     socket.on("playSound", (soundDescription, ID) => {
-        //console.log("script ready to play sound")
         const player = players.find(player => player.playerID = ID);
         //console.log(player);
+        // !! confirm player has sound before asking HOST to play it
         player.removeSound(soundDescription);
         socket.broadcast.emit("sendHostSound", soundDescription, hostID);
     })

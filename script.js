@@ -54,6 +54,7 @@ const gameState = {
     allAnswers: [],
     questionNum: 0,
     totalQuestions: questions.length,
+    waitingOn: "initialGuesses",
     abilitiesToUse: {eliminateOne: true, secondSelection: true, doublePts: false, seeAllSubmissions: false},
     loadNextQuestion(question) {
         this.question = question.questionText;
@@ -136,6 +137,7 @@ io.on("connection", (socket) => {
             io.emit("unreadyAllPlayers", hostID);
             const answers = compileAnswers();
             gameState.allAnswers = answers;
+            gameState.waitingOn = "finalAnswers";
             io.emit("sendAnswerChoices", answers, hostID);
         }
     })
@@ -152,6 +154,7 @@ io.on("connection", (socket) => {
                 players[i].isReady = false;
                 io.emit("unreadyAllPlayers", hostID);
             }
+            gameState.waitingOn = "answerReveal";
             io.emit("revealAnswer", players, gameState.answer, hostID);
             adjustPts();
         }
@@ -295,6 +298,7 @@ function allPlayersAreReady(){
 function sendNextQuesetion(){
     gameState.loadNextQuestion(questions[gameState.questionNum]);
     gameState.updateAvailableAbilities();
+    gameState.waitingOn = "initialGuesses";
     io.emit("nextQuestion", gameState.question, gameState.additionalInfo, gameState.abilitiesToUse, hostID);
 }
 

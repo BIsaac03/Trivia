@@ -30,8 +30,12 @@ socket.on("reconnection", (hostID, gameState, players) => {
             setUpHostDisplay(players, gameState);
             updateStatuses(players);
             displayQuestion(gameState.question);
-            if (gameState.allAnswers.length > 0){
+
+            if (gameState.waitingOn != "initialGuesses"){
                 hostDisplayAnswers(gameState.allAnswers);
+                if (gameState.waitingOn == "answerReveal"){
+                    revealAnswers(players, gameState.answer);
+                }
             }
         }
     }
@@ -889,7 +893,7 @@ function revealAnswers(players, answer){
     }, stall*2000); 
 
     setTimeout(() => {
-        //socket.emit("finishedRound");
+        socket.emit("finishedRound");
     }, 4000 + stall*2000); 
 }
 

@@ -133,9 +133,8 @@ font-size: 30px;
     width: 200px;
     display: grid;
     align-items: center;
-    justify-content: center;
 }
-#activeAbilities .ability{
+#activeAbilities div{
     display: grid;
     justify-items: center;
     align-items: center;
@@ -296,12 +295,13 @@ font-size: 30px;
     background-color: lightgrey;
 }
 #abilityPopUp div.used{
-    background-color: gray;
+    background-color: #808080;
 }
 .abilityError{
     position: absolute;
     top: min(3vw, 3vh);
     right: min(13vw, 13vh);
+    background-color: lightcyan;
 }
 
 #soundsPopUp{

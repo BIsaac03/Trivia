@@ -261,6 +261,10 @@ socket.on("showAllSubmissions", () => {
 });
 
 socket.on("illegalAbilityUse", () => {
+    const existingMessage = document.querySelector(`.abilityError`);
+    if (existingMessage != undefined){
+        existingMessage.remove();
+    }
     const timingErrorPopUp = document.createElement("p");
     timingErrorPopUp.textContent = "You cannot use this ability until all players have submitted their initial guesses.";
     timingErrorPopUp.classList.add("abilityError");
@@ -354,11 +358,12 @@ socket.on("startTrivia", (players, gameState, hostID) => {
     }
 });
 
-socket.on("nextQuestion", (question, hostID) => {
+socket.on("nextQuestion", (question, abilitiesToUse, hostID) => {
     if (hostID == myID){
         displayQuestion(question);
         const questionNum = document.querySelector(`#progress .currentNum`);
         questionNum.textContent = Number(questionNum.textContent) + 1;
+        updateAbilityAvailability(abilitiesToUse);
     }
     else{
         readyNewSubmission();
@@ -770,6 +775,8 @@ function setUpHostDisplay(players, gameState){
     bodyElement.appendChild(activeAbilities);
     bodyElement.appendChild(playerStatuses);
     bodyElement.appendChild(trivia);
+
+    updateAbilityAvailability(gameState.abilitiesToUse);
 }
 
 function displayQuestion(question){
@@ -892,7 +899,7 @@ function addQuote(quoteText, quoteNum){
 
 function addAbility(abilityName, abilitiesDiv){
     const ability = document.createElement("div");
-    ability.classList.add("ability");
+    ability.classList.add(abilityName);
 
     const abilityIcon = document.createElement("img");
     abilityIcon.src = `/static/icons/${abilityName}.svg`;
@@ -904,4 +911,16 @@ function addAbility(abilityName, abilitiesDiv){
     ability.appendChild(abilityIcon);
     ability.appendChild(abilityRounds);
     abilitiesDiv.appendChild(ability);
+}
+
+function updateAbilityAvailability(abilitiesToUse){
+    const abilities = document.querySelectorAll(`#activeAbilities div`);
+    abilities.forEach((ability) => {
+        if (abilitiesToUse[ability.classList[0]] == false){
+            ability.firstChild.style.filter = `brightness(0) invert(0.5)`;
+        }
+        else{
+            ability.firstChild.style.filter = ``;
+        }
+    })
 }

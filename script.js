@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { Socket } from "dgram";
 import e from "express";
+import { secureHeapUsed } from "crypto";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -57,6 +58,12 @@ const gameState = {
         this.question = question.questionText;
         this.answer = question.answer;
         this.questionNum++;
+    },
+    updateAvailableAbilities(){
+        // !! add round availability for each ability
+        if (this.questionNum > 1){
+            this.abilitiesToUse.doublePts = true;
+        }
     }
 }
 let hostID = undefined;
@@ -285,7 +292,8 @@ function allPlayersAreReady(){
 
 function sendNextQuesetion(){
     gameState.loadNextQuestion(questions[gameState.questionNum]);
-    io.emit("nextQuestion", gameState.question, hostID)
+    gameState.updateAvailableAbilities();
+    io.emit("nextQuestion", gameState.question, gameState.abilitiesToUse, hostID);
 }
 
 function compileAnswers(){

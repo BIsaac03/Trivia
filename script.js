@@ -50,6 +50,7 @@ const gameState = {
     gameHasStarted: false,
     question: "",
     answer: "",
+    additionalInfo: "",
     allAnswers: [],
     questionNum: 0,
     totalQuestions: questions.length,
@@ -57,6 +58,7 @@ const gameState = {
     loadNextQuestion(question) {
         this.question = question.questionText;
         this.answer = question.answer;
+        this.additionalInfo = question.additionalInfo;
         this.questionNum++;
     },
     updateAvailableAbilities(){
@@ -293,7 +295,7 @@ function allPlayersAreReady(){
 function sendNextQuesetion(){
     gameState.loadNextQuestion(questions[gameState.questionNum]);
     gameState.updateAvailableAbilities();
-    io.emit("nextQuestion", gameState.question, gameState.abilitiesToUse, hostID);
+    io.emit("nextQuestion", gameState.question, gameState.additionalInfo, gameState.abilitiesToUse, hostID);
 }
 
 function compileAnswers(){

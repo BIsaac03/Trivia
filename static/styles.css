@@ -156,6 +156,14 @@ font-size: 30px;
     font-size: 30px;
     text-align: center;
 }
+
+#trivia .additionalInfo{
+    position: fixed;
+    justify-self: center;
+    height: 30px;
+    width: 30px;
+    top: 10px;
+}
 #trivia .guess{
     padding-top: 25vh;
     display: grid;

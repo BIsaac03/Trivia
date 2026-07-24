@@ -1,14 +1,17 @@
 [
     {
         "questionText": "What is 2 + 2?",
-        "answer": "4"
+        "answer": "4",
+        "additionalInfo": "+ is the sign for addition"
     },
     {
         "questionText": "What is 2 * 2?",
-        "answer": "4"
+        "answer": "4",
+        "additionalInfo": "* is the sign for multiplication"
     },
     {
         "questionText": "What is 7 - 1?",
-        "answer": "6"
+        "answer": "6",
+        "additionalInfo": "- is the sign for subtraction"
     }
 ]

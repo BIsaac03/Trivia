@@ -55,6 +55,7 @@ socket.on("reconnection", (hostID, gameState, players) => {
             const me = players.find(player => player.playerID == myID);
             if (me != undefined){
                 setUpPlayerDisplay();
+                displayAdditionalInfo(gameState.additionalInfo);
                 if (me.initialGuess == ''){
                     console.log("empty");
                     readyNewSubmission();
@@ -358,7 +359,7 @@ socket.on("startTrivia", (players, gameState, hostID) => {
     }
 });
 
-socket.on("nextQuestion", (question, abilitiesToUse, hostID) => {
+socket.on("nextQuestion", (question, additionalInfo, abilitiesToUse, hostID) => {
     if (hostID == myID){
         displayQuestion(question);
         const questionNum = document.querySelector(`#progress .currentNum`);
@@ -367,6 +368,7 @@ socket.on("nextQuestion", (question, abilitiesToUse, hostID) => {
     }
     else{
         readyNewSubmission();
+        displayAdditionalInfo(additionalInfo);
     }
 });
 
@@ -528,6 +530,10 @@ function setUpPlayerDisplay(){
     const trivia = document.createElement("div");
     trivia.id = "trivia";
 
+    const additionalInfo = document.createElement("img");
+    additionalInfo.src = "static/icons/additionalInfo.svg";
+    additionalInfo.classList.add("additionalInfo");
+
     const guessDiv = document.createElement("div");
     guessDiv.classList.add("guess");
     const userGuess = document.createElement("input");
@@ -570,6 +576,7 @@ function setUpPlayerDisplay(){
 
     guessDiv.appendChild(userGuess);
     guessDiv.appendChild(submitBtn);
+    trivia.appendChild(additionalInfo);
     trivia.appendChild(guessDiv);
     trivia.appendChild(answersDiv);
 
@@ -591,6 +598,11 @@ function readyNewSubmission(){
     confirmFinalAnswer.disabled = false;
 
     toggleVisibleSelections();
+}
+
+function displayAdditionalInfo(additionalInfo){
+    const additionalInfoDOM = document.querySelector(`.additionalInfo`);
+    additionalInfoDOM.setAttribute("title", additionalInfo);
 }
 
 function playerDisplayAnswers(answers){

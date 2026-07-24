@@ -848,12 +848,16 @@ function revealAnswers(players, answer){
     }
 
     // display who wrote each guess
-    const lastPlayer = players.reduce((loser, current) => current.pts < loser.pts ? current : loser);
+    let losingPlayer = players.reduce((loser, current) => current.pts < loser.pts ? current : loser);
+    const checkUniqueness = players.filter(player => player.pts == losingPlayer.pts);
+    if (checkUniqueness.length > 1){
+        losingPlayer = undefined;
+    }
     for (let authors = 0; authors < players.length; authors++){
         setTimeout(() => {
             const author = document.createElement("p");
             author.textContent = players[authors].playerName;
-            if (players[authors] == lastPlayer){
+            if (players[authors] == losingPlayer){
                 author.id = "cursedLabel";
             }
             const initialGuess = answers.find(writtenAnswer => writtenAnswer.textContent == players[authors].initialGuess);

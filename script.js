@@ -315,7 +315,11 @@ function resetPlayers(){
 }
 
 function adjustPts(){
-    const lastPlayer = players.reduce((loser, current) => current.pts < loser.pts ? current : loser);
+    let losingPlayer = players.reduce((loser, current) => current.pts < loser.pts ? current : loser);
+    const checkUniqueness = players.filter(player => player.pts == losingPlayer.pts);
+    if (checkUniqueness.length > 1){
+        losingPlayer = undefined;
+    }
     // calculate points earned by each player
     // !! account for players who used second selection ability
     for (let i = 0; i < players.length; i++){
@@ -336,12 +340,14 @@ function adjustPts(){
         }
 
         // players who picked cursed answer give ALL their points that round to the losing player
-        if (players[i].finalAnswer == lastPlayer.initialGuess && lastPlayer.initialGuess != gameState.answer && players[i].finalAnswer != players[i].initialGuess){
-            lastPlayer.pts += players[i].ptsThisRound;
-            players[i].ptsThisRound = 0;
-            players[i].addSound("complain");
+        if (losingPlayer != undefined){
+            if (players[i].finalAnswer == losingPlayer.initialGuess && losingPlayer.initialGuess != gameState.answer && players[i].finalAnswer != players[i].initialGuess){
+                losingPlayer.pts += players[i].ptsThisRound;
+                players[i].ptsThisRound = 0;
+                players[i].addSound("complain");
+            }
         }
-    
+        
         players[i].pts += players[i].ptsThisRound;
 
         // double points ability NOT STOLEN BY CURSES

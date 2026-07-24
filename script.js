@@ -191,25 +191,29 @@ io.on("connection", (socket) => {
         }
 
         else{
-            // !! SIMPLIFIED FOR TESTING, ENSURE ABILITIES ARE USED ONCE TESTED
-            // player.abilities[abilityName] = false;
-
             switch (abilityName){
                 case "eliminateOne":
                     socket.emit("eliminateAnAnswer");
 
                 case "continentCheck":
+                    player.abilities.continentCheck = false;
                     socket.emit("tellContinent", gameState.continent);
 
                 case "doublePts":
+                    player.abilities.doublePts = false;
                     player.doubleMyPts = true;
 
                 case "seeAllSubmission":
-            }       socket.emit("showAllSubmissions");
+                    player.abilities.seeAllSubmissions = false;
+                    socket.emit("showAllSubmissions");
+            }       
         }
     });
 
-    socket.on("requestedEliminationTargets", (index1, index2) => {
+    socket.on("requestedEliminationTargets", (index1, index2, ID) => {
+        const player = players.find(player => player.playerID = ID);
+        player.abilities.eliminateOne = false;
+
         let eliminatedAnswer = undefined;
         if (gameState.answer == gameState.allAnswers[index1]){
             eliminatedAnswer = index2;

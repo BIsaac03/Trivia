@@ -208,16 +208,15 @@ socket.on("eliminateAnAnswer", () => {
     tinyAnswers.classList.add("tiny");
     bodyElement.appendChild(tinyAnswers);
 
-    // !! submit button is current first child; swap order and change following lines
-    const submitButton = tinyAnswers.firstChild;
-    const answerChoices = tinyAnswers.lastChild;
+    const answerChoices = tinyAnswers.firstChild;
+    const submitButton = tinyAnswers.lastChild;
 
     submitButton.addEventListener("click", () => {
         const selectedAnswers = document.querySelectorAll(`.tiny .selected`);
         if (selectedAnswers.length == 2){
             const answerIndex1 = Number(selectedAnswers[0].textContent) - 1;
             const answerIndex2 = Number(selectedAnswers[1].textContent) - 1;
-            socket.emit("requestedEliminationTargets", answerIndex1, answerIndex2);
+            socket.emit("requestedEliminationTargets", answerIndex1, answerIndex2, myID);
             tinyAnswers.remove();
         }
         else{
@@ -258,8 +257,10 @@ socket.on("eliminateAnswer", (eliminatedAnswerIndex) => {
 })
 
 socket.on("tellContinent", (continent) => {
-    // !! display message to user
-    console.log(continent);
+    const continentDOM = document.createElement("p");
+    continentDOM.textContent = continent;
+    bodyElement.appendChild(continentDOM);
+    // !! remove continent on next question
 })
 
 socket.on("showAllSubmissions", () => {
@@ -576,8 +577,8 @@ function setUpPlayerDisplay(){
             confirmFinalAnswer.disabled = true;
         }
     })
-    answersDiv.appendChild(confirmFinalAnswer);
     answersDiv.appendChild(answerChoices);
+    answersDiv.appendChild(confirmFinalAnswer);
 
     guessDiv.appendChild(userGuess);
     guessDiv.appendChild(submitBtn);

@@ -1,8 +1,9 @@
 [
     {
-        "questionText": "What is 2 + 2?",
-        "answer": "4",
-        "additionalInfo": "+ is the sign for addition"
+        "questionText": "What is Canada's capital?",
+        "answer": "Ottawa",
+        "continent": "North America",
+        "additionalInfo": ""
     },
     {
         "questionText": "What is 2 * 2?",

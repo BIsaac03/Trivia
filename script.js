@@ -50,15 +50,17 @@ const gameState = {
     gameHasStarted: false,
     question: "",
     answer: "",
+    continent: undefined,
     additionalInfo: "",
     allAnswers: [],
     questionNum: 0,
     totalQuestions: questions.length,
     waitingOn: "initialGuesses",
-    abilitiesToUse: {eliminateOne: true, secondSelection: true, doublePts: false, seeAllSubmissions: false},
+    abilitiesToUse: {eliminateOne: true, continentCheck: true, doublePts: false, seeAllSubmissions: false},
     loadNextQuestion(question) {
         this.question = question.questionText;
         this.answer = question.answer;
+        this.continent = question.continent;
         this.additionalInfo = question.additionalInfo;
         this.questionNum++;
     },
@@ -180,8 +182,7 @@ io.on("connection", (socket) => {
     socket.on("useAbility", (abilityName, ID) => {
         const player = players.find(player => player.playerID = ID);
 
-        // ensure all users have submitted initial guesses
-        if (gameState.allAnswers.length == 0){
+        if (gameState.waitingOn == "initialGuesses" && abilityName != "continentCheck"){
             socket.emit("illegalAbilityUse");
         }
 
@@ -197,8 +198,8 @@ io.on("connection", (socket) => {
                 case "eliminateOne":
                     socket.emit("eliminateAnAnswer");
 
-                case "secondSelection":
-                    socket.emit("forceSelectTwoAnswers");
+                case "continentCheck":
+                    socket.emit("tellContinent", gameState.continent);
 
                 case "doublePts":
                     player.doubleMyPts = true;
@@ -261,7 +262,7 @@ function makePlayer(name, ID, img){
     let pts = 0;
     let ptsThisRound = 0;
     let doubleMyPts = false;
-    let abilities = {eliminateOne: true, secondSelection: true, doublePts: true, seeAllSubmissions: true};
+    let abilities = {eliminateOne: true, continentCheck: true, doublePts: true, seeAllSubmissions: true};
     let sounds = []; // [[soundName, numSounds], ...]
     let isReady = false;
     const addSound = (soundDescription) => {
@@ -327,7 +328,6 @@ function adjustPts(){
         losingPlayer = undefined;
     }
     // calculate points earned by each player
-    // !! account for players who used second selection ability
     for (let i = 0; i < players.length; i++){
         if (players[i].initialGuess == gameState.answer){
             players[i].ptsThisRound += FIRSTTRYPTS;

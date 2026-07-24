@@ -137,8 +137,8 @@ socket.on("displayAbilities", (myAbilities, currentlyAvailableAbilities) => {
 
     displayAbility("eliminateOne", myAbilities.eliminateOne, currentlyAvailableAbilities.eliminateOne, abilityPopUp,
                     "Pick two answers. An incorrect one is removed.");
-    displayAbility("secondSelection", myAbilities.secondSelection, currentlyAvailableAbilities.secondSelection, abilityPopUp,
-                    "Select a second answer. If EITHER is cursed, you will earn no points.");
+    displayAbility("continentCheck", myAbilities.continentCheck, currentlyAvailableAbilities.continentCheck, abilityPopUp,
+                    "Learn which continent the correct answer is located in.");
     displayAbility("doublePts", myAbilities.doublePts, currentlyAvailableAbilities.doublePts, abilityPopUp,
                     "Double the points you earn this round.\nPoints earned/lost from cursing are not doubled.");
     displayAbility("seeAllSubmissions", myAbilities.seeAllSubmissions, currentlyAvailableAbilities.seeAllSubmissions, abilityPopUp,
@@ -257,9 +257,10 @@ socket.on("eliminateAnswer", (eliminatedAnswerIndex) => {
     answerButton.disabled = true;
 })
 
-socket.on("forceSelectTwoAnswers", () => {
-    // !! make user select a second answer
-});
+socket.on("tellContinent", (continent) => {
+    // !! display message to user
+    console.log(continent);
+})
 
 socket.on("showAllSubmissions", () => {
     // !! reveal unedited list of all initial guesses (+ correct answer)
@@ -762,7 +763,7 @@ function setUpHostDisplay(players, gameState){
     const activeAbilities = document.createElement("div");
     activeAbilities.id = "activeAbilities";
     addAbility("eliminateOne", activeAbilities);
-    addAbility("secondSelection", activeAbilities);
+    addAbility("continentCheck", activeAbilities);
     addAbility("doublePts", activeAbilities);
     addAbility("seeAllSubmissions", activeAbilities);
 
@@ -854,7 +855,6 @@ function revealAnswers(players, answer){
             const guessedIcon = document.createElement("img");
             guessedIcon.src = players[icons].playerImg;
             guessedIcon.classList.add("pfp");
-            // !! account for players who used second selection ability
             const chosenAnswer = answers.find(selectedAnswer => selectedAnswer.textContent == players[icons].finalAnswer);
             const chosenByDiv = chosenAnswer.parentElement.querySelector(`.chosenBy`);
             console.log(chosenByDiv);

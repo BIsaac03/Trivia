@@ -554,11 +554,11 @@ function setUpPlayerDisplay(){
 
     submitBtn.addEventListener("click", () => {
         if (userGuess.value != ""){
+            socket.emit("madeFirstGuess", myID, userGuess.value);
             userGuess.placeholder = "Submitted!";
             userGuess.disabled = true;
             userGuess.value = "";  
             submitBtn.disabled = true;
-            socket.emit("madeFirstGuess", myID, userGuess.value);
         } 
     })
 

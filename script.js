@@ -89,24 +89,29 @@ io.on("connection", (socket) => {
     })
 
     socket.on("playerJoined", (name, ID, img) => {
-        const existingPlayer = players.find(player => player.playerID == ID);
-        if (existingPlayer == undefined){
-            const nameInUse = players.find(player => player.playerName == name);
-            if (nameInUse == undefined){
-                const newPlayer = makePlayer(name, ID, img);
-                players.push(newPlayer);
-                socket.broadcast.emit("playerJoined", newPlayer, hostID);
-                socket.emit("waitingInLobby", true);
+        if (gameState.gameHasStarted == false){
+            const existingPlayer = players.find(player => player.playerID == ID);
+            if (existingPlayer == undefined){
+                const nameInUse = players.find(player => player.playerName == name);
+                if (nameInUse == undefined){
+                    const newPlayer = makePlayer(name, ID, img);
+                    players.push(newPlayer);
+                    socket.broadcast.emit("playerJoined", newPlayer, hostID);
+                    socket.emit("waitingInLobby", true);
+                }
+                else{
+                    socket.emit("nameInUse", name);
+                }
             }
             else{
-                socket.emit("nameInUse", name);
+                existingPlayer.playerName = name;
+                existingPlayer.playerImg = img;
+                socket.broadcast.emit("playerModified", existingPlayer, hostID);
+                socket.emit("waitingInLobby", false);
             }
         }
         else{
-            existingPlayer.playerName = name;
-            existingPlayer.playerImg = img;
-            socket.broadcast.emit("playerModified", existingPlayer, hostID);
-            socket.emit("waitingInLobby", false);
+            // !! inform player that game has already started
         }
     });
 

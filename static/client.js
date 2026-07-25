@@ -156,6 +156,7 @@ socket.on("displayAbilities", (myAbilities, currentlyAvailableAbilities) => {
 socket.on("displaySounds", (mySounds) => {
     const soundsPopUp = document.createElement("div");
     soundsPopUp.id = "soundsPopUp";
+    bodyElement.appendChild(soundsPopUp);
 
     if (mySounds.length == 0){
         const noSoundsMessage = document.createElement("p");
@@ -193,7 +194,6 @@ socket.on("displaySounds", (mySounds) => {
             soundDiv.appendChild(soundButton);
             soundsPopUp.appendChild(soundDiv);
         });
-        bodyElement.appendChild(soundsPopUp);
     }
 
     document.addEventListener("click", (event) => {

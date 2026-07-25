@@ -4,8 +4,8 @@ if (document.cookie == ""){
 const userIDCookie = document.cookie;
 const myID = userIDCookie.slice(7);
 
-const socket = io("https://trivia-k294.onrender.com/", {
-//const socket = io("http://localhost:3000", {
+//const socket = io("https://trivia-k294.onrender.com/", {
+const socket = io("http://localhost:3000", {
     auth: {
         token: userIDCookie
     }
@@ -16,7 +16,6 @@ const bodyElement = document.body;
 socket.on("connect", () => {  
     document.body.innerHTML = "";
     socket.emit("userConnected", myID);
-    //console.log("connected");
 });
 
 socket.on("reconnection", (hostID, gameState, players) => {
@@ -117,14 +116,13 @@ socket.on("newConnection", () => {
 });
 
 socket.on("nameInUse", (name) => {
-    const existingNameMsg = document.createElement("p");
-    existingNameMsg.textContent = `Another player has already claimed the name: ${name}`;
-    existingNameMsg.classList.add("needUserInfoMsg");
     const me = document.getElementById("me");
-    me.appendChild(existingNameMsg);
-    setTimeout(() => {
-        existingNameMsg.remove();
-    }, 2000);
+    messagePopUp(`Another player has already claimed the name: ${name}`, me, 2000)
+});
+
+socket.on("gameInProgress", () => {
+    const me = document.getElementById("me");
+    messagePopUp("A game is already in progress", me, 2000)
 });
 
 socket.on("waitingInLobby", (me, isFirstTimeJoin) => {
@@ -171,6 +169,7 @@ socket.on("displaySounds", (mySounds) => {
     else{
         mySounds.forEach(sound => {
             const soundDiv = document.createElement("div");
+            soundDiv.classList.add("sound");
             const soundDescription = document.createElement("p");
             const soundNum = document.createElement("p");
             const soundButton = document.createElement("button");
@@ -223,7 +222,8 @@ socket.on("eliminateAnAnswer", () => {
             tinyAnswers.remove();
         }
         else{
-            // !! prompt player to select exactly two answers
+            // !! format message
+            messagePopUp("Select exactly 2 answers to designate for elimination", tinyAnswers, 2000);
         }
     })
 
@@ -447,23 +447,10 @@ function firstTimePlayerSetup(){
         const pfpPreview = document.querySelector(`#me img.preview`);
         const me = document.getElementById("me");
         if (pfpPreview.src == ""){
-            const noImgMsg = document.createElement("p");
-            noImgMsg.textContent = "Add a profile picture first!";
-            noImgMsg.classList.add("needUserInfoMsg");
-            me.appendChild(noImgMsg);
-            setTimeout(() => {
-                noImgMsg.remove();
-            }, 1000);
+            messagePopUp("Add a profile picture first!", me, 1000)
         }
         else if (nameEntry.value == ""){
-            const noNameMsg = document.createElement("p");
-            noNameMsg.textContent = "Enter a name first!";
-            noNameMsg.classList.add("needUserInfoMsg");
-            me.appendChild(noNameMsg);
-            setTimeout(() => {
-                noNameMsg.remove();
-            }, 1000);
-
+            messagePopUp("Add a name first!", me, 1000)
         }
         else {
             socket.emit("playerJoined", nameEntry.value, myID, pfpPreview.src);
@@ -553,11 +540,15 @@ function setUpPlayerDisplay(){
     submitBtn.textContent = "Lock in";
 
     submitBtn.addEventListener("click", () => {
-        socket.emit("madeFirstGuess", myID, userGuess.value);
-        userGuess.placeholder = "Submitted!";
-        userGuess.disabled = true;
-        userGuess.value = "";  
-        submitBtn.disabled = true;
+        console.log(userGuess.value)
+        if (userGuess.value != ""){
+            socket.emit("madeFirstGuess", myID, userGuess.value);
+            console.log(userGuess.value)
+            userGuess.placeholder = "Submitted!";
+            userGuess.disabled = true;
+            userGuess.value = "";  
+            submitBtn.disabled = true;
+        }
     })
 
     const answersDiv = document.createElement("div");
@@ -687,6 +678,18 @@ function displayAbility(abilityName, hasAbility, canUseAbility, abilityPopUp, de
     abilityDiv.appendChild(abilityButton);
 
     abilityPopUp.appendChild(abilityDiv);
+}
+
+function messagePopUp(messageText, appendTo, lengthMS){
+    const message = document.createElement("p");
+    message.textContent = messageText;
+    message.classList.add("message");
+    appendTo.appendChild(message);
+    if (lengthMS > 0){
+        setTimeout(() => {
+            message.remove();
+        }, lengthMS);
+    }
 }
 
 ////// HOST functions

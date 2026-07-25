@@ -124,43 +124,43 @@ io.on("connection", (socket) => {
     
     socket.on("madeFirstGuess", (ID, guess) => {
         const player = players.find(player => player.playerID == ID);
-        if (player == undefined){
-            console.log(ID)
-            console.log("undefined player; signal from previous session")
-        }
-        player.initialGuess = guess;
-        player.isReady = true;
-        io.emit("playerReady", ID, hostID);
+        if (player != undefined){
+            player.initialGuess = guess;
+            player.isReady = true;
+            io.emit("playerReady", ID, hostID);
 
-        // all players have submitted their initial guess
-        if (allPlayersAreReady()){
-            for (let i = 0; i < players.length; i++){
-                players[i].isReady = false;
+            // all players have submitted their initial guess
+            if (allPlayersAreReady()){
+                for (let i = 0; i < players.length; i++){
+                    players[i].isReady = false;
+                }
+                io.emit("unreadyAllPlayers", hostID);
+                const answers = compileAnswers();
+                gameState.allAnswers = answers;
+                gameState.waitingOn = "finalAnswers";
+                io.emit("sendAnswerChoices", answers, hostID);
             }
-            io.emit("unreadyAllPlayers", hostID);
-            const answers = compileAnswers();
-            gameState.allAnswers = answers;
-            gameState.waitingOn = "finalAnswers";
-            io.emit("sendAnswerChoices", answers, hostID);
         }
     })
 
     socket.on("choseFinalAnswer", (ID, guessNum) => {
         const player = players.find(player => player.playerID == ID);
-        player.finalAnswer = gameState.allAnswers[guessNum];
-        player.isReady = true;
-        io.emit("playerReady", player.playerID, hostID);
+        if (player != undefined){
+            player.finalAnswer = gameState.allAnswers[guessNum];
+            player.isReady = true;
+            io.emit("playerReady", player.playerID, hostID);
 
-        // all players have submitted their final answer
-        if (allPlayersAreReady()){
-            for (let i = 0; i < players.length; i++){
-                players[i].isReady = false;
-                io.emit("unreadyAllPlayers", hostID);
+            // all players have submitted their final answer
+            if (allPlayersAreReady()){
+                for (let i = 0; i < players.length; i++){
+                    players[i].isReady = false;
+                    io.emit("unreadyAllPlayers", hostID);
+                }
+                gameState.waitingOn = "answerReveal";
+                io.emit("revealAnswer", players, gameState.answer, hostID);
+                adjustPts();
             }
-            gameState.waitingOn = "answerReveal";
-            io.emit("revealAnswer", players, gameState.answer, hostID);
-            adjustPts();
-        }
+        }  
     })
 
     socket.on("finishedRound", () => {
@@ -177,74 +177,82 @@ io.on("connection", (socket) => {
 
     socket.on("requestAbilities", (ID) => {
         const player = players.find(player => player.playerID = ID);
-        socket.emit("displayAbilities", player.abilities, gameState.abilitiesToUse);
+        if (player != undefined){
+            socket.emit("displayAbilities", player.abilities, gameState.abilitiesToUse);
+        }
     });
 
     socket.on("useAbility", (abilityName, ID) => {
         const player = players.find(player => player.playerID = ID);
+        if (player != undefined){
+            if (gameState.waitingOn == "initialGuesses" && abilityName != "continentCheck"){
+                socket.emit("illegalAbilityUse");
+            }
 
-        if (gameState.waitingOn == "initialGuesses" && abilityName != "continentCheck"){
-            socket.emit("illegalAbilityUse");
-        }
+            else if (gameState.abilitiesToUse[abilityName] == false || player.abilities[abilityName] == false){
+                console.log("User should not have been allowed to activate ability");
+            }
 
-        else if (gameState.abilitiesToUse[abilityName] == false || player.abilities[abilityName] == false){
-            console.log("User should not have been allowed to activate ability");
-        }
+            else{
+                switch (abilityName){
+                    case "eliminateOne":
+                        socket.emit("eliminateAnAnswer");
 
-        else{
-            switch (abilityName){
-                case "eliminateOne":
-                    socket.emit("eliminateAnAnswer");
+                    case "continentCheck":
+                        player.abilities.continentCheck = false;
+                        socket.emit("tellContinent", gameState.continent);
 
-                case "continentCheck":
-                    player.abilities.continentCheck = false;
-                    socket.emit("tellContinent", gameState.continent);
+                    case "doublePts":
+                        player.abilities.doublePts = false;
+                        player.doubleMyPts = true;
 
-                case "doublePts":
-                    player.abilities.doublePts = false;
-                    player.doubleMyPts = true;
-
-                case "seeAllSubmission":
-                    player.abilities.seeAllSubmissions = false;
-                    socket.emit("showAllSubmissions");
-            }       
+                    case "seeAllSubmission":
+                        player.abilities.seeAllSubmissions = false;
+                        socket.emit("showAllSubmissions");
+                }       
+            }
         }
     });
 
     socket.on("requestedEliminationTargets", (index1, index2, ID) => {
         const player = players.find(player => player.playerID = ID);
-        player.abilities.eliminateOne = false;
+        if (player != undefined){
+            player.abilities.eliminateOne = false;
 
-        let eliminatedAnswer = undefined;
-        if (gameState.answer == gameState.allAnswers[index1]){
-            eliminatedAnswer = index2;
-        }
-        else if (gameState.answer == gameState.allAnswers[index2]){
-            eliminatedAnswer = index1;
-        }
-        else{
-            if (Math.random() < 0.5){
+            let eliminatedAnswer = undefined;
+            if (gameState.answer == gameState.allAnswers[index1]){
+                eliminatedAnswer = index2;
+            }
+            else if (gameState.answer == gameState.allAnswers[index2]){
                 eliminatedAnswer = index1;
             }
             else{
-                eliminatedAnswer = index2;
+                if (Math.random() < 0.5){
+                    eliminatedAnswer = index1;
+                }
+                else{
+                    eliminatedAnswer = index2;
+                }
             }
-        }
-        socket.emit("eliminateAnswer", eliminatedAnswer);
+            socket.emit("eliminateAnswer", eliminatedAnswer);
+        } 
     })
 
     socket.on("requestSounds", (ID) => {
         const player = players.find(player => player.playerID = ID);
-        socket.emit("displaySounds", player.sounds);
-        //console.log(player.sounds);
+        if (player != undefined){
+            socket.emit("displaySounds", player.sounds);
+            //console.log(player.sounds);
+        }
     });
 
     socket.on("playSound", (soundDescription, ID) => {
         const player = players.find(player => player.playerID = ID);
-        //console.log(player);
-        // !! confirm player has sound before asking HOST to play it
-        player.removeSound(soundDescription);
-        socket.broadcast.emit("sendHostSound", soundDescription, hostID);
+        if (player != undefined){
+            // !! confirm player has sound before asking HOST to play it
+            player.removeSound(soundDescription);
+            socket.broadcast.emit("sendHostSound", soundDescription, hostID);
+        }
     })
 
     socket.on("test", (data) => {

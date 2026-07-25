@@ -130,6 +130,7 @@ io.on("connection", (socket) => {
     socket.on("madeFirstGuess", (ID, guess) => {
         const player = players.find(player => player.playerID == ID);
         if (player != undefined){
+            console.log(guess);
             player.initialGuess = guess;
             player.isReady = true;
             io.emit("playerReady", ID, hostID);

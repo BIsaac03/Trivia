@@ -553,11 +553,13 @@ function setUpPlayerDisplay(){
     submitBtn.textContent = "Lock in";
 
     submitBtn.addEventListener("click", () => {
-        socket.emit("madeFirstGuess", myID, userGuess.value);
-        userGuess.placeholder = "Submitted!";
-        userGuess.disabled = true;
-        userGuess.value = "";  
-        submitBtn.disabled = true;
+        if (userGuess.value != ""){
+            userGuess.placeholder = "Submitted!";
+            userGuess.disabled = true;
+            userGuess.value = "";  
+            submitBtn.disabled = true;
+            socket.emit("madeFirstGuess", myID, userGuess.value);
+        } 
     })
 
     const answersDiv = document.createElement("div");

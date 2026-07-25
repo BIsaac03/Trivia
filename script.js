@@ -125,6 +125,7 @@ io.on("connection", (socket) => {
     socket.on("madeFirstGuess", (ID, guess) => {
         const player = players.find(player => player.playerID == ID);
         if (player == undefined){
+            console.log(ID)
             console.log("undefined player; signal from previous session")
         }
         player.initialGuess = guess;

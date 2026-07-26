@@ -137,17 +137,22 @@ io.on("connection", (socket) => {
 
             // all players have submitted their initial guess
             if (allPlayersAreReady()){
-                for (let i = 0; i < players.length; i++){
-                    players[i].isReady = false;
-                }
-                io.emit("unreadyAllPlayers", hostID);
-                const answers = compileAnswers();
-                gameState.allAnswers = answers;
-                gameState.waitingOn = "finalAnswers";
-                io.emit("sendAnswerChoices", answers, hostID);
+                io.emit("sendAnswersForModification", players, gameState.answer, hostID);
             }
         }
     })
+
+    socket.on("getModifiedAnswers", (modifiedAnswers) => {
+        for (let i = 0; i < players.length; i++){
+            players[i].initialGuess = modifiedAnswers[i];
+            players[i].isReady = false;
+        }
+        io.emit("unreadyAllPlayers", hostID);
+        const answers = compileAnswers();
+        gameState.allAnswers = answers;
+        gameState.waitingOn = "finalAnswers";
+        io.emit("sendAnswerChoices", answers, hostID);
+    });
 
     socket.on("choseFinalAnswer", (ID, guessNum) => {
         const player = players.find(player => player.playerID == ID);

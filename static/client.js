@@ -309,6 +309,47 @@ socket.on("playerModified", (modifiedPlayer, hostID) => {
     }
 });
 
+socket.on("sendAnswersForModification", (players, correctAnswer, hostID) => {
+    if (hostID == myID && window.name == "answerModifier"){
+        const answersToModify = document.createElement("div");
+        answersToModify.id = "answersToModify";
+
+        players.forEach((player) => {
+            const answerDiv = document.createElement("div");
+
+            const name = document.createElement("p");
+            name.textContent = player.playerName;
+
+            const answer = document.createElement("input");
+            answer.value = player.initialGuess;
+
+            answerDiv.appendChild(name);
+            answerDiv.appendChild(answer);
+            answersToModify.appendChild(answerDiv);
+        })
+        const answerDiv = document.createElement("div");
+        const answer = document.createElement("p");
+        answer.textContent = correctAnswer;
+        answersToModify.appendChild(answerDiv);
+
+        const submitBtn = document.createElement("button");
+        submitBtn.textContent = "Modify";
+        submitBtn.addEventListener("click", () => {
+            const modifiedAnswers = [];
+            const answersDOM = document.querySelectorAll(`#answersToModify input`);
+            const answers = [...answersDOM];
+            answers.forEach((answer) => {
+                modifiedAnswers.push(answer.value);
+            });
+            socket.emit("getModifiedAnswers", modifiedAnswers);
+            answersToModify.remove();
+        })
+        answersToModify.appendChild(submitBtn);
+
+        bodyElement.appendChild(answersToModify);
+    }
+});
+
 socket.on("revealAnswer", (players, answer, hostID) => {
     if (hostID == myID && window.name != "answerModifier"){
         revealAnswers(players, answer);

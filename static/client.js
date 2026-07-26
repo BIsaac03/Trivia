@@ -21,7 +21,10 @@ socket.on("connect", () => {
 socket.on("reconnection", (hostID, gameState, players) => {
     console.log(players);
     // restore HOST state
-    if (hostID == myID){
+    if (window.name == "answerModifier"){
+        // !! restore answerModifier state
+    }
+    else if (hostID == myID){
         if (!gameState.gameHasStarted){
             displayLobby(players);
         }
@@ -290,14 +293,14 @@ socket.on("hostSetUp", () => {
 })
 
 socket.on("playerJoined", (newPlayer, hostID) => {
-    if (hostID == myID){
+    if (hostID == myID && window.name != "answerModifier"){
         const playersDiv = document.getElementById("playersDiv");
         displayPlayerInLobby(newPlayer, playersDiv);
     }
 });
 
 socket.on("playerModified", (modifiedPlayer, hostID) => {
-    if (hostID == myID){
+    if (hostID == myID && window.name != "answerModifier"){
         const name = document.querySelector(`.${modifiedPlayer.playerID} .name`)
         name.textContent = modifiedPlayer.playerName;
 
@@ -307,27 +310,27 @@ socket.on("playerModified", (modifiedPlayer, hostID) => {
 });
 
 socket.on("revealAnswer", (players, answer, hostID) => {
-    if (hostID == myID){
+    if (hostID == myID && window.name != "answerModifier"){
         revealAnswers(players, answer);
     }
 })
 
 socket.on("playerReady", (playerID, hostID) => {
-    if (hostID == myID){
+    if (hostID == myID  && window.name != "answerModifier"){
         const status = document.querySelector(`#${playerID}`);
         status.style.opacity = 1;
     }
 })
 
 socket.on("unreadyAllPlayers", (hostID) => {
-    if (hostID == myID){
+    if (hostID == myID && window.name != "answerModifier"){
         const statuses = document.querySelectorAll(`#statuses .pfp`)
         statuses.forEach((status) => status.style.opacity = 0.4);
     }
 })
 
 socket.on("sendHostSound", (soundDescription, hostID) => {
-    if (hostID == myID){
+    if (hostID == myID && window.name != "answerModifier"){
         console.log(soundDescription);
         // play appropriate sound
         let path = undefined;
@@ -360,7 +363,7 @@ socket.on("sendHostSound", (soundDescription, hostID) => {
 
 ////// HOST & PLAYER events
 socket.on("startTrivia", (players, gameState, hostID) => {
-    if (hostID == myID){
+    if (hostID == myID && window.name != "answerModifier"){
         setUpHostDisplay(players, gameState);
     }
     else{
@@ -369,7 +372,7 @@ socket.on("startTrivia", (players, gameState, hostID) => {
 });
 
 socket.on("nextQuestion", (question, additionalInfo, abilitiesToUse, hostID) => {
-    if (hostID == myID){
+    if (hostID == myID && window.name != "answerModifier"){
         displayQuestion(question);
         const questionNum = document.querySelector(`#progress .currentNum`);
         questionNum.textContent = Number(questionNum.textContent) + 1;
@@ -382,7 +385,7 @@ socket.on("nextQuestion", (question, additionalInfo, abilitiesToUse, hostID) => 
 });
 
 socket.on("sendAnswerChoices", (answers, hostID) => {
-    if (hostID == myID){
+    if (hostID == myID && window.name != "answerModifier"){
         hostDisplayAnswers(answers);
     }
     else{
@@ -695,6 +698,7 @@ function messagePopUp(messageText, appendTo, lengthMS){
 ////// HOST functions
 function displayLobby(players){
     document.body.innerHTML = "";
+    addManualAnswerModifier();
 
     const header = document.createElement("div");
     header.id = "header";
@@ -756,6 +760,7 @@ function displayPlayerInLobby(displayedPlayer, playersDiv){
 
 function setUpHostDisplay(players, gameState){
     document.body.innerHTML = "";
+    addManualAnswerModifier();
 
     const progress = document.createElement("div");
     progress.id = "progress";
@@ -864,7 +869,6 @@ function revealAnswers(players, answer){
             guessedIcon.classList.add("pfp");
             const chosenAnswer = answers.find(selectedAnswer => selectedAnswer.textContent == players[icons].finalAnswer);
             const chosenByDiv = chosenAnswer.parentElement.querySelector(`.chosenBy`);
-            console.log(chosenByDiv);
             popAudio.play();
             chosenByDiv.appendChild(guessedIcon);
         }, icons*1000);            
@@ -950,4 +954,21 @@ function updateAbilityAvailability(abilitiesToUse){
             ability.firstChild.style.filter = ``;
         }
     })
+}
+
+function addManualAnswerModifier(){
+    if (window.name != "answerModifier"){
+        const openAnswerModifier = document.createElement("img");
+        openAnswerModifier.src = "/static/icons/answerModifier.svg";
+        openAnswerModifier.id = "openAnswerModifier";
+        openAnswerModifier.addEventListener("click", () => {
+            const existingWindow = window.open("", "answerModifier");
+            if (!existingWindow || existingWindow.location.href == "about:blank"){
+                //const manualAnswerModification = window.open("http://trivia-k294.onrender.com", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
+                const manualAnswerModification = window.open("http://localhost:5500", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
+                manualAnswerModification.name = "answerModifier";
+            }
+        });
+    bodyElement.appendChild(openAnswerModifier);
+    }
 }

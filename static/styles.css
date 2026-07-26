@@ -112,6 +112,12 @@ font-size: 30px;
     justify-self: center;
 }
 
+#openAnswerModifier{
+    position: absolute;
+    bottom: 5vh;
+    right: 5vh;
+    height: 5vh;
+}
 #progress{
     position: absolute;
     display: flex;

@@ -210,6 +210,10 @@ socket.on("displaySounds", (mySounds) => {
 
 socket.on("eliminateAnAnswer", () => {
     const answersContainer = document.querySelector(`#trivia .answers`);
+    const preSelectedAnswer = document.getElementById("finalAnswer");
+    if (preSelectedAnswer != undefined){
+        preSelectedAnswer.id = "";
+    }
 
     const tinyAnswers = answersContainer.cloneNode(true);
     tinyAnswers.classList.add("tiny");
@@ -282,7 +286,7 @@ socket.on("showAllSubmissions", (rawAnswers) => {
     })
     rawAnswerList.appendChild(rawAnswerList);
     console.log("client side")
-    bodyElement.appendChild(rawAnswerDiv);
+    bodyElement.appendChild(rawAnswerList);
 });
 
 socket.on("illegalAbilityUse", () => {
@@ -981,6 +985,7 @@ function addManualAnswerModifier(){
         openAnswerModifier.id = "openAnswerModifier";
         openAnswerModifier.addEventListener("click", () => {
             const existingWindow = window.open("", "answerModifier");
+            console.log(existingWindow.location.href);
             if (!existingWindow || existingWindow.location.href == "about:blank"){
                 const manualAnswerModification = window.open("http://trivia-k294.onrender.com", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
                 //const manualAnswerModification = window.open("http://localhost:5500", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");

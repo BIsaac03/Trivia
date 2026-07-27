@@ -22,7 +22,9 @@ socket.on("reconnection", (hostID, gameState, players) => {
     console.log(players);
     // restore HOST state
     if (window.name == "answerModifier"){
-        // !! restore answerModifier state
+        if (gameState.waitingOn == "answerModification"){
+            displayAnswersToModify(players, gameState.answer);
+        }
     }
     else if (hostID == myID){
         if (!gameState.gameHasStarted){
@@ -311,42 +313,7 @@ socket.on("playerModified", (modifiedPlayer, hostID) => {
 
 socket.on("sendAnswersForModification", (players, correctAnswer, hostID) => {
     if (hostID == myID && window.name == "answerModifier"){
-        const answersToModify = document.createElement("div");
-        answersToModify.id = "answersToModify";
-
-        players.forEach((player) => {
-            const answerDiv = document.createElement("div");
-
-            const name = document.createElement("p");
-            name.textContent = player.playerName;
-
-            const answer = document.createElement("input");
-            answer.value = player.initialGuess;
-
-            answerDiv.appendChild(name);
-            answerDiv.appendChild(answer);
-            answersToModify.appendChild(answerDiv);
-        })
-        const answerDiv = document.createElement("div");
-        const answer = document.createElement("p");
-        answer.textContent = correctAnswer;
-        answersToModify.appendChild(answerDiv);
-
-        const submitBtn = document.createElement("button");
-        submitBtn.textContent = "Modify";
-        submitBtn.addEventListener("click", () => {
-            const modifiedAnswers = [];
-            const answersDOM = document.querySelectorAll(`#answersToModify input`);
-            const answers = [...answersDOM];
-            answers.forEach((answer) => {
-                modifiedAnswers.push(answer.value);
-            });
-            socket.emit("getModifiedAnswers", modifiedAnswers);
-            answersToModify.remove();
-        })
-        answersToModify.appendChild(submitBtn);
-
-        bodyElement.appendChild(answersToModify);
+        displayAnswersToModify(players, correctAnswer);
     }
 });
 
@@ -407,7 +374,7 @@ socket.on("startTrivia", (players, gameState, hostID) => {
     if (hostID == myID && window.name != "answerModifier"){
         setUpHostDisplay(players, gameState);
     }
-    else{
+    else if (window.name != "answerModifier"){
         setUpPlayerDisplay()
     }
 });
@@ -419,7 +386,7 @@ socket.on("nextQuestion", (question, additionalInfo, abilitiesToUse, hostID) => 
         questionNum.textContent = Number(questionNum.textContent) + 1;
         updateAbilityAvailability(abilitiesToUse);
     }
-    else{
+    else if (window.name != "answerModifier"){
         readyNewSubmission();
         displayAdditionalInfo(additionalInfo);
     }
@@ -429,7 +396,7 @@ socket.on("sendAnswerChoices", (answers, hostID) => {
     if (hostID == myID && window.name != "answerModifier"){
         hostDisplayAnswers(answers);
     }
-    else{
+    else if (window.name != "answerModifier"){
         playerDisplayAnswers(answers);
     }
 });
@@ -1012,4 +979,48 @@ function addManualAnswerModifier(){
         });
     bodyElement.appendChild(openAnswerModifier);
     }
+}
+
+function displayAnswersToModify(players, correctAnswer){
+    document.body.innerHTML = "";
+
+    const answersToModify = document.createElement("div");
+    answersToModify.id = "answersToModify";
+
+    players.forEach((player) => {
+        const answerDiv = document.createElement("div");
+        
+        const name = document.createElement("p");
+        name.textContent = player.playerName;
+
+        const answer = document.createElement("input");
+        answer.value = player.initialGuess;
+
+        answerDiv.appendChild(name);
+        answerDiv.appendChild(answer);
+        answersToModify.appendChild(answerDiv);
+    })
+    const answerDiv = document.createElement("div");
+    const answer = document.createElement("input");
+    answer.value = correctAnswer;
+    answer.disabled = true;
+    answerDiv.appendChild(answer);
+    answersToModify.appendChild(answerDiv);
+
+    const submitBtn = document.createElement("button");
+    submitBtn.textContent = "Modify";
+    submitBtn.addEventListener("click", () => {
+        const modifiedAnswers = [];
+        const answersDOM = document.querySelectorAll(`#answersToModify input`);
+        const answers = [...answersDOM];
+        answers.forEach((answer) => {
+            modifiedAnswers.push(answer.value);
+        });
+        
+        socket.emit("getModifiedAnswers", modifiedAnswers);
+        answersToModify.remove();
+    })
+    answersToModify.appendChild(submitBtn);
+
+    bodyElement.appendChild(answersToModify);
 }

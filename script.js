@@ -130,13 +130,13 @@ io.on("connection", (socket) => {
     socket.on("madeFirstGuess", (ID, guess) => {
         const player = players.find(player => player.playerID == ID);
         if (player != undefined){
-            console.log(guess);
             player.initialGuess = guess;
             player.isReady = true;
             io.emit("playerReady", ID, hostID);
 
             // all players have submitted their initial guess
             if (allPlayersAreReady()){
+                gameState.waitingOn = "answerModification";
                 io.emit("sendAnswersForModification", players, gameState.answer, hostID);
             }
         }
@@ -385,8 +385,8 @@ function adjustPts(){
             players[i].pts += players[i].ptsThisRound;
             players[i].doubleMyPts = false;
         }
-        console.log(`this round ${players[i].playerName} got ${players[i].ptsThisRound} pts`);
-        console.log(`${players[i].playerName} has ${players[i].pts} total`);
+        //console.log(`this round ${players[i].playerName} got ${players[i].ptsThisRound} pts`);
+        //console.log(`${players[i].playerName} has ${players[i].pts} total`);
     }
 
     const noPtsThisRound = players.filter(player => player.ptsThisRound == 0);

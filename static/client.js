@@ -209,12 +209,12 @@ socket.on("displaySounds", (mySounds) => {
 });
 
 socket.on("eliminateAnAnswer", () => {
-    const answersContainer = document.querySelector(`#trivia .answers`);
     const preSelectedAnswer = document.getElementById("finalAnswer");
     if (preSelectedAnswer != undefined){
         preSelectedAnswer.id = "";
     }
 
+    const answersContainer = document.querySelector(`#trivia .answers`);
     const tinyAnswers = answersContainer.cloneNode(true);
     tinyAnswers.classList.add("tiny");
     bodyElement.appendChild(tinyAnswers);
@@ -284,8 +284,6 @@ socket.on("showAllSubmissions", (rawAnswers) => {
         answerDOM.textContent = answer;
         rawAnswerList.appendChild(answerDOM);
     })
-    rawAnswerList.appendChild(rawAnswerList);
-    console.log("client side")
     bodyElement.appendChild(rawAnswerList);
 });
 
@@ -548,12 +546,12 @@ function setUpPlayerDisplay(){
         }
     })
 
-    const trivia = document.createElement("div");
-    trivia.id = "trivia";
-
     const additionalInfo = document.createElement("img");
     additionalInfo.src = "static/icons/additionalInfo.svg";
-    additionalInfo.classList.add("additionalInfo");
+    additionalInfo.id = "additionalInfo";
+
+    const trivia = document.createElement("div");
+    trivia.id = "trivia";
 
     const guessDiv = document.createElement("div");
     guessDiv.classList.add("guess");
@@ -601,7 +599,6 @@ function setUpPlayerDisplay(){
 
     guessDiv.appendChild(userGuess);
     guessDiv.appendChild(submitBtn);
-    trivia.appendChild(additionalInfo);
     trivia.appendChild(guessDiv);
     trivia.appendChild(answersDiv);
 
@@ -609,6 +606,7 @@ function setUpPlayerDisplay(){
     menus.appendChild(sounds);
 
     bodyElement.appendChild(menus);
+    bodyElement.appendChild(additionalInfo);
     bodyElement.appendChild(trivia);
 }
 
@@ -626,7 +624,7 @@ function readyNewSubmission(){
 }
 
 function displayAdditionalInfo(additionalInfo){
-    const additionalInfoDOM = document.querySelector(`.additionalInfo`);
+    const additionalInfoDOM = document.querySelector(`#additionalInfo`);
     additionalInfoDOM.setAttribute("title", additionalInfo);
 }
 

@@ -3,6 +3,7 @@
     padding: 0px;
 }
 body{
+    position: fixed;
     width: 100vw;
     height: 100dvh;
     overflow: hidden;
@@ -192,11 +193,12 @@ font-size: 30px;
 }
 
 #trivia .additionalInfo{
-    position: fixed;
+    position: absolute;
     justify-self: center;
-    height: 30px;
-    width: 30px;
-    top: 10px;
+    width: min(8vw, 8dvh);
+    height: min(8vw, 8dvh);
+    top: min(3vw, 3dvh);
+    left: min(13vw, 13dvh);
 }
 #trivia .guess{
     padding-top: 25dvh;
@@ -309,7 +311,7 @@ font-size: 30px;
     position: absolute;
     top: min(3vw, 3dvh);
     right: min(13vw, 13dvh);
-    justify-self:center;
+    justify-self: center;
     display: grid;
 }
 #abilityPopUp{

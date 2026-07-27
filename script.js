@@ -174,6 +174,7 @@ io.on("connection", (socket) => {
                 gameState.waitingOn = "answerReveal";
                 io.emit("revealAnswer", players, gameState.answer, hostID);
                 adjustPts();
+                io.emit("updateScores", players, hostID);
             }
         }  
     })
@@ -270,7 +271,7 @@ io.on("connection", (socket) => {
         if (player != undefined){
             // !! confirm player has sound before asking HOST to play it
             player.removeSound(soundDescription);
-            socket.broadcast.emit("sendHostSound", soundDescription, hostID);
+            socket.broadcast.emit("sendHostSound", soundDescription, ID, hostID);
         }
     })
 
@@ -296,8 +297,13 @@ function makePlayer(name, ID, img){
     let doubleMyPts = false;
     let abilities = {eliminateOne: true, continentCheck: true, doublePts: true, seeAllSubmissions: true};
     let sounds = []; // [[soundName, numSounds], ...]
+    let hasAcquiredFirstSound = false;
     let isReady = false;
     const addSound = (soundDescription) => {
+        if (hasAcquiredFirstSound == false){
+            hasAcquiredFirstSound = true;
+            // !! send message to player when they acquire their first sound
+        }
         const existingSound = sounds.find(sound => sound[0] == soundDescription);
         if (existingSound == undefined){
             sounds.push([soundDescription, 1]);
@@ -317,7 +323,7 @@ function makePlayer(name, ID, img){
             sounds.splice(index, 1);
         }
     }
-    return {playerName, playerID, playerImg, initialGuess, finalAnswer, pts, ptsThisRound, doubleMyPts, abilities, sounds, isReady, addSound, removeSound}
+    return {playerName, playerID, playerImg, initialGuess, finalAnswer, pts, ptsThisRound, doubleMyPts, abilities, sounds, hasAcquiredFirstSound, isReady, addSound, removeSound}
 }
 
 function allPlayersAreReady(){

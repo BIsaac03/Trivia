@@ -22,6 +22,7 @@ socket.on("reconnection", (hostID, gameState, players) => {
     console.log(players);
     // restore HOST state
     if (window.name == "answerModifier"){
+        displayScores(players);
         if (gameState.waitingOn == "answerModification"){
             displayAnswersToModify(players, gameState.answer);
         }
@@ -331,9 +332,14 @@ socket.on("unreadyAllPlayers", (hostID) => {
     }
 })
 
-socket.on("sendHostSound", (soundDescription, hostID) => {
+socket.on("updateScores", (players, hostID) => {
+    if (hostID == myID && window.name == "answerModifier"){
+        updateScores(players);
+    }
+})
+
+socket.on("sendHostSound", (soundDescription, ID, hostID) => {
     if (hostID == myID && window.name != "answerModifier"){
-        console.log(soundDescription);
         // play appropriate sound
         let path = undefined;
         if (soundDescription == "complain"){
@@ -354,7 +360,17 @@ socket.on("sendHostSound", (soundDescription, hostID) => {
         }
 
         if (path != undefined){
+            const playerIcon = document.getElementById(ID);
+            const playingSound = document.createElement("img");
+            playingSound.src = "/static/icons/sounds.svg";
+
             const audio = new Audio(path);
+            audio.addEventListener('playing', () => {
+                playerIcon.appendChild(playingSound);
+            });
+            audio.addEventListener('ended', () => {
+                playingSound.remove();
+            });
             audio.play();
         }
 
@@ -904,6 +920,36 @@ function revealAnswers(players, answer){
     setTimeout(() => {
         socket.emit("finishedRound");
     }, 4000 + stall*2000); 
+}
+
+function displayScores(players){
+    const scoreDiv = document.createElement("div");
+    scoreDiv.id = "scores";
+
+    players.forEach((player) => {
+        const playerDiv = document.createElement("div");
+        const name = document.createElement("p");
+        name.textContent = player.playerName;
+        const score = document.createElement("p");
+        score.textContent = player.pts;
+
+        playerDiv.appendChild(name);
+        playerDiv.appendChild(score);
+        scoreDiv.appendChild(playerDiv);
+    })
+    bodyElement.appendChild(scoreDiv);
+}
+
+function updateScores(players){
+    const scoreDiv = document.getElementById("scores");
+    const scoresDOM = scoreDiv.children;
+    const scores = [...scoresDOM];
+    scores.forEach((score) => {
+        const name = score.firstChild;
+        const pts = score.lastChild;
+        const player = players.find(player => player.playerName == name.textContent);
+        pts.textContent = player.pts;
+    })
 }
 
 function addQuote(quoteText, quoteNum){

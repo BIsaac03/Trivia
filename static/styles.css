@@ -5,7 +5,7 @@
 body{
     position: fixed;
     width: 100vw;
-    height: 100dvh;
+    height: 100svh;
     overflow: hidden;
     display: grid;
     grid-template: auto 1fr / auto 1fr;
@@ -60,13 +60,10 @@ label.imgEntry.pfp{
     font-size: 32px;
     background-color: lightgoldenrodyellow;
 }
-.inLobbyMsg .needUserInfoMsg{
-    text-align: center;
-}
 
 #header{
     grid-column: 1 / 3;
-    padding-top: 3dvh;
+    padding-top: 3svh;
     display: grid;
     grid-template: 2fr 1fr / repeat(3, auto);
     grid-template-areas: 
@@ -95,11 +92,11 @@ label.imgEntry.pfp{
     display: grid;
     align-self: baseline;
     justify-self: center;
-    gap: 3dvh;
+    gap: 3svh;
 }
 #lobby #playersDiv{
     display: grid;
-    gap: 2dvh;
+    gap: 2svh;
 }
 #lobby .player{
 display: flex;
@@ -108,16 +105,16 @@ align-items: center;
 font-size: 30px;
 }
 #lobby .startTrivia{
-    height: 5dvh;
+    height: 5svh;
     width: 50%;
     justify-self: center;
 }
 
 #openAnswerModifier{
     position: absolute;
-    bottom: 5dvh;
-    right: 5dvh;
-    height: 5dvh;
+    bottom: 5svh;
+    right: 5svh;
+    height: 5svh;
 }
 #progress{
     position: absolute;
@@ -150,10 +147,18 @@ font-size: 30px;
     font-size: 52px;
 }
 #activeAbilities img{
-    width: 10dvh;
-    height: 10dvh;
+    width: 10svh;
+    height: 10svh;
 }
 
+#scores{
+    position: absolute;
+    justify-self: center;
+    display: flex;
+    gap: 50px;
+    text-align: center;
+    font-size: 32px;
+}
 #answersToModify{
     grid-area: 1 / 1 / 3 / 3;
     align-self: center;
@@ -169,7 +174,7 @@ font-size: 30px;
 }
 #answersToModify input{
     width: 40vw;
-    height: max(4dvh, 20px);
+    height: max(4svh, 20px);
     border-radius: 10px;
     padding: 5px 10px;
     font-size: 30px;
@@ -194,19 +199,19 @@ font-size: 30px;
 
 #additionalInfo{
     position: absolute;
-    width: min(10vw, 8dvh);
-    height: min(10vw, 8dvh);
-    top: min(3vw, 3dvh);
-    left: min(3vw, 3dvh);
+    width: min(10vw, 8svh);
+    height: min(10vw, 8svh);
+    top: min(3vw, 3svh);
+    left: min(3vw, 3svh);
 }
 .additionalInfoMessage{
     position: absolute;
-    top: min(16vw, 14dvh);
-    left: min(3vw, 3dvh);
+    top: min(16vw, 14svh);
+    left: min(3vw, 3svh);
 }
 
 #trivia .guess{
-    padding-top: 25dvh;
+    padding-top: 25svh;
     display: grid;
     gap: 25px;
     align-self: baseline;
@@ -214,7 +219,7 @@ font-size: 30px;
 }
 .guess input{
     width: 70vw;
-    height: max(4dvh, 20px);
+    height: max(4svh, 20px);
     border-radius: 10px;
     padding: 5px 10px;
     font-size: 30px;
@@ -230,7 +235,7 @@ font-size: 30px;
     align-self: baseline;
     display: none;
     justify-content: center;
-    gap: 4dvh;
+    gap: 4svh;
     font-size: 48px;
     white-space: nowrap;
 }
@@ -277,7 +282,7 @@ font-size: 30px;
 
 @media (orientation: landscape) {
     .answerChoices{
-        grid-template-columns: repeat(3, min(35vw, 25dvh));
+        grid-template-columns: repeat(3, min(35vw, 25svh));
         gap: 2vw;
     }
     /* !! breaks with >7 answer choices*/
@@ -293,11 +298,11 @@ font-size: 30px;
 }
 @media (orientation: portrait) {
     .answers{
-        padding-top: calc(min(26vw, 21dvh) - 50px);
+        padding-top: calc(min(26vw, 21svh) - 50px);
     }
     .answerChoices{
-        grid-template-columns: repeat(2, min(35vw, 25dvh));
-        gap: 2dvh;
+        grid-template-columns: repeat(2, min(35vw, 25svh));
+        gap: 2svh;
     }
     .answerChoices button:nth-child(odd):last-child{
         grid-column: 1 / 3;
@@ -306,19 +311,19 @@ font-size: 30px;
 
 #menus{
     position: absolute;
-    top: min(3vw, 3dvh);
-    right: min(3vw, 3dvh);
+    top: min(3vw, 3svh);
+    right: min(3vw, 3svh);
     display: grid;
-    gap: min(3vw, 3dvh);
+    gap: min(3vw, 3svh);
 }
 #menus .icon{
-    width: min(10vw, 8dvh);
-    height: min(10vw, 8dvh);
+    width: min(10vw, 8svh);
+    height: min(10vw, 8svh);
 }
 #abilityPopUp, #soundsPopUp{
     position: absolute;
-    top: min(3vw, 3dvh);
-    right: min(13vw, 13dvh);
+    top: min(3vw, 3svh);
+    right: min(13vw, 13svh);
     justify-self: center;
     display: grid;
 }
@@ -350,10 +355,9 @@ font-size: 30px;
 }
 .abilityError{
     position: absolute;
-    top: min(3vw, 3dvh);
-    right: min(13vw, 13dvh);
-    width: calc(100vw - calc(2 * min(13vw, 13dvh)));
-    text-align: center;
+    top: min(3vw, 3svh);
+    right: min(13vw, 13svh);
+    width: min(fit-content, calc(100vw - calc(2 * min(13vw, 13svh))));
     background-color: lightcyan;
 }
 
@@ -365,16 +369,19 @@ font-size: 30px;
     display: flex;
     gap: 20px;
 }
+.noSoundsMsg{
+    width: min(fit-content, calc(100vw - calc(2 * min(13vw, 13svh))));
+}
 .answers.tiny{
     position: absolute;
     transform: scale(0.5);
     transform-origin: top right;
-    top: min(3vw, 3dvh);
-    right: min(13vw, 13dvh);
+    top: min(3vw, 3svh);
+    right: min(13vw, 13svh);
     background-color: lightcyan;
     justify-content: center;
-    gap: 4dvh;
-    padding: 6dvh;
+    gap: 4svh;
+    padding: 6svh;
     font-size: 24px;
     text-align: center;
 }
@@ -387,35 +394,37 @@ font-size: 30px;
     font-size: 50px;
 }
 .answers button{
-    width: min(35vw, 25dvh);
-    height: min(35vw, 25dvh);
+    width: min(35vw, 25svh);
+    height: min(35vw, 25svh);
     justify-self: center;
-    border-radius: min(8vw, 4dvh);
-    font-size: min(14vw, 10dvh);
+    border-radius: min(8vw, 4svh);
+    font-size: min(14vw, 10svh);
 }
 #confirmFinalAnswer{
     grid-row: 2 / 3;
-    height: min(20vw, 15dvh);
-    font-size: min(7vw, 5dvh);
+    height: min(20vw, 15svh);
+    font-size: min(7vw, 5svh);
 }
 #finalAnswer{
     border: 4px solid lightgreen;
 }
 
-#scores{
+.continent{
     position: absolute;
     justify-self: center;
-    display: flex;
-    gap: 50px;
-    text-align: center;
-    font-size: 32px;
+    top: 3svh;
+    font-size: 26px;
 }
 #rawAnswers{
     position: absolute;
     justify-self: center;
-    top: min(3vw, 3dvh);
+    top: 10svh;
+    font-size: 26px;
 }
 
+.message{
+    text-align: center;
+}
 button{
     color: black;
     background-color: lightgrey;

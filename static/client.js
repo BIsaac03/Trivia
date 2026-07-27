@@ -123,12 +123,12 @@ socket.on("newConnection", () => {
 
 socket.on("nameInUse", (name) => {
     const me = document.getElementById("me");
-    messagePopUp(`Another player has already claimed the name: ${name}`, me, "nameTakenError", 2000)
+    messagePopUp(`Another player has already claimed the name: ${name}`, me, "nameTakenError", 2000, false)
 });
 
 socket.on("gameInProgress", () => {
     const me = document.getElementById("me");
-    messagePopUp("A game is already in progress", me, "gameInProgressError", 2000)
+    messagePopUp("A game is already in progress.", me, "gameInProgressError", 2000, false)
 });
 
 socket.on("waitingInLobby", () => {
@@ -163,7 +163,7 @@ socket.on("displaySounds", (mySounds) => {
     bodyElement.appendChild(soundsPopUp);
 
     if (mySounds.length == 0){
-        messagePopUp("You have no sounds! Do cool things to earn more.", soundsPopUp, "noSoundsMsg", 3000);
+        messagePopUp("You have no sounds! Do cool things to earn more.", soundsPopUp, "noSoundsMsg", 3000, true);
     }
 
     else{
@@ -226,7 +226,7 @@ socket.on("eliminateAnAnswer", () => {
             tinyAnswers.remove();
         }
         else{
-            messagePopUp("Select exactly 2 answers to designate for elimination.", tinyAnswers, "selectTwoMsg", 2000);
+            messagePopUp("Select exactly 2 answers to designate for elimination.", tinyAnswers, "selectTwoMsg", 2000, true);
         }
     })
 
@@ -263,10 +263,7 @@ socket.on("eliminateAnswer", (eliminatedAnswerIndex) => {
 })
 
 socket.on("tellContinent", (continent) => {
-    const continentDOM = document.createElement("p");
-    continentDOM.textContent = continent;
-    bodyElement.appendChild(continentDOM);
-    // !! remove continent on next question
+    messagePopUp(continent, bodyElement, "continent", 0, true);
 })
 
 socket.on("showAllSubmissions", (rawAnswers) => {
@@ -282,7 +279,7 @@ socket.on("showAllSubmissions", (rawAnswers) => {
 });
 
 socket.on("illegalAbilityUse", () => {
-    messagePopUp("You cannot use this ability until all players have submitted their initial guesses.", bodyElement, "abilityError", 4000);  
+    messagePopUp("You cannot use this ability until all players have submitted their initial guesses.", bodyElement, "abilityError", 4000, true);  
 });
 ////// HOST events
 socket.on("hostSetUp", () => {
@@ -390,6 +387,11 @@ socket.on("startTrivia", (players, gameState, hostID) => {
 });
 
 socket.on("nextQuestion", (question, additionalInfo, abilitiesToUse, hostID) => {
+    const elementsToRemove = document.querySelectorAll(`.removeEOR`);
+    elementsToRemove.forEach((element) => {
+        element.remove();
+    })
+
     if (hostID == myID && window.name != "answerModifier"){
         displayQuestion(question);
         const questionNum = document.querySelector(`#progress .currentNum`);
@@ -468,10 +470,10 @@ function firstTimePlayerSetup(){
         const pfpPreview = document.querySelector(`#me img.preview`);
         const me = document.getElementById("me");
         if (pfpPreview.src == ""){
-            messagePopUp("Add a profile picture first!", me, "noPfpError", 1500)
+            messagePopUp("Add a profile picture first!", me, "noPfpError", 1500, false)
         }
         else if (nameEntry.value == ""){
-            messagePopUp("Add a name first!", me, "noNameError", 1500)
+            messagePopUp("Add a name first!", me, "noNameError", 1500, false)
         }
         else {
             socket.emit("playerJoined", nameEntry.value, myID, pfpPreview.src);
@@ -500,7 +502,8 @@ function waitingInLobby(){
     const joinButton = document.querySelector(`#me .submit`);
     joinButton.textContent = "Update";
     const me = document.getElementById("me");
-    messagePopUp("You have successfully connected to the lobby. Remain here until trivia starts.", me, "inLobbyMsg", 0);
+    console.log(me);
+    messagePopUp("You have successfully connected to the lobby. Remain here until trivia starts.", me, "inLobbyMsg", 0, false);
 }
 
 function setUpPlayerDisplay(){
@@ -618,7 +621,7 @@ function displayAdditionalInfo(additionalInfo){
     const additionalInfoDOM = document.querySelector(`#additionalInfo`);
     additionalInfoDOM.setAttribute("title", additionalInfo);
     additionalInfoDOM.addEventListener("click", () => {
-        messagePopUp(additionalInfo, bodyElement, "additionalInfoMessage", 3000);
+        messagePopUp(additionalInfo, bodyElement, "additionalInfoMessage", 3000, true);
     })
 }
 
@@ -697,7 +700,7 @@ function displayAbility(abilityName, hasAbility, canUseAbility, abilityPopUp, de
     abilityPopUp.appendChild(abilityDiv);
 }
 
-function messagePopUp(messageText, appendTo, className, lengthMS){
+function messagePopUp(messageText, appendTo, className, lengthMS, removeAtEndOfRound){
     const existingMessage = appendTo.querySelector(`.message.${className}`);
     if (existingMessage == undefined){
         const message = document.createElement("p");
@@ -709,6 +712,9 @@ function messagePopUp(messageText, appendTo, className, lengthMS){
             setTimeout(() => {
                 message.remove();
             }, lengthMS);
+        }
+        if (removeAtEndOfRound){
+            message.classList.add("removeEOR");
         }
     }  
 }

@@ -287,6 +287,9 @@ font-size: 30px;
     }
 }
 @media (orientation: portrait) {
+    .answers{
+        padding-top: calc(min(26vw, 21dvh) - 50px);
+    }
     .answerChoices{
         grid-template-columns: repeat(2, min(35vw, 25dvh));
         gap: 2dvh;
@@ -392,6 +395,14 @@ font-size: 30px;
     border: 4px solid lightgreen;
 }
 
+#scores{
+    position: absolute;
+    justify-self: center;
+    display: flex;
+    gap: 50px;
+    text-align: center;
+    font-size: 32px;
+}
 #rawAnswers{
     position: absolute;
     justify-self: center;

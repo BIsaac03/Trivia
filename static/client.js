@@ -55,7 +55,7 @@ socket.on("reconnection", (hostID, gameState, players) => {
             else{
                 firstTimePlayerSetup();
                 fillInPlayerInfo(alreadyJoined);
-                waitingInLobby(alreadyJoined);
+                waitingInLobby();
             }
         }
 
@@ -131,8 +131,8 @@ socket.on("gameInProgress", () => {
     messagePopUp("A game is already in progress", me, 2000)
 });
 
-socket.on("waitingInLobby", (me, isFirstTimeJoin) => {
-    waitingInLobby(me);
+socket.on("waitingInLobby", () => {
+    waitingInLobby();
 })
 
 socket.on("displayAbilities", (myAbilities, currentlyAvailableAbilities) => {
@@ -496,9 +496,10 @@ function fillInPlayerInfo(player){
     name.value = player.playerName;
 }
 
-function waitingInLobby(me){
+function waitingInLobby(){
     const joinButton = document.querySelector(`#me .submit`);
     joinButton.textContent = "Update";
+    const me = document.getElementById("me");
     messagePopUp("You have successfully connected to the lobby. Remain here until trivia starts.", me, "inLobbyMsg", 0);
 }
 

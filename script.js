@@ -99,7 +99,7 @@ io.on("connection", (socket) => {
                     const newPlayer = makePlayer(name, ID, img);
                     players.push(newPlayer);
                     socket.broadcast.emit("playerJoined", newPlayer, hostID);
-                    socket.emit("waitingInLobby", true);
+                    socket.emit("waitingInLobby");
                 }
                 else{
                     socket.emit("nameInUse", name);
@@ -109,7 +109,7 @@ io.on("connection", (socket) => {
                 existingPlayer.playerName = name;
                 existingPlayer.playerImg = img;
                 socket.broadcast.emit("playerModified", existingPlayer, hostID);
-                socket.emit("waitingInLobby", false);
+                socket.emit("waitingInLobby");
             }
         }
         else{

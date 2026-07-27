@@ -123,12 +123,12 @@ socket.on("newConnection", () => {
 
 socket.on("nameInUse", (name) => {
     const me = document.getElementById("me");
-    messagePopUp(`Another player has already claimed the name: ${name}`, me, 2000)
+    messagePopUp(`Another player has already claimed the name: ${name}`, me, "nameTakenError", 2000)
 });
 
 socket.on("gameInProgress", () => {
     const me = document.getElementById("me");
-    messagePopUp("A game is already in progress", me, 2000)
+    messagePopUp("A game is already in progress", me, "gameInProgressError", 2000)
 });
 
 socket.on("waitingInLobby", () => {
@@ -617,6 +617,9 @@ function readyNewSubmission(){
 function displayAdditionalInfo(additionalInfo){
     const additionalInfoDOM = document.querySelector(`#additionalInfo`);
     additionalInfoDOM.setAttribute("title", additionalInfo);
+    additionalInfoDOM.addEventListener("click", () => {
+        messagePopUp(additionalInfo, bodyElement, "additionalInfoMessage", 3000);
+    })
 }
 
 function playerDisplayAnswers(answers){
@@ -1020,8 +1023,6 @@ function addManualAnswerModifier(){
 }
 
 function displayAnswersToModify(players, correctAnswer){
-    document.body.innerHTML = "";
-
     const answersToModify = document.createElement("div");
     answersToModify.id = "answersToModify";
 

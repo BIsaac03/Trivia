@@ -194,12 +194,17 @@ font-size: 30px;
 
 #additionalInfo{
     position: absolute;
-    justify-self: center;
     width: min(10vw, 8dvh);
     height: min(10vw, 8dvh);
     top: min(3vw, 3dvh);
     left: min(3vw, 3dvh);
 }
+.additionalInfoMessage{
+    position: absolute;
+    top: min(16vw, 14dvh);
+    left: min(3vw, 3dvh);
+}
+
 #trivia .guess{
     padding-top: 25dvh;
     display: grid;
@@ -347,6 +352,8 @@ font-size: 30px;
     position: absolute;
     top: min(3vw, 3dvh);
     right: min(13vw, 13dvh);
+    width: calc(100vw - calc(2 * min(13vw, 13dvh)));
+    text-align: center;
     background-color: lightcyan;
 }
 
@@ -413,8 +420,4 @@ button{
     color: black;
     background-color: lightgrey;
     border: 1px solid black;
-}
-
-:disabled{
-    background-color: grey;
 }

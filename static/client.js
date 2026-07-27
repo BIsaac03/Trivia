@@ -271,8 +271,19 @@ socket.on("tellContinent", (continent) => {
     // !! remove continent on next question
 })
 
-socket.on("showAllSubmissions", () => {
-    // !! reveal unedited list of all initial guesses (+ correct answer)
+socket.on("showAllSubmissions", (rawAnswers) => {
+    const rawAnswerDiv = document.createElement("div");
+    rawAnswerDiv.id = "rawAnswers";
+    const rawAnswerList = document.createElement("ul");
+    
+    rawAnswers.forEach((answer) => {
+        const answerDOM = document.createElement("li");
+        answerDOM.textContent = answer;
+        rawAnswerDiv.appendChild(answerDOM);
+    })
+    rawAnswerDiv.appendChild(rawAnswerList);
+    console.log("client side")
+    bodyElement.appendChild(rawAnswerDiv);
 });
 
 socket.on("illegalAbilityUse", () => {

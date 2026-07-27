@@ -53,10 +53,12 @@ const gameState = {
     continent: undefined,
     additionalInfo: "",
     allAnswers: [],
+    rawAnswers: [],
     questionNum: 0,
     totalQuestions: questions.length,
     waitingOn: "initialGuesses",
-    abilitiesToUse: {eliminateOne: true, continentCheck: true, doublePts: false, seeAllSubmissions: false},
+    // !! set back to correct values after testing
+    abilitiesToUse: {eliminateOne: true, continentCheck: true, doublePts: true, seeAllSubmissions: true},
     loadNextQuestion(question) {
         this.question = question.questionText;
         this.answer = question.answer;
@@ -136,6 +138,8 @@ io.on("connection", (socket) => {
 
             // all players have submitted their initial guess
             if (allPlayersAreReady()){
+                const rawAnswers = compileAnswers();
+                gameState.rawAnswers = rawAnswers;
                 gameState.waitingOn = "answerModification";
                 io.emit("sendAnswersForModification", players, gameState.answer, hostID);
             }
@@ -217,9 +221,9 @@ io.on("connection", (socket) => {
                         player.abilities.doublePts = false;
                         player.doubleMyPts = true;
 
-                    case "seeAllSubmission":
+                    case "seeAllSubmissions":
                         player.abilities.seeAllSubmissions = false;
-                        socket.emit("showAllSubmissions");
+                        socket.emit("showAllSubmissions", gameState.rawAnswers);
                 }       
             }
         }

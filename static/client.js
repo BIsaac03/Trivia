@@ -263,6 +263,7 @@ socket.on("eliminateAnswer", (eliminatedAnswerIndex) => {
 })
 
 socket.on("tellContinent", (continent) => {
+    // !! format to not overlap with answer choices
     messagePopUp(continent, bodyElement, "continent", 0, true);
 })
 
@@ -278,8 +279,8 @@ socket.on("showAllSubmissions", (rawAnswers) => {
     bodyElement.appendChild(rawAnswerList);
 });
 
-socket.on("illegalAbilityUse", () => {
-    messagePopUp("You cannot use this ability until all players have submitted their initial guesses.", bodyElement, "abilityError", 4000, true);  
+socket.on("illegalAbilityUse", (message) => {
+    messagePopUp(message, bodyElement, "abilityError", 4000, true);  
 });
 ////// HOST events
 socket.on("hostSetUp", () => {

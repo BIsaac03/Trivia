@@ -202,7 +202,10 @@ io.on("connection", (socket) => {
         const player = players.find(player => player.playerID == ID);
         if (player != undefined){
             if (gameState.waitingOn != "finalAnswers" && abilityName != "continentCheck"){
-                socket.emit("illegalAbilityUse");
+                socket.emit("illegalAbilityUse", "You cannot use this ability until all players have submitted their initial guesses.");
+            }
+            else if (player.finalAnswer != ""){
+                socket.emit("illegalAbilityUse", "You have already submitted your final answer.");
             }
 
             else if (gameState.abilitiesToUse[abilityName] == false || player.abilities[abilityName] == false){

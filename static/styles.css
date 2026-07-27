@@ -3,7 +3,6 @@
     padding: 0px;
 }
 body{
-    position: fixed;
     width: 100vw;
     height: 100svh;
     overflow: hidden;
@@ -189,7 +188,7 @@ font-size: 30px;
 #trivia{
     grid-area: 2 / 2 / 3 / 3;
     display: grid;
-    padding: 25px;
+    padding: 25px 25px 0px 25px;
     gap: 10px;
 }
 #trivia .question{
@@ -211,7 +210,7 @@ font-size: 30px;
 }
 
 #trivia .guess{
-    padding-top: 25svh;
+    padding-top: 20svh;
     display: grid;
     gap: 25px;
     align-self: baseline;
@@ -297,11 +296,8 @@ font-size: 30px;
     }
 }
 @media (orientation: portrait) {
-    .answers{
-        padding-top: calc(min(26vw, 21svh) - 50px);
-    }
     .answerChoices{
-        grid-template-columns: repeat(2, min(35vw, 25svh));
+        grid-template-columns: repeat(2, min(33vw, 25svh));
         gap: 2svh;
     }
     .answerChoices button:nth-child(odd):last-child{
@@ -357,7 +353,8 @@ font-size: 30px;
     position: absolute;
     top: min(3vw, 3svh);
     right: min(13vw, 13svh);
-    width: min(fit-content, calc(100vw - calc(2 * min(13vw, 13svh))));
+    width: fit-content;
+    max-width: calc(100vw - calc(2 * min(13vw, 13svh)));
     background-color: lightcyan;
 }
 
@@ -394,8 +391,8 @@ font-size: 30px;
     font-size: 50px;
 }
 .answers button{
-    width: min(35vw, 25svh);
-    height: min(35vw, 25svh);
+    width: min(33vw, 25svh);
+    height: min(33vw, 25svh);
     justify-self: center;
     border-radius: min(8vw, 4svh);
     font-size: min(14vw, 10svh);
@@ -429,4 +426,7 @@ button{
     color: black;
     background-color: lightgrey;
     border: 1px solid black;
+}
+button:disabled{
+    background-color: grey;
 }

@@ -4,8 +4,8 @@ if (document.cookie == ""){
 const userIDCookie = document.cookie;
 const myID = userIDCookie.slice(7);
 
-//const socket = io("https://trivia-k294.onrender.com/", {
-const socket = io("http://localhost:3000", {
+const socket = io("https://trivia-k294.onrender.com/", {
+//const socket = io("http://localhost:3000", {
     auth: {
         token: userIDCookie
     }
@@ -982,8 +982,8 @@ function addManualAnswerModifier(){
         openAnswerModifier.addEventListener("click", () => {
             const existingWindow = window.open("", "answerModifier");
             if (!existingWindow || existingWindow.location.href == "about:blank"){
-                //const manualAnswerModification = window.open("http://trivia-k294.onrender.com", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
-                const manualAnswerModification = window.open("http://localhost:5500", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
+                const manualAnswerModification = window.open("http://trivia-k294.onrender.com", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
+                //const manualAnswerModification = window.open("http://localhost:5500", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
                 manualAnswerModification.name = "answerModifier";
             }
         });

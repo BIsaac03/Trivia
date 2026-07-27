@@ -619,11 +619,13 @@ function readyNewSubmission(){
 }
 
 function displayAdditionalInfo(additionalInfo){
-    const additionalInfoDOM = document.querySelector(`#additionalInfo`);
-    additionalInfoDOM.setAttribute("title", additionalInfo);
-    additionalInfoDOM.addEventListener("click", () => {
+    const oldInfo = document.querySelector(`#additionalInfo`);
+    const newInfo = oldInfo.cloneNode(true);
+    newInfo.setAttribute("title", additionalInfo);
+    newInfo.addEventListener("click", () => {
         messagePopUp(additionalInfo, bodyElement, "additionalInfoMessage", 3000, true);
     })
+    oldInfo.parentNode.replaceChild(newInfo, oldInfo);
 }
 
 function playerDisplayAnswers(answers){

@@ -4,7 +4,7 @@
 }
 body{
     width: 100vw;
-    height: 100svh;
+    height: fit-content;
     overflow: hidden;
     display: grid;
     grid-template: auto 1fr / auto 1fr;
@@ -188,7 +188,7 @@ font-size: 30px;
 #trivia{
     grid-area: 2 / 2 / 3 / 3;
     display: grid;
-    padding: 25px 25px 0px 25px;
+    padding: 25px;
     gap: 10px;
 }
 #trivia .question{
@@ -367,7 +367,8 @@ font-size: 30px;
     gap: 20px;
 }
 .noSoundsMsg{
-    width: min(fit-content, calc(100vw - calc(2 * min(13vw, 13svh))));
+    width: fit-content;
+    max-width: calc(100vw - calc(2 * min(13vw, 13svh)));
 }
 .answers.tiny{
     position: absolute;

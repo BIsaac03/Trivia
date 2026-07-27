@@ -212,18 +212,22 @@ io.on("connection", (socket) => {
                 switch (abilityName){
                     case "eliminateOne":
                         socket.emit("eliminateAnAnswer");
+                        break;
 
                     case "continentCheck":
                         player.abilities.continentCheck = false;
                         socket.emit("tellContinent", gameState.continent);
+                        break;
 
                     case "doublePts":
                         player.abilities.doublePts = false;
                         player.doubleMyPts = true;
+                        break;
 
                     case "seeAllSubmissions":
                         player.abilities.seeAllSubmissions = false;
                         socket.emit("showAllSubmissions", gameState.rawAnswers);
+                        break;
                 }       
             }
         }

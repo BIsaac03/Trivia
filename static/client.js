@@ -272,14 +272,13 @@ socket.on("tellContinent", (continent) => {
 })
 
 socket.on("showAllSubmissions", (rawAnswers) => {
-    const rawAnswerDiv = document.createElement("div");
-    rawAnswerDiv.id = "rawAnswers";
     const rawAnswerList = document.createElement("ul");
+    rawAnswerList.id = "rawAnswers"
     
     rawAnswers.forEach((answer) => {
         const answerDOM = document.createElement("li");
         answerDOM.textContent = answer;
-        rawAnswerDiv.appendChild(answerDOM);
+        rawAnswerList.appendChild(answerDOM);
     })
     rawAnswerDiv.appendChild(rawAnswerList);
     console.log("client side")

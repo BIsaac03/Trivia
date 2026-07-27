@@ -483,8 +483,6 @@ function fillInPlayerInfo(player){
 function waitingInLobby(me){
     const joinButton = document.querySelector(`#me .submit`);
     joinButton.textContent = "Update";
-
-    const me = document.getElementById("me");
     messagePopUp("You have successfully connected to the lobby. Remain here until trivia starts.", me, "inLobbyMsg", 0);
 }
 

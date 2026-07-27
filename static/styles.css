@@ -4,7 +4,7 @@
 }
 body{
     width: 100vw;
-    height: 100vh;
+    height: 100dvh;
     overflow: hidden;
     display: grid;
     grid-template: auto 1fr / auto 1fr;
@@ -65,7 +65,7 @@ label.imgEntry.pfp{
 
 #header{
     grid-column: 1 / 3;
-    padding-top: 3vh;
+    padding-top: 3dvh;
     display: grid;
     grid-template: 2fr 1fr / repeat(3, auto);
     grid-template-areas: 
@@ -94,11 +94,11 @@ label.imgEntry.pfp{
     display: grid;
     align-self: baseline;
     justify-self: center;
-    gap: 3vh;
+    gap: 3dvh;
 }
 #lobby #playersDiv{
     display: grid;
-    gap: 2vh;
+    gap: 2dvh;
 }
 #lobby .player{
 display: flex;
@@ -107,16 +107,16 @@ align-items: center;
 font-size: 30px;
 }
 #lobby .startTrivia{
-    height: 5vh;
+    height: 5dvh;
     width: 50%;
     justify-self: center;
 }
 
 #openAnswerModifier{
     position: absolute;
-    bottom: 5vh;
-    right: 5vh;
-    height: 5vh;
+    bottom: 5dvh;
+    right: 5dvh;
+    height: 5dvh;
 }
 #progress{
     position: absolute;
@@ -149,8 +149,8 @@ font-size: 30px;
     font-size: 52px;
 }
 #activeAbilities img{
-    width: 10vh;
-    height: 10vh;
+    width: 10dvh;
+    height: 10dvh;
 }
 
 #answersToModify{
@@ -168,7 +168,7 @@ font-size: 30px;
 }
 #answersToModify input{
     width: 40vw;
-    height: max(4vh, 20px);
+    height: max(4dvh, 20px);
     border-radius: 10px;
     padding: 5px 10px;
     font-size: 30px;
@@ -199,7 +199,7 @@ font-size: 30px;
     top: 10px;
 }
 #trivia .guess{
-    padding-top: 25vh;
+    padding-top: 25dvh;
     display: grid;
     gap: 25px;
     align-self: baseline;
@@ -207,7 +207,7 @@ font-size: 30px;
 }
 .guess input{
     width: 70vw;
-    height: max(4vh, 20px);
+    height: max(4dvh, 20px);
     border-radius: 10px;
     padding: 5px 10px;
     font-size: 30px;
@@ -223,7 +223,7 @@ font-size: 30px;
     align-self: baseline;
     display: none;
     justify-content: center;
-    gap: 4vh;
+    gap: 4dvh;
     font-size: 48px;
     white-space: nowrap;
 }
@@ -270,7 +270,7 @@ font-size: 30px;
 
 @media (orientation: landscape) {
     .answerChoices{
-        grid-template-columns: repeat(3, min(35vw, 25vh));
+        grid-template-columns: repeat(3, min(35vw, 25dvh));
         gap: 2vw;
     }
     /* !! breaks with >7 answer choices*/
@@ -286,8 +286,8 @@ font-size: 30px;
 }
 @media (orientation: portrait) {
     .answerChoices{
-        grid-template-columns: repeat(2, min(35vw, 25vh));
-        gap: 2vh;
+        grid-template-columns: repeat(2, min(35vw, 25dvh));
+        gap: 2dvh;
     }
     .answerChoices button:nth-child(odd):last-child{
         grid-column: 1 / 3;
@@ -296,19 +296,19 @@ font-size: 30px;
 
 #menus{
     position: absolute;
-    top: min(3vw, 3vh);
-    right: min(3vw, 3vh);
+    top: min(3vw, 3dvh);
+    right: min(3vw, 3dvh);
     display: grid;
-    gap: min(3vw, 3vh);
+    gap: min(3vw, 3dvh);
 }
 #menus .icon{
-    width: min(8vw, 8vh);
-    height: min(8vw, 8vh);
+    width: min(8vw, 8dvh);
+    height: min(8vw, 8dvh);
 }
 #abilityPopUp, #soundsPopUp{
     position: absolute;
-    top: min(3vw, 3vh);
-    right: min(13vw, 13vh);
+    top: min(3vw, 3dvh);
+    right: min(13vw, 13dvh);
     justify-self:center;
     display: grid;
 }
@@ -340,8 +340,8 @@ font-size: 30px;
 }
 .abilityError{
     position: absolute;
-    top: min(3vw, 3vh);
-    right: min(13vw, 13vh);
+    top: min(3vw, 3dvh);
+    right: min(13vw, 13dvh);
     background-color: lightcyan;
 }
 
@@ -357,12 +357,12 @@ font-size: 30px;
     position: absolute;
     transform: scale(0.5);
     transform-origin: top right;
-    top: min(3vw, 3vh);
-    right: min(13vw, 13vh);
+    top: min(3vw, 3dvh);
+    right: min(13vw, 13dvh);
     background-color: lightcyan;
     justify-content: center;
-    gap: 4vh;
-    padding: 2vh;
+    gap: 4dvh;
+    padding: 2dvh;
 }
 .answers.tiny .selected{
     border: 6px solid lightgreen;
@@ -373,17 +373,22 @@ font-size: 30px;
     font-size: 50px;
 }
 .answers button{
-    width: min(35vw, 25vh);
-    height: min(35vw, 25vh);
+    width: min(35vw, 25dvh);
+    height: min(35vw, 25dvh);
     justify-self: center;
-    border-radius: min(8vw, 4vh);
-    font-size: min(14vw, 10vh);
+    border-radius: min(8vw, 4dvh);
+    font-size: min(14vw, 10dvh);
 }
 #confirmFinalAnswer{
     grid-row: 2 / 3;
-    height: min(20vw, 15vh);
-    font-size: min(7vw, 5vh);
+    height: min(20vw, 15dvh);
+    font-size: min(7vw, 5dvh);
 }
 #finalAnswer{
     border: 4px solid lightgreen;
+}
+
+button{
+    color: black;
+    border: 1px solid black;
 }

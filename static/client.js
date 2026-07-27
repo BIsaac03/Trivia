@@ -280,7 +280,7 @@ socket.on("showAllSubmissions", (rawAnswers) => {
         answerDOM.textContent = answer;
         rawAnswerList.appendChild(answerDOM);
     })
-    rawAnswerDiv.appendChild(rawAnswerList);
+    rawAnswerList.appendChild(rawAnswerList);
     console.log("client side")
     bodyElement.appendChild(rawAnswerDiv);
 });

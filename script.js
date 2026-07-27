@@ -191,14 +191,14 @@ io.on("connection", (socket) => {
     });
 
     socket.on("requestAbilities", (ID) => {
-        const player = players.find(player => player.playerID = ID);
+        const player = players.find(player => player.playerID == ID);
         if (player != undefined){
             socket.emit("displayAbilities", player.abilities, gameState.abilitiesToUse);
         }
     });
 
     socket.on("useAbility", (abilityName, ID) => {
-        const player = players.find(player => player.playerID = ID);
+        const player = players.find(player => player.playerID == ID);
         if (player != undefined){
             if (gameState.waitingOn == "initialGuesses" && abilityName != "continentCheck"){
                 socket.emit("illegalAbilityUse");
@@ -234,7 +234,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("requestedEliminationTargets", (index1, index2, ID) => {
-        const player = players.find(player => player.playerID = ID);
+        const player = players.find(player => player.playerID == ID);
         if (player != undefined){
             player.abilities.eliminateOne = false;
 
@@ -258,7 +258,7 @@ io.on("connection", (socket) => {
     })
 
     socket.on("requestSounds", (ID) => {
-        const player = players.find(player => player.playerID = ID);
+        const player = players.find(player => player.playerID == ID);
         if (player != undefined){
             socket.emit("displaySounds", player.sounds);
             //console.log(player.sounds);
@@ -266,7 +266,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("playSound", (soundDescription, ID) => {
-        const player = players.find(player => player.playerID = ID);
+        const player = players.find(player => player.playerID == ID);
         if (player != undefined){
             // !! confirm player has sound before asking HOST to play it
             player.removeSound(soundDescription);

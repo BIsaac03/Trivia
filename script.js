@@ -200,7 +200,7 @@ io.on("connection", (socket) => {
     socket.on("useAbility", (abilityName, ID) => {
         const player = players.find(player => player.playerID == ID);
         if (player != undefined){
-            if (gameState.waitingOn == "initialGuesses" && abilityName != "continentCheck"){
+            if (gameState.waitingOn != "finalAnswers" && abilityName != "continentCheck"){
                 socket.emit("illegalAbilityUse");
             }
 

@@ -192,11 +192,11 @@ font-size: 30px;
     text-align: center;
 }
 
-#trivia .additionalInfo{
+#additionalInfo{
     position: absolute;
     justify-self: center;
-    width: min(8vw, 8dvh);
-    height: min(8vw, 8dvh);
+    width: min(10vw, 8dvh);
+    height: min(10vw, 8dvh);
     top: min(3vw, 3dvh);
     left: min(13vw, 13dvh);
 }
@@ -304,8 +304,8 @@ font-size: 30px;
     gap: min(3vw, 3dvh);
 }
 #menus .icon{
-    width: min(8vw, 8dvh);
-    height: min(8vw, 8dvh);
+    width: min(10vw, 8dvh);
+    height: min(10vw, 8dvh);
 }
 #abilityPopUp, #soundsPopUp{
     position: absolute;
@@ -364,7 +364,9 @@ font-size: 30px;
     background-color: lightcyan;
     justify-content: center;
     gap: 4dvh;
-    padding: 2dvh;
+    padding: 6dvh;
+    font-size: 24px;
+    text-align: center;
 }
 .answers.tiny .selected{
     border: 6px solid lightgreen;
@@ -390,7 +392,14 @@ font-size: 30px;
     border: 4px solid lightgreen;
 }
 
+#rawAnswers{
+    position: absolute;
+    justify-self: center;
+    top: min(3vw, 3dvh);
+}
+
 button{
     color: black;
+    background-color: darkgrey;
     border: 1px solid black;
 }

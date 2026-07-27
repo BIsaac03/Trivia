@@ -162,13 +162,7 @@ socket.on("displaySounds", (mySounds) => {
     bodyElement.appendChild(soundsPopUp);
 
     if (mySounds.length == 0){
-        const noSoundsMessage = document.createElement("p");
-        noSoundsMessage.textContent = "You have no sounds! Do cool things to earn more.";
-        soundsPopUp.appendChild(noSoundsMessage);
-
-        setTimeout(() => {
-            soundsPopUp.remove();
-        }, 3000);
+        messagePopUp("You have no sounds! Do cool things to earn more.", soundsPopUp, "noSoundsMsg", 3000);
     }
 
     else{
@@ -231,8 +225,7 @@ socket.on("eliminateAnAnswer", () => {
             tinyAnswers.remove();
         }
         else{
-            // !! format message
-            messagePopUp("Select exactly 2 answers to designate for elimination", tinyAnswers, 2000);
+            messagePopUp("Select exactly 2 answers to designate for elimination.", tinyAnswers, "selectTwoMsg", 2000);
         }
     })
 
@@ -288,18 +281,7 @@ socket.on("showAllSubmissions", (rawAnswers) => {
 });
 
 socket.on("illegalAbilityUse", () => {
-    const existingMessage = document.querySelector(`.abilityError`);
-    if (existingMessage != undefined){
-        existingMessage.remove();
-    }
-    const timingErrorPopUp = document.createElement("p");
-    timingErrorPopUp.textContent = "You cannot use this ability until all players have submitted their initial guesses.";
-    timingErrorPopUp.classList.add("abilityError");
-    bodyElement.appendChild(timingErrorPopUp);
-    setTimeout(() => {
-        timingErrorPopUp.remove();
-    }, 4000); 
-    
+    messagePopUp("You cannot use this ability until all players have submitted their initial guesses.", bodyElement, "abilityError", 4000);  
 });
 ////// HOST events
 socket.on("hostSetUp", () => {
@@ -470,10 +452,10 @@ function firstTimePlayerSetup(){
         const pfpPreview = document.querySelector(`#me img.preview`);
         const me = document.getElementById("me");
         if (pfpPreview.src == ""){
-            messagePopUp("Add a profile picture first!", me, 1000)
+            messagePopUp("Add a profile picture first!", me, "noPfpError", 1500)
         }
         else if (nameEntry.value == ""){
-            messagePopUp("Add a name first!", me, 1000)
+            messagePopUp("Add a name first!", me, "noNameError", 1500)
         }
         else {
             socket.emit("playerJoined", nameEntry.value, myID, pfpPreview.src);
@@ -502,14 +484,8 @@ function waitingInLobby(me){
     const joinButton = document.querySelector(`#me .submit`);
     joinButton.textContent = "Update";
 
-    const existingMessage = document.querySelector(`.inLobbyMsg`);
-    if (existingMessage == undefined){
-        const message = document.createElement("p");
-        message.textContent = "You have successfully connected to the lobby. Remain here until trivia starts."
-        message.classList.add("inLobbyMsg");
-        const me = document.getElementById("me");
-        me.appendChild(message);
-    } 
+    const me = document.getElementById("me");
+    messagePopUp("You have successfully connected to the lobby. Remain here until trivia starts.", me, "inLobbyMsg", 0);
 }
 
 function setUpPlayerDisplay(){
@@ -703,16 +679,20 @@ function displayAbility(abilityName, hasAbility, canUseAbility, abilityPopUp, de
     abilityPopUp.appendChild(abilityDiv);
 }
 
-function messagePopUp(messageText, appendTo, lengthMS){
-    const message = document.createElement("p");
-    message.textContent = messageText;
-    message.classList.add("message");
-    appendTo.appendChild(message);
-    if (lengthMS > 0){
-        setTimeout(() => {
-            message.remove();
-        }, lengthMS);
-    }
+function messagePopUp(messageText, appendTo, className, lengthMS){
+    const existingMessage = appendTo.querySelector(`.message.${className}`);
+    if (existingMessage == undefined){
+        const message = document.createElement("p");
+        message.textContent = messageText;
+        message.classList.add("message");
+        message.classList.add(className);
+        appendTo.appendChild(message);
+        if (lengthMS > 0){
+            setTimeout(() => {
+                message.remove();
+            }, lengthMS);
+        }
+    }  
 }
 
 ////// HOST functions

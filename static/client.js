@@ -182,6 +182,15 @@ socket.on("displaySounds", (mySounds) => {
     }
 
     else{
+        const titleDiv = document.createElement("div");
+        titleDiv.classList.add("sound");
+        const description = document.createElement("p");
+        const numRemaining = document.createElement("p");
+        description.textContent = "Play when you want...";
+        numRemaining.textContent = "#";
+        titleDiv.appendChild(description);
+        titleDiv.appendChild(numRemaining);
+        soundsPopUp.appendChild(titleDiv);
         mySounds.forEach(sound => {
             const soundDiv = document.createElement("div");
             soundDiv.classList.add("sound");

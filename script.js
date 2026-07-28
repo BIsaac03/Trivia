@@ -155,9 +155,8 @@ io.on("connection", (socket) => {
             players[i].initialGuess = modifiedAnswers[i];
             players[i].isReady = false;
             // awards sound if more than a minute has elapsed between submitting guess and receiving answers
-            console.log(currentTime - players[i].timeOfInitialGuess)
             if (currentTime - players[i].timeOfInitialGuess > 60000){
-                players[i].addSound("hurryUp");
+                players[i].addSound("Slowpokes to hurry up");
             }
         }
         io.emit("unreadyAllPlayers", hostID);
@@ -414,7 +413,7 @@ function adjustPts(){
             if (players[i].finalAnswer == losingPlayer.initialGuess && losingPlayer.initialGuess != gameState.answer && players[i].finalAnswer != players[i].initialGuess){
                 losingPlayer.pts += players[i].ptsThisRound;
                 players[i].ptsThisRound = 0;
-                players[i].addSound("complain");
+                players[i].addSound("To complain");
             }
         }
         
@@ -430,6 +429,6 @@ function adjustPts(){
 
     const noPtsThisRound = players.filter(player => player.ptsThisRound == 0);
     if (noPtsThisRound.length == 1){
-        noPtsThisRound[0].addSound("encourage");
+        noPtsThisRound[0].addSound("Encouragement");
     }
 }

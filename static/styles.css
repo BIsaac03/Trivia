@@ -124,6 +124,7 @@ label.imgEntry.pfp{
     justify-self: right;
     padding: 10px 20px;
     font-size: 32px;
+    font-weight: bold;
     white-space: pre;
 }
 #statuses{
@@ -205,7 +206,7 @@ label.imgEntry.pfp{
     margin-top: 50px;
     justify-self: center;
     width: 60vw;
-    height: 60svh;
+    height: 55svh;
     object-fit: contain;
 }
 
@@ -464,6 +465,7 @@ label.imgEntry.pfp{
 
 .message{
     text-align: center;
+    z-index: 1;
 }
 button{
     color: black;

@@ -9,7 +9,7 @@
     {
         "questionText": "What is 2 * 2?",
         "answer": "4",
-        "image": "",
+        "image": "/static/images/volcano.jpg",
         "additionalInfo": "* is the sign for multiplication"
     },
     {

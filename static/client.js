@@ -85,7 +85,7 @@ socket.on("reconnection", (hostID, gameState, players) => {
                         submitBtn.disabled = true;
                     }
                     else{
-                        console.log(gameState.allAnswers);
+                        //console.log(gameState.allAnswers);
                         playerDisplayAnswers(gameState.allAnswers);
                         toggleVisibleSelections();
 
@@ -359,7 +359,7 @@ socket.on("firstSoundAcquired", (ID) => {
                         "Once acquired, you may play the audio at the time of your choosing.",
                         "Click on the new audio menu below your abilities to check out your collection.",
                         "You only get ONE use of your sounds, so make sure to use them at the most (in?)opportune time."],
-                        0, bodyElement, "soundExplanations");
+                        0, bodyElement, "soundExplanations", 3000);
         addSoundMenu();
     }
 })
@@ -368,7 +368,8 @@ socket.on("sendHostSound", (soundDescription, ID, hostID) => {
     if (hostID == myID && window.name != "answerModifier"){
         // play appropriate sound
         let path = undefined;
-        if (soundDescription == "complain"){
+        console.log(soundDescription)
+        if (soundDescription == "To complain"){
             const soundNum = Math.floor(Math.random()*4);
             switch (soundNum){
                 case 0:
@@ -381,8 +382,12 @@ socket.on("sendHostSound", (soundDescription, ID, hostID) => {
                     path = "/static/audios/totallyUnfair.m4a";
             }
         }
-        else if (soundDescription == "encourage"){
+        else if (soundDescription == "Encouragement"){
             path = "/static/audios/saveMe.mp3";
+            // !! personalized: {name} is going to win this round... I can feel it"
+        }
+        else if (soundDescription == "Slowpokes to hurry up"){
+            // !! HOW LONG IS THIS GOING TO TAKE 
         }
 
         if (path != undefined){
@@ -662,13 +667,14 @@ function displayAdditionalInfo(additionalInfo){
 function addDoublePtsIcon(){
     const doublePtsIcon = document.createElement("img");
     doublePtsIcon.src = "/static/icons/doublePts.svg";
-    doublePtsIcon.classList.add("doublePtsIcon");
+    doublePtsIcon.classList.add("doublePtsIcon", "removeEOR");
     bodyElement.appendChild(doublePtsIcon);
 }
 
 function showAllSubmissions(rawAnswers){
     const rawAnswerList = document.createElement("ul");
     rawAnswerList.id = "rawAnswers"
+    rawAnswerList.classList.add("removeEOR");
     
     rawAnswers.forEach((answer) => {
         const answerDOM = document.createElement("li");
@@ -783,15 +789,16 @@ function messagePopUp(messageText, appendTo, className, lengthMS, removeAtEndOfR
     }
 }
 
-function chainMessages(messages, messageNum, appendTo, classToAdd){
+function chainMessages(messages, messageNum, appendTo, classToAdd, lengthMS){
     const message = messagePopUp(messages[messageNum], appendTo, classToAdd, 0, false);    
-    
-    message.addEventListener("click", () => {
+    setTimeout(() => {
         message.remove();
         if (messages.length > messageNum+1){
-            chainMessages(messages, messageNum+1, appendTo, classToAdd);
+            chainMessages(messages, messageNum+1, appendTo, classToAdd, lengthMS);
         }
-    })
+    }, lengthMS)
+
+
     /*
     document.addEventListener("click", (event) => {
         if (!message.contains(event.target)) {
@@ -801,6 +808,13 @@ function chainMessages(messages, messageNum, appendTo, classToAdd){
             }
         }
     });
+
+        message.addEventListener("click", () => {
+        message.remove();
+        if (messages.length > messageNum+1){
+            chainMessages(messages, messageNum+1, appendTo, classToAdd, lengthMS);
+        }
+    })
     */
 }
 ////// HOST functions
@@ -839,7 +853,6 @@ function addHeader(){
     const header = document.createElement("div");
     header.id = "header";
     bodyElement.appendChild(header);
-    console.log(bodyElement)
 
     const title = document.createElement("p")
     title.classList.add("title");

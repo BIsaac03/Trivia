@@ -2,17 +2,20 @@
     {
         "questionText": "What is Canada's capital?",
         "answer": "Ottawa",
+        "image": "/static/images/Ottawa.jpg",
         "continent": "North America",
         "additionalInfo": ""
     },
     {
         "questionText": "What is 2 * 2?",
         "answer": "4",
+        "image": "",
         "additionalInfo": "* is the sign for multiplication"
     },
     {
         "questionText": "What is 7 - 1?",
         "answer": "6",
+        "image": "",
         "additionalInfo": "- is the sign for subtraction"
     }
 ]

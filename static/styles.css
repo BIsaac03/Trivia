@@ -84,6 +84,9 @@ label.imgEntry.pfp{
     grid-area: rightQuote;
     rotate: 30deg;
 }
+.quote{
+    font-size: 18px;
+}
 
 #lobby{
     width: 50vw;
@@ -192,9 +195,18 @@ label.imgEntry.pfp{
     gap: 10px;
 }
 #trivia .question{
-    font-size: 30px;
+    display: grid;
+    font-size: 32px;
     font-weight: bold;
     text-align: center;
+}
+#trivia .question img{
+    position: fixed;
+    margin-top: 50px;
+    justify-self: center;
+    width: 60vw;
+    height: 60svh;
+    object-fit: contain;
 }
 
 #additionalInfo{
@@ -235,7 +247,7 @@ label.imgEntry.pfp{
     align-self: baseline;
     display: none;
     justify-content: center;
-    gap: 4svh;
+    gap: 3svh;
     font-size: 48px;
     white-space: nowrap;
 }

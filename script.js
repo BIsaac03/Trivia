@@ -50,6 +50,7 @@ const gameState = {
     gameHasStarted: false,
     question: "",
     answer: "",
+    img: "",
     continent: undefined,
     additionalInfo: "",
     allAnswers: [],
@@ -62,6 +63,7 @@ const gameState = {
     loadNextQuestion(question) {
         this.question = question.questionText;
         this.answer = question.answer;
+        this.img = question.image;
         this.continent = question.continent;
         this.additionalInfo = question.additionalInfo;
         this.questionNum++;
@@ -358,7 +360,7 @@ function sendNextQuesetion(){
     gameState.loadNextQuestion(questions[gameState.questionNum]);
     gameState.updateAvailableAbilities();
     gameState.waitingOn = "initialGuesses";
-    io.emit("nextQuestion", gameState.question, gameState.additionalInfo, gameState.abilitiesToUse, hostID);
+    io.emit("nextQuestion", gameState.question, gameState.img, gameState.additionalInfo, gameState.abilitiesToUse, hostID);
 }
 
 function compileAnswers(){

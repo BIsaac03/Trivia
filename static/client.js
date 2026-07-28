@@ -34,7 +34,7 @@ socket.on("reconnection", (hostID, gameState, players) => {
         else{
             setUpHostDisplay(players, gameState);
             updateStatuses(players);
-            displayQuestion(gameState.question);
+            displayQuestion(gameState.question, gameState.img);
 
             if (gameState.waitingOn != "initialGuesses"){
                 hostDisplayAnswers(gameState.allAnswers);
@@ -415,14 +415,14 @@ socket.on("startTrivia", (players, gameState, hostID) => {
     }
 });
 
-socket.on("nextQuestion", (question, additionalInfo, abilitiesToUse, hostID) => {
+socket.on("nextQuestion", (question, img, additionalInfo, abilitiesToUse, hostID) => {
     const elementsToRemove = document.querySelectorAll(`.removeEOR`);
     elementsToRemove.forEach((element) => {
         element.remove();
     })
 
     if (hostID == myID && window.name != "answerModifier"){
-        displayQuestion(question);
+        displayQuestion(question, img);
         const questionNum = document.querySelector(`#progress .currentNum`);
         questionNum.textContent = Number(questionNum.textContent) + 1;
         updateAbilityAvailability(abilitiesToUse);
@@ -907,9 +907,13 @@ function setUpHostDisplay(players, gameState){
     const trivia = document.createElement("div");
     trivia.id = "trivia";
 
+    const question = document.createElement("div");
+    question.classList.add("question");
     const questionText = document.createElement("p");
-    questionText.classList.add("question");
-    trivia.appendChild(questionText);
+    const questionImg = document.createElement("img");
+    question.appendChild(questionText);
+    question.appendChild(questionImg);
+    trivia.appendChild(question);
 
     const answersDiv = document.createElement("div");
     answersDiv.classList.add("answers");
@@ -923,15 +927,22 @@ function setUpHostDisplay(players, gameState){
     updateAbilityAvailability(gameState.abilitiesToUse);
 }
 
-function displayQuestion(question){
+function displayQuestion(question, img){
     const answersDiv = document.querySelector(`div.answers`);
     answersDiv.style.display = "none";
 
-    const questionText = document.querySelector(`p.question`);
+    const questionText = document.querySelector(`.question p`);
     questionText.textContent = question;
+
+    const questionImg = document.querySelector(`.question img`);
+    questionImg.style.opacity = 1;
+    questionImg.src = img;
 }
 
 function hostDisplayAnswers(answers){
+    const questionImg = document.querySelector(`.question img`);
+    questionImg.style.opacity = 0.2;
+
     const allAnswers = document.querySelector(`div.answers`);
     allAnswers.replaceChildren();
     for (let i = 0; i < answers.length; i++){

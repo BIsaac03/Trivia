@@ -4,8 +4,8 @@ if (document.cookie == ""){
 const userIDCookie = document.cookie;
 const myID = userIDCookie.slice(7);
 
-const socket = io("https://trivia-k294.onrender.com/", {
-//const socket = io("http://localhost:3000", {
+//const socket = io("https://trivia-k294.onrender.com/", {
+const socket = io("http://localhost:3000", {
     auth: {
         token: userIDCookie
     }
@@ -64,6 +64,9 @@ socket.on("reconnection", (hostID, gameState, players) => {
             const me = players.find(player => player.playerID == myID);
             if (me != undefined){
                 setUpPlayerDisplay();
+                if (me.hasAcquiredFirstSound){
+                    addSoundMenu();
+                }
                 displayAdditionalInfo(gameState.additionalInfo);
                 if (me.initialGuess == ''){
                     console.log("empty");
@@ -173,6 +176,7 @@ socket.on("displaySounds", (mySounds) => {
             const soundDescription = document.createElement("p");
             const soundNum = document.createElement("p");
             const soundButton = document.createElement("button");
+            soundButton.textContent = "PLAY";
 
             soundDescription.textContent = sound[0];
             soundNum.textContent = sound[1];
@@ -336,6 +340,18 @@ socket.on("updateScores", (players, hostID) => {
     }
 })
 
+socket.on("firstSoundAcquired", (ID) => {
+    if (ID == myID){
+        chainMessages([ "SHHHH you have discovered a HIDDEN mechanic: audios!",
+                        "You will collect new sounds throughout the game by fulfilling various secret criteria.",
+                        "Once acquired, you may play the audio at the time of your choosing.",
+                        "Click on the new audio menu below your abilities to check out your collection.",
+                        "You only get ONE use of your sounds, so make sure to use them at the most (in?)opportune time."],
+                        0, bodyElement, "soundExplanations");
+    }
+    addSoundMenu();
+})
+
 socket.on("sendHostSound", (soundDescription, ID, hostID) => {
     if (hostID == myID && window.name != "answerModifier"){
         // play appropriate sound
@@ -364,7 +380,7 @@ socket.on("sendHostSound", (soundDescription, ID, hostID) => {
 
             const audio = new Audio(path);
             audio.addEventListener('playing', () => {
-                playerIcon.appendChild(playingSound);
+                playerIcon.parentElement.appendChild(playingSound);
             });
             audio.addEventListener('ended', () => {
                 playingSound.remove();
@@ -527,20 +543,6 @@ function setUpPlayerDisplay(){
         }
     })
 
-    const sounds = document.createElement("img");
-    sounds.src = "/static/icons/sounds.svg"
-    sounds.id = "sounds";
-    sounds.classList.add("icon");
-    sounds.addEventListener("click", () => {
-        const soundsPopUp = document.querySelector(`#soundsPopUp`)
-        if (soundsPopUp == undefined){
-            socket.emit("requestSounds", myID);
-        }
-        else{
-            soundsPopUp.remove();
-        }
-    })
-
     const additionalInfo = document.createElement("img");
     additionalInfo.src = "static/icons/additionalInfo.svg";
     additionalInfo.id = "additionalInfo";
@@ -598,11 +600,28 @@ function setUpPlayerDisplay(){
     trivia.appendChild(answersDiv);
 
     menus.appendChild(abilities);
-    menus.appendChild(sounds);
 
     bodyElement.appendChild(menus);
     bodyElement.appendChild(additionalInfo);
     bodyElement.appendChild(trivia);
+}
+
+function addSoundMenu(){
+    const sounds = document.createElement("img");
+    sounds.src = "/static/icons/sounds.svg"
+    sounds.id = "sounds";
+    sounds.classList.add("icon");
+    sounds.addEventListener("click", () => {
+        const soundsPopUp = document.querySelector(`#soundsPopUp`)
+        if (soundsPopUp == undefined){
+            socket.emit("requestSounds", myID);
+        }
+        else{
+            soundsPopUp.remove();
+        }
+    })
+    const menus = document.getElementById("menus");
+    menus.appendChild(sounds);
 }
 
 function readyNewSubmission(){
@@ -621,11 +640,11 @@ function readyNewSubmission(){
 function displayAdditionalInfo(additionalInfo){
     const oldInfo = document.querySelector(`#additionalInfo`);
     const newInfo = oldInfo.cloneNode(true);
+    oldInfo.parentNode.replaceChild(newInfo, oldInfo);
     newInfo.setAttribute("title", additionalInfo);
     newInfo.addEventListener("click", () => {
         messagePopUp(additionalInfo, bodyElement, "additionalInfoMessage", 3000, true);
     })
-    oldInfo.parentNode.replaceChild(newInfo, oldInfo);
 }
 
 function playerDisplayAnswers(answers){
@@ -704,12 +723,15 @@ function displayAbility(abilityName, hasAbility, canUseAbility, abilityPopUp, de
 }
 
 function messagePopUp(messageText, appendTo, className, lengthMS, removeAtEndOfRound){
-    const existingMessage = appendTo.querySelector(`.message.${className}`);
+    console.log(appendTo);
+    const existingMessage = appendTo.querySelector(`.message`);
     if (existingMessage == undefined){
         const message = document.createElement("p");
         message.textContent = messageText;
         message.classList.add("message");
-        message.classList.add(className);
+        if (className != ""){
+            message.classList.add(className);
+        }
         appendTo.appendChild(message);
         if (lengthMS > 0){
             setTimeout(() => {
@@ -719,9 +741,30 @@ function messagePopUp(messageText, appendTo, className, lengthMS, removeAtEndOfR
         if (removeAtEndOfRound){
             message.classList.add("removeEOR");
         }
-    }  
+        return message;
+    }
 }
 
+function chainMessages(messages, messageNum, appendTo, classToAdd){
+    const message = messagePopUp(messages[messageNum], appendTo, classToAdd, 0, false);    
+    
+    message.addEventListener("click", () => {
+        message.remove();
+        if (messages.length > messageNum+1){
+            chainMessages(messages, messageNum+1, appendTo, classToAdd);
+        }
+    })
+    /*
+    document.addEventListener("click", (event) => {
+        if (!message.contains(event.target)) {
+            message.remove();
+            if (messages.length > messageNum+1){
+                chainMessages(messages, messageNum+1, appendTo);
+            }
+        }
+    });
+    */
+}
 ////// HOST functions
 function displayLobby(players){
     document.body.innerHTML = "";
@@ -1022,8 +1065,8 @@ function addManualAnswerModifier(){
             const existingWindow = window.open("", "answerModifier");
             console.log(existingWindow.location.href);
             if (!existingWindow || existingWindow.location.href == "about:blank"){
-                const manualAnswerModification = window.open("http://trivia-k294.onrender.com", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
-                //const manualAnswerModification = window.open("http://localhost:5500", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
+                //const manualAnswerModification = window.open("http://trivia-k294.onrender.com", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
+                const manualAnswerModification = window.open("http://localhost:5500", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
                 manualAnswerModification.name = "answerModifier";
             }
         });

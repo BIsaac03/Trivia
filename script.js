@@ -31,8 +31,8 @@ app.use("/static", express.static('./static/'));
 
 const io = new Server(httpServer, {
     cors: {
-        origin: "http://trivia-k294.onrender.com",
-        //origin: "http://localhost:5500",
+        //origin: "http://trivia-k294.onrender.com",
+        origin: "http://localhost:5500",
     }
 });
 
@@ -305,7 +305,7 @@ function makePlayer(name, ID, img){
     const addSound = (soundDescription) => {
         if (hasAcquiredFirstSound == false){
             hasAcquiredFirstSound = true;
-            // !! send message to player when they acquire their first sound
+            io.emit("firstSoundAcquired", ID);
         }
         const existingSound = sounds.find(sound => sound[0] == soundDescription);
         if (existingSound == undefined){
@@ -408,6 +408,6 @@ function adjustPts(){
 
     const noPtsThisRound = players.filter(player => player.ptsThisRound == 0);
     if (noPtsThisRound.length == 1){
-        players[0].addSound("encourage");
+        noPtsThisRound[0].addSound("encourage");
     }
 }

@@ -61,14 +61,14 @@ label.imgEntry.pfp{
 }
 
 #header{
-    grid-column: 1 / 3;
+    grid-area: 1 / 2 / 2 / 3;
     padding-top: 3svh;
     display: grid;
     grid-template: 2fr 1fr / 1fr 1fr 1fr;
     grid-template-areas: 
         "leftQuote title rightQuote"
         "btmQuote btmQuote btmQuote";
-        gap: 15px;
+    gap: 50px;
     justify-items: center;
     align-items: center;
 }
@@ -193,6 +193,7 @@ label.imgEntry.pfp{
 }
 #trivia .question{
     font-size: 30px;
+    font-weight: bold;
     text-align: center;
 }
 

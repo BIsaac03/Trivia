@@ -807,21 +807,7 @@ function chainMessages(messages, messageNum, appendTo, classToAdd){
 function displayLobby(players){
     document.body.innerHTML = "";
     addManualAnswerModifier();
-
-    const header = document.createElement("div");
-    header.id = "header";
-    bodyElement.appendChild(header);
-
-    const title = document.createElement("p")
-    title.classList.add("title");
-    title.textContent = "Trivia"
-    header.appendChild(title);
-
-    addQuote("\"Totally unfair\"", 1);
-    addQuote("\"I was cheated\"", 2);
-    addQuote("\"Game is rigged\"", 3);
-    addQuote("\"A trivial experience\"", 4);
-    addQuote("\"Biased beyond belief\"", 5);
+    addHeader();
 
     const lobby = document.createElement("div");
     lobby.id = "lobby";
@@ -849,6 +835,24 @@ function displayLobby(players){
     lobby.appendChild(startTriviaButton);
 }
 
+function addHeader(){
+    const header = document.createElement("div");
+    header.id = "header";
+    bodyElement.appendChild(header);
+    console.log(bodyElement)
+
+    const title = document.createElement("p")
+    title.classList.add("title");
+    title.textContent = "Trivia"
+    header.appendChild(title);
+
+    addQuote("\"Totally unfair\"", 1);
+    addQuote("\"I was cheated\"", 2);
+    addQuote("\"Game is rigged\"", 3);
+    addQuote("\"A trivial experience\"", 4);
+    addQuote("\"Biased beyond belief\"", 5);
+}
+
 function displayPlayerInLobby(displayedPlayer, playersDiv){
     const player = document.createElement("div");
     player.classList.add("player", displayedPlayer.playerID);
@@ -869,6 +873,9 @@ function displayPlayerInLobby(displayedPlayer, playersDiv){
 function setUpHostDisplay(players, gameState){
     document.body.innerHTML = "";
     addManualAnswerModifier();
+    addHeader();
+    const title = document.querySelector(`#header .title`);
+    title.style.opacity = 0;
 
     const progress = document.createElement("div");
     progress.id = "progress";

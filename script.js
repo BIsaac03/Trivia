@@ -132,6 +132,7 @@ io.on("connection", (socket) => {
     socket.on("madeFirstGuess", (ID, guess) => {
         const player = players.find(player => player.playerID == ID);
         if (player != undefined){
+            player.timeOfInitialGuess = Date.now();
             player.initialGuess = guess;
             player.isReady = true;
             io.emit("playerReady", ID, hostID);
@@ -147,9 +148,15 @@ io.on("connection", (socket) => {
     })
 
     socket.on("getModifiedAnswers", (modifiedAnswers) => {
+        const currentTime = Date.now();
         for (let i = 0; i < players.length; i++){
             players[i].initialGuess = modifiedAnswers[i];
             players[i].isReady = false;
+            // awards sound if more than a minute has elapsed between submitting guess and receiving answers
+            console.log(currentTime - players[i].timeOfInitialGuess)
+            if (currentTime - players[i].timeOfInitialGuess > 60000){
+                players[i].addSound("hurryUp");
+            }
         }
         io.emit("unreadyAllPlayers", hostID);
         const answers = compileAnswers();
@@ -293,6 +300,7 @@ function makePlayer(name, ID, img){
     let playerName = name;
     const playerID = ID;
     let playerImg = img;
+    let timeOfInitialGuess = undefined;
     let initialGuess = '';
     let finalAnswer = '';
     let pts = 0;
@@ -304,8 +312,7 @@ function makePlayer(name, ID, img){
     let isReady = false;
     const addSound = (soundDescription) => {
         if (hasAcquiredFirstSound == false){
-            hasAcquiredFirstSound = true;
-            io.emit("firstSoundAcquired", ID);
+            firstSound(playerID);
         }
         const existingSound = sounds.find(sound => sound[0] == soundDescription);
         if (existingSound == undefined){
@@ -326,7 +333,13 @@ function makePlayer(name, ID, img){
             sounds.splice(index, 1);
         }
     }
-    return {playerName, playerID, playerImg, initialGuess, finalAnswer, pts, ptsThisRound, doubleMyPts, abilities, sounds, hasAcquiredFirstSound, isReady, addSound, removeSound}
+    return {playerName, playerID, playerImg, timeOfInitialGuess, initialGuess, finalAnswer, pts, ptsThisRound, doubleMyPts, abilities, sounds, hasAcquiredFirstSound, isReady, addSound, removeSound}
+}
+
+function firstSound(ID){
+    const player = players.find((player) => player.playerID == ID);
+    player.hasAcquiredFirstSound = true;
+    io.emit("firstSoundAcquired", ID);
 }
 
 function allPlayersAreReady(){

@@ -19,7 +19,7 @@ socket.on("connect", () => {
 });
 
 socket.on("reconnection", (hostID, gameState, players) => {
-    console.log(players);
+    //console.log(players);
     // restore HOST state
     if (window.name == "answerModifier"){
         displayScores(players);
@@ -69,7 +69,6 @@ socket.on("reconnection", (hostID, gameState, players) => {
                 }
                 displayAdditionalInfo(gameState.additionalInfo);
                 if (me.initialGuess == ''){
-                    console.log("empty");
                     readyNewSubmission();
                 }
                 else if (me.finalAnswer == ''){
@@ -99,10 +98,10 @@ socket.on("reconnection", (hostID, gameState, players) => {
                     const answers = [...answersDOM];
                     answers.forEach((answer) => {
                         answer.disabled = true;
-                        console.log(me.finalAnswer);
-                        console.log(answer.textContent);
+                        //console.log(me.finalAnswer);
+                        //console.log(answer.textContent);
                         if (gameState.allAnswers[answer.textContent-1] == me.finalAnswer){
-                            console.log("match")
+                            //console.log("match")
                             answer.id = "finalAnswer";
                         }
                     });
@@ -258,7 +257,7 @@ socket.on("eliminateAnAnswer", () => {
 });
 
 socket.on("eliminateAnswer", (eliminatedAnswerIndex) => {
-    console.log(eliminatedAnswerIndex);
+    //console.log(eliminatedAnswerIndex);
     const answerChoices = document.querySelector(`#trivia .answers .answerChoices`);
     const answersDOM = answerChoices.children;
     const answers = [...answersDOM];
@@ -348,8 +347,8 @@ socket.on("firstSoundAcquired", (ID) => {
                         "Click on the new audio menu below your abilities to check out your collection.",
                         "You only get ONE use of your sounds, so make sure to use them at the most (in?)opportune time."],
                         0, bodyElement, "soundExplanations");
+        addSoundMenu();
     }
-    addSoundMenu();
 })
 
 socket.on("sendHostSound", (soundDescription, ID, hostID) => {
@@ -519,7 +518,7 @@ function waitingInLobby(){
     const joinButton = document.querySelector(`#me .submit`);
     joinButton.textContent = "Update";
     const me = document.getElementById("me");
-    console.log(me);
+    //console.log(me);
     messagePopUp("You have successfully connected to the lobby. Remain here until trivia starts.", me, "inLobbyMsg", 0, false);
 }
 
@@ -560,10 +559,10 @@ function setUpPlayerDisplay(){
     submitBtn.textContent = "Lock in";
 
     submitBtn.addEventListener("click", () => {
-        console.log(userGuess.value)
+        //console.log(userGuess.value)
         if (userGuess.value != ""){
             socket.emit("madeFirstGuess", myID, userGuess.value);
-            console.log(userGuess.value)
+            //console.log(userGuess.value)
             userGuess.placeholder = "Submitted!";
             userGuess.disabled = true;
             userGuess.value = "";  
@@ -723,7 +722,6 @@ function displayAbility(abilityName, hasAbility, canUseAbility, abilityPopUp, de
 }
 
 function messagePopUp(messageText, appendTo, className, lengthMS, removeAtEndOfRound){
-    console.log(appendTo);
     const existingMessage = appendTo.querySelector(`.message`);
     if (existingMessage == undefined){
         const message = document.createElement("p");
@@ -1063,7 +1061,6 @@ function addManualAnswerModifier(){
         openAnswerModifier.id = "openAnswerModifier";
         openAnswerModifier.addEventListener("click", () => {
             const existingWindow = window.open("", "answerModifier");
-            console.log(existingWindow.location.href);
             if (!existingWindow || existingWindow.location.href == "about:blank"){
                 //const manualAnswerModification = window.open("http://trivia-k294.onrender.com", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
                 const manualAnswerModification = window.open("http://localhost:5500", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");

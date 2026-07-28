@@ -360,7 +360,12 @@ font-size: 30px;
 
 .soundExplanations{
     position: absolute;
+    top: min(2vw, 2svh);
     justify-self: center;
+    padding: 5px;
+    width: fit-content;
+    max-width: calc(100vw - calc(2 * min(13vw, 13svh)));
+    background-color: lightgoldenrodyellow;
 }
 #soundsPopUp{
     background-color: lightgoldenrodyellow;

@@ -67,6 +67,9 @@ socket.on("reconnection", (hostID, gameState, players) => {
                 if (me.hasAcquiredFirstSound){
                     addSoundMenu();
                 }
+                if (me.abilitiesUsedThisRound.continentCheck){
+                    messagePopUp(me.abilitiesUsedThisRound.continentCheck, bodyElement, "continent", 0, true);
+                }
                 displayAdditionalInfo(gameState.additionalInfo);
                 if (me.initialGuess == ''){
                     readyNewSubmission();
@@ -85,6 +88,16 @@ socket.on("reconnection", (hostID, gameState, players) => {
                         console.log(gameState.allAnswers);
                         playerDisplayAnswers(gameState.allAnswers);
                         toggleVisibleSelections();
+
+                        if (me.abilitiesUsedThisRound.eliminateOne){
+                            eliminatePotentialAnswer(me.abilitiesUsedThisRound.eliminateOne);
+                        }
+                        if (me.abilitiesUsedThisRound.doublePts){
+                            addDoublePtsIcon();
+                        }
+                        if (me.abilitiesUsedThisRound.seeAllSubmissions){
+                            showAllSubmissions(me.abilitiesUsedThisRound.seeAllSubmissions);
+                        }
                     }
                     
                 }
@@ -257,29 +270,20 @@ socket.on("eliminateAnAnswer", () => {
 });
 
 socket.on("eliminateAnswer", (eliminatedAnswerIndex) => {
-    //console.log(eliminatedAnswerIndex);
-    const answerChoices = document.querySelector(`#trivia .answers .answerChoices`);
-    const answersDOM = answerChoices.children;
-    const answers = [...answersDOM];
-    const answerButton = answers.find(answer => answer.textContent == eliminatedAnswerIndex + 1);
-    answerButton.disabled = true;
-})
+    eliminatePotentialAnswer(eliminatedAnswerIndex);
+});
 
 socket.on("tellContinent", (continent) => {
     // !! format to not overlap with answer choices
     messagePopUp(continent, bodyElement, "continent", 0, true);
+});
+
+socket.on("addDoublePtsIcon", () => {
+    addDoublePtsIcon();
 })
 
 socket.on("showAllSubmissions", (rawAnswers) => {
-    const rawAnswerList = document.createElement("ul");
-    rawAnswerList.id = "rawAnswers"
-    
-    rawAnswers.forEach((answer) => {
-        const answerDOM = document.createElement("li");
-        answerDOM.textContent = answer;
-        rawAnswerList.appendChild(answerDOM);
-    })
-    bodyElement.appendChild(rawAnswerList);
+    showAllSubmissions(rawAnswers);
 });
 
 socket.on("illegalAbilityUse", (message) => {
@@ -646,6 +650,25 @@ function displayAdditionalInfo(additionalInfo){
     })
 }
 
+function addDoublePtsIcon(){
+    const doublePtsIcon = document.createElement("img");
+    doublePtsIcon.src = "/static/icons/doublePts.svg";
+    doublePtsIcon.classList.add("doublePtsIcon");
+    bodyElement.appendChild(doublePtsIcon);
+}
+
+function showAllSubmissions(rawAnswers){
+    const rawAnswerList = document.createElement("ul");
+    rawAnswerList.id = "rawAnswers"
+    
+    rawAnswers.forEach((answer) => {
+        const answerDOM = document.createElement("li");
+        answerDOM.textContent = answer;
+        rawAnswerList.appendChild(answerDOM);
+    })
+    bodyElement.appendChild(rawAnswerList);
+}
+
 function playerDisplayAnswers(answers){
     const answersDiv = document.querySelector(`div.answers`);
     const answerChoices = document.querySelector(`div.answerChoices`);
@@ -665,6 +688,14 @@ function playerDisplayAnswers(answers){
     }
 
     toggleVisibleSelections();
+}
+
+function eliminatePotentialAnswer(index){
+    const answerChoices = document.querySelector(`#trivia .answers .answerChoices`);
+    const answersDOM = answerChoices.children;
+    const answers = [...answersDOM];
+    const answerButton = answers.find(answer => answer.textContent == index + 1);
+    answerButton.disabled = true;
 }
 
 function toggleVisibleSelections(){

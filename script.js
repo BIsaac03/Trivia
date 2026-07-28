@@ -227,16 +227,19 @@ io.on("connection", (socket) => {
 
                     case "continentCheck":
                         player.abilities.continentCheck = false;
+                        player.abilitiesUsedThisRound.continentCheck = gameState.continent;
                         socket.emit("tellContinent", gameState.continent);
                         break;
 
                     case "doublePts":
                         player.abilities.doublePts = false;
-                        player.doubleMyPts = true;
+                        player.abilitiesUsedThisRound.doublePts = true;
+                        socket.emit("addDoublePtsIcon");
                         break;
 
                     case "seeAllSubmissions":
                         player.abilities.seeAllSubmissions = false;
+                        player.abilitiesUsedThisRound.seeAllSubmissions = gameState.rawAnswers;
                         socket.emit("showAllSubmissions", gameState.rawAnswers);
                         break;
                 }       
@@ -247,8 +250,6 @@ io.on("connection", (socket) => {
     socket.on("requestedEliminationTargets", (index1, index2, ID) => {
         const player = players.find(player => player.playerID == ID);
         if (player != undefined){
-            player.abilities.eliminateOne = false;
-
             let eliminatedAnswer = undefined;
             if (gameState.answer == gameState.allAnswers[index1]){
                 eliminatedAnswer = index2;
@@ -264,6 +265,9 @@ io.on("connection", (socket) => {
                     eliminatedAnswer = index2;
                 }
             }
+
+            player.abilities.eliminateOne = false;
+            player.abilitiesUsedThisRound.eliminateOne = eliminatedAnswer;
             socket.emit("eliminateAnswer", eliminatedAnswer);
         } 
     })
@@ -305,8 +309,8 @@ function makePlayer(name, ID, img){
     let finalAnswer = '';
     let pts = 0;
     let ptsThisRound = 0;
-    let doubleMyPts = false;
     let abilities = {eliminateOne: true, continentCheck: true, doublePts: true, seeAllSubmissions: true};
+    let abilitiesUsedThisRound = {eliminateOne: null, continentCheck: null, doublePts: null, seeAllSubmissions: null};
     let sounds = []; // [[soundName, numSounds], ...]
     let hasAcquiredFirstSound = false;
     let isReady = false;
@@ -333,7 +337,7 @@ function makePlayer(name, ID, img){
             sounds.splice(index, 1);
         }
     }
-    return {playerName, playerID, playerImg, timeOfInitialGuess, initialGuess, finalAnswer, pts, ptsThisRound, doubleMyPts, abilities, sounds, hasAcquiredFirstSound, isReady, addSound, removeSound}
+    return {playerName, playerID, playerImg, timeOfInitialGuess, initialGuess, finalAnswer, pts, ptsThisRound, abilities, abilitiesUsedThisRound, sounds, hasAcquiredFirstSound, isReady, addSound, removeSound}
 }
 
 function firstSound(ID){
@@ -371,6 +375,10 @@ function resetPlayers(){
         players[i].ptsThisRound = 0;
         players[i].initialGuess = "";
         players[i].finalAnswer = "";
+        players[i].abilitiesUsedThisRound.eliminateOne = null;
+        players[i].abilitiesUsedThisRound.continentCheck = null;
+        players[i].abilitiesUsedThisRound.doublePts = null;
+        players[i].abilitiesUsedThisRound.seeAllSubmissions = null;
         players[i].isReady = false;
     }
 }
@@ -411,9 +419,8 @@ function adjustPts(){
         players[i].pts += players[i].ptsThisRound;
 
         // double points ability NOT STOLEN BY CURSES
-        if (players[i].doubleMyPts){
+        if (players[i].abilitiesUsedThisRound.doublePts){
             players[i].pts += players[i].ptsThisRound;
-            players[i].doubleMyPts = false;
         }
         //console.log(`this round ${players[i].playerName} got ${players[i].ptsThisRound} pts`);
         //console.log(`${players[i].playerName} has ${players[i].pts} total`);

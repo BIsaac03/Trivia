@@ -98,10 +98,10 @@ label.imgEntry.pfp{
     gap: 2svh;
 }
 #lobby .player{
-display: flex;
-gap: 20px;
-align-items: center;
-font-size: 30px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    font-size: 30px;
 }
 #lobby .startTrivia{
     height: 5svh;
@@ -400,6 +400,9 @@ font-size: 30px;
 .answers.tiny .selected{
     border: 6px solid lightgreen;
 }
+.answers:has(#confirmFinalAnswer){
+    align-self: center;
+}
 .answerChoices{
     display: grid;
     justify-self: center;
@@ -421,6 +424,13 @@ font-size: 30px;
     border: 4px solid lightgreen;
 }
 
+.doublePtsIcon{
+    position: absolute;
+    width: min(10vw, 8svh);
+    height: min(10vw, 8svh);
+    top: 20svh;
+    left: min(3vw, 3svh);
+}
 .continent{
     position: absolute;
     justify-self: center;

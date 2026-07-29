@@ -485,6 +485,14 @@ async function displayPfp(file) {
 
 function firstTimePlayerSetup(){
     document.body.innerHTML = "";
+
+    const becomeHost = document.createElement("button");
+    becomeHost.textContent = "Become New Host";
+    becomeHost.id = "becomeHost";
+    becomeHost.addEventListener("click", () => {
+        socket.emit("createHost", myID);
+    })
+
     const playerSetup = document.createElement("div");
     playerSetup.id = "me";
 
@@ -553,6 +561,7 @@ function firstTimePlayerSetup(){
     playerSetup.appendChild(codeEntry);
     playerSetup.appendChild(joinBtn);
 
+    bodyElement.appendChild(becomeHost);
     bodyElement.appendChild(playerSetup);
 }
 
@@ -860,6 +869,14 @@ function displayLobby(roomCode, players){
     const lobby = document.createElement("div");
     lobby.id = "lobby";
     bodyElement.appendChild(lobby);
+
+    const abandonLobby = document.createElement("button");
+    abandonLobby.textContent = "Abandon Lobby";
+    abandonLobby.id = "abandonLobby";
+    abandonLobby.addEventListener("click", () => {
+        socket.emit("abandonLobby", myID);
+    })
+    lobby.appendChild(abandonLobby);
 
     const codeDiv = document.createElement("div");
     codeDiv.classList.add("roomCode");

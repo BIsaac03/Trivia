@@ -45,9 +45,11 @@ const FIRSTTRYPTS = 5;
 const SECONDGUESSPTS = 3;
 const FOOLPTS = 1;
 
-const players = [];
+const gamesInProgress = [];
+
 const gameState = {
     gameHasStarted: false,
+    players: [],
     question: "",
     answer: "",
     img: "",
@@ -80,19 +82,22 @@ let roomCode = undefined;
 
 io.on("connection", (socket) => {
     socket.on("userConnected", (ID) => {
-        const returningPlayer = players.find(player => player.playerID == ID)
+        const returningPlayer = gameState.players.find(player => player.playerID == ID)
+        if (returningPlayer == undefined && ID != hostID){
+            socket.emit("newConnection");
+        }
+        else{
+            socket.emit("reconnection", hostID, roomCode, gameState, gameState.players);
+        }
+    });
+
+    socket.on("createHost", (ID) => {
         if (hostID == undefined){
             hostID = ID;
             roomCode = (Math.random().toString(36).slice(2, 6)).toUpperCase();
             socket.emit("hostSetUp", roomCode);
         }
-        else if (returningPlayer == undefined && ID != hostID){
-            socket.emit("newConnection");
-        }
-        else{
-            socket.emit("reconnection", hostID, roomCode, gameState, players);
-        }
-    })
+    });
 
     socket.on("playerJoined", (name, ID, img, code) => {
         if (gameState.gameHasStarted == false){
@@ -100,12 +105,12 @@ io.on("connection", (socket) => {
                 socket.emit("invalidRoomCode");
             }
             else{
-                const existingPlayer = players.find(player => player.playerID == ID);
+                const existingPlayer = gameState.players.find(player => player.playerID == ID);
                 if (existingPlayer == undefined){
-                    const nameInUse = players.find(player => player.playerName == name);
+                    const nameInUse = gameState.players.find(player => player.playerName == name);
                     if (nameInUse == undefined){
                         const newPlayer = makePlayer(name, ID, img);
-                        players.push(newPlayer);
+                        gameState.players.push(newPlayer);
                         socket.broadcast.emit("playerJoined", newPlayer, hostID);
                         socket.emit("waitingInLobby");
                     }
@@ -126,10 +131,14 @@ io.on("connection", (socket) => {
         }
     });
 
+    socket.on("abandonLobby", (ID) => {
+        // !! delete lobby
+    });
+
     socket.on("attemptStart", () => {
-        if (players.length > 1){
+        if (gameState.players.length > 1){
             gameState.gameHasStarted = true;
-            io.emit("startTrivia", players, gameState, hostID);
+            io.emit("startTrivia", gameState.players, gameState, hostID);
             io.emit("unreadyAllPlayers", hostID);
             sendNextQuesetion();
         }
@@ -139,7 +148,7 @@ io.on("connection", (socket) => {
     })
     
     socket.on("madeFirstGuess", (ID, guess) => {
-        const player = players.find(player => player.playerID == ID);
+        const player = gameState.players.find(player => player.playerID == ID);
         if (player != undefined){
             player.timeOfInitialGuess = Date.now();
             player.initialGuess = guess;
@@ -151,19 +160,19 @@ io.on("connection", (socket) => {
                 const rawAnswers = compileAnswers();
                 gameState.rawAnswers = rawAnswers;
                 gameState.waitingOn = "answerModification";
-                io.emit("sendAnswersForModification", players, gameState.answer, hostID);
+                io.emit("sendAnswersForModification", gameState.players, gameState.answer, hostID);
             }
         }
     })
 
     socket.on("getModifiedAnswers", (modifiedAnswers) => {
         const currentTime = Date.now();
-        for (let i = 0; i < players.length; i++){
-            players[i].initialGuess = modifiedAnswers[i];
-            players[i].isReady = false;
+        for (let i = 0; i < gameState.players.length; i++){
+            gameState.players[i].initialGuess = modifiedAnswers[i];
+            gameState.players[i].isReady = false;
             // awards sound if more than a minute has elapsed between submitting guess and receiving answers
-            if (currentTime - players[i].timeOfInitialGuess > 60000){
-                players[i].addSound("Slowpokes to hurry up");
+            if (currentTime - gameState.players[i].timeOfInitialGuess > 60000){
+                gameState.players[i].addSound("Slowpokes to hurry up");
             }
         }
         io.emit("unreadyAllPlayers", hostID);
@@ -174,7 +183,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("choseFinalAnswer", (ID, guessNum) => {
-        const player = players.find(player => player.playerID == ID);
+        const player = gameState.players.find(player => player.playerID == ID);
         if (player != undefined){
             player.finalAnswer = gameState.allAnswers[guessNum];
             player.isReady = true;
@@ -182,14 +191,14 @@ io.on("connection", (socket) => {
 
             // all players have submitted their final answer
             if (allPlayersAreReady()){
-                for (let i = 0; i < players.length; i++){
-                    players[i].isReady = false;
+                for (let i = 0; i < gameState.players.length; i++){
+                    gameState.players[i].isReady = false;
                     io.emit("unreadyAllPlayers", hostID);
                 }
                 gameState.waitingOn = "answerReveal";
-                io.emit("revealAnswer", players, gameState.answer, hostID);
+                io.emit("revealAnswer", gameState.players, gameState.answer, hostID);
                 adjustPts();
-                io.emit("updateScores", players, hostID);
+                io.emit("updateScores", gameState.players, hostID);
             }
         }  
     })
@@ -207,14 +216,14 @@ io.on("connection", (socket) => {
     });
 
     socket.on("requestAbilities", (ID) => {
-        const player = players.find(player => player.playerID == ID);
+        const player = gameState.players.find(player => player.playerID == ID);
         if (player != undefined){
             socket.emit("displayAbilities", player.abilities, gameState.abilitiesToUse);
         }
     });
 
     socket.on("useAbility", (abilityName, ID) => {
-        const player = players.find(player => player.playerID == ID);
+        const player = gameState.players.find(player => player.playerID == ID);
         if (player != undefined){
             if (gameState.waitingOn != "finalAnswers" && abilityName != "continentCheck"){
                 socket.emit("illegalAbilityUse", "You cannot use this ability until all players have submitted their initial guesses.");
@@ -256,7 +265,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("requestedEliminationTargets", (index1, index2, ID) => {
-        const player = players.find(player => player.playerID == ID);
+        const player = gameState.players.find(player => player.playerID == ID);
         if (player != undefined){
             let eliminatedAnswer = undefined;
             if (gameState.answer == gameState.allAnswers[index1]){
@@ -281,14 +290,14 @@ io.on("connection", (socket) => {
     })
 
     socket.on("requestSounds", (ID) => {
-        const player = players.find(player => player.playerID == ID);
+        const player = gameState.players.find(player => player.playerID == ID);
         if (player != undefined){
             socket.emit("displaySounds", player.sounds);
         }
     });
 
     socket.on("playSound", (soundDescription, ID) => {
-        const player = players.find(player => player.playerID == ID);
+        const player = gameState.players.find(player => player.playerID == ID);
         if (player != undefined){
             const hasSound = player.sounds.find((sound) => sound[0] == soundDescription);
             if (hasSound){
@@ -349,13 +358,13 @@ function makePlayer(name, ID, img){
 }
 
 function firstSound(ID){
-    const player = players.find((player) => player.playerID == ID);
+    const player = gameState.players.find((player) => player.playerID == ID);
     player.hasAcquiredFirstSound = true;
     io.emit("firstSoundAcquired", ID);
 }
 
 function allPlayersAreReady(){
-    const waitingOnPlayer = players.find(player => player.isReady == false);
+    const waitingOnPlayer = gameState.players.find(player => player.isReady == false);
     if (waitingOnPlayer == undefined){
         return true;
     }
@@ -372,70 +381,70 @@ function sendNextQuesetion(){
 function compileAnswers(){
     const answers = []
     answers.push(gameState.answer);
-    for (let i = 0; i < players.length; i++){
-        answers.push(players[i].initialGuess);
+    for (let i = 0; i < gameState.players.length; i++){
+        answers.push(gameState.players[i].initialGuess);
     }
     return [...new Set(answers.sort())];
 }
 
 function resetPlayers(){
-    for (let i = 0; i < players.length; i++){
-        players[i].ptsThisRound = 0;
-        players[i].initialGuess = "";
-        players[i].finalAnswer = "";
-        players[i].abilitiesUsedThisRound.eliminateOne = null;
-        players[i].abilitiesUsedThisRound.continentCheck = null;
-        players[i].abilitiesUsedThisRound.doublePts = null;
-        players[i].abilitiesUsedThisRound.seeAllSubmissions = null;
-        players[i].isReady = false;
+    for (let i = 0; i < gameState.players.length; i++){
+        gameState.players[i].ptsThisRound = 0;
+        gameState.players[i].initialGuess = "";
+        gameState.players[i].finalAnswer = "";
+        gameState.players[i].abilitiesUsedThisRound.eliminateOne = null;
+        gameState.players[i].abilitiesUsedThisRound.continentCheck = null;
+        gameState.players[i].abilitiesUsedThisRound.doublePts = null;
+        gameState.players[i].abilitiesUsedThisRound.seeAllSubmissions = null;
+        gameState.players[i].isReady = false;
     }
 }
 
 function adjustPts(){
-    let losingPlayer = players.reduce((loser, current) => current.pts < loser.pts ? current : loser);
-    const checkUniqueness = players.filter(player => player.pts == losingPlayer.pts);
+    let losingPlayer = gameState.players.reduce((loser, current) => current.pts < loser.pts ? current : loser);
+    const checkUniqueness = gameState.players.filter(player => player.pts == losingPlayer.pts);
     if (checkUniqueness.length > 1){
         losingPlayer = undefined;
     }
     // calculate points earned by each player
-    for (let i = 0; i < players.length; i++){
-        if (players[i].initialGuess == gameState.answer){
-            players[i].ptsThisRound += FIRSTTRYPTS;
-            players[i].addSound("To brag");
+    for (let i = 0; i < gameState.players.length; i++){
+        if (gameState.players[i].initialGuess == gameState.answer){
+            gameState.players[i].ptsThisRound += FIRSTTRYPTS;
+            gameState.players[i].addSound("To brag");
         }
-        if (players[i].finalAnswer == gameState.answer){
-            players[i].ptsThisRound += SECONDGUESSPTS;
+        if (gameState.players[i].finalAnswer == gameState.answer){
+            gameState.players[i].ptsThisRound += SECONDGUESSPTS;
         }
         // award fooling points only if opponents pick "YOUR" answer 
         // no points if they pick their own answer, which happens to also be yours
-        for (let j = 0; j < players.length; j++){
-            if (players[j].finalAnswer == players[i].initialGuess && players[j].finalAnswer != gameState.answer){
-                if (players[j].finalAnswer != players[j].initialGuess){
-                    players[i].ptsThisRound += FOOLPTS;
+        for (let j = 0; j < gameState.players.length; j++){
+            if (gameState.players[j].finalAnswer == gameState.players[i].initialGuess && gameState.players[j].finalAnswer != gameState.answer){
+                if (gameState.players[j].finalAnswer != gameState.players[j].initialGuess){
+                    gameState.players[i].ptsThisRound += FOOLPTS;
                 }
             }
         }
 
         // players who picked cursed answer give ALL their points that round to the losing player
         if (losingPlayer != undefined){
-            if (players[i].finalAnswer == losingPlayer.initialGuess && losingPlayer.initialGuess != gameState.answer && players[i].finalAnswer != players[i].initialGuess){
-                losingPlayer.pts += players[i].ptsThisRound;
-                players[i].ptsThisRound = 0;
-                players[i].addSound("To complain");
+            if (gameState.players[i].finalAnswer == losingPlayer.initialGuess && losingPlayer.initialGuess != gameState.answer && gameState.players[i].finalAnswer != gameState.players[i].initialGuess){
+                losingPlayer.pts += gameState.players[i].ptsThisRound;
+                gameState.players[i].ptsThisRound = 0;
+                gameState.players[i].addSound("To complain");
             }
         }
         
-        players[i].pts += players[i].ptsThisRound;
+        gameState.players[i].pts += gameState.players[i].ptsThisRound;
 
         // double points ability NOT STOLEN BY CURSES
-        if (players[i].abilitiesUsedThisRound.doublePts){
-            players[i].pts += players[i].ptsThisRound;
+        if (gameState.players[i].abilitiesUsedThisRound.doublePts){
+            gameState.players[i].pts += gameState.players[i].ptsThisRound;
         }
-        //console.log(`this round ${players[i].playerName} got ${players[i].ptsThisRound} pts`);
-        //console.log(`${players[i].playerName} has ${players[i].pts} total`);
+        //console.log(`this round ${gameState.players[i].playerName} got ${gameState.players[i].ptsThisRound} pts`);
+        //console.log(`${gameState.players[i].playerName} has ${gameState.players[i].pts} total`);
     }
 
-    const noPtsThisRound = players.filter(player => player.ptsThisRound == 0);
+    const noPtsThisRound = gameState.players.filter(player => player.ptsThisRound == 0);
     if (noPtsThisRound.length == 1){
         noPtsThisRound[0].addSound("Encouragement");
     }

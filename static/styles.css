@@ -11,6 +11,22 @@ body{
     row-gap: 25px;
 }
 
+#becomeHost{
+    position: absolute;
+    top: min(3vw, 3svh);
+    right: min(3vw, 3svh);
+    padding: 10px;
+    border-radius: 20px;
+    border: 2px dashed darkgoldenrod;
+}
+#abandonLobby{
+    position: fixed;
+    top: calc(25vh + 54px);
+    right: 10vw;
+    padding: 10px;
+    border-radius: 20px;
+    border: 2px dashed maroon;
+}
 #me{
     grid-area: 1 / 2 / 2 / 3;
     display: grid;
@@ -62,6 +78,7 @@ label.imgEntry.pfp{
 
 #header{
     grid-area: 1 / 2 / 2 / 3;
+    height: 25vh;
     display: grid;
     grid-template: 2fr 1fr / 1fr 1fr 1fr;
     grid-template-areas: 

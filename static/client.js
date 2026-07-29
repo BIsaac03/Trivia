@@ -18,8 +18,7 @@ socket.on("connect", () => {
     socket.emit("userConnected", myID);
 });
 
-socket.on("reconnection", (hostID, gameState, players) => {
-    //console.log(players);
+socket.on("reconnection", (hostID, roomCode, gameState, players) => {
     // restore HOST state
     if (window.name == "answerModifier"){
         displayScores(players);
@@ -29,7 +28,7 @@ socket.on("reconnection", (hostID, gameState, players) => {
     }
     else if (hostID == myID){
         if (!gameState.gameHasStarted){
-            displayLobby(players);
+            displayLobby(roomCode, players);
         }
         else{
             setUpHostDisplay(players, gameState);
@@ -85,7 +84,6 @@ socket.on("reconnection", (hostID, gameState, players) => {
                         submitBtn.disabled = true;
                     }
                     else{
-                        //console.log(gameState.allAnswers);
                         playerDisplayAnswers(gameState.allAnswers);
                         toggleVisibleSelections();
 
@@ -111,10 +109,7 @@ socket.on("reconnection", (hostID, gameState, players) => {
                     const answers = [...answersDOM];
                     answers.forEach((answer) => {
                         answer.disabled = true;
-                        //console.log(me.finalAnswer);
-                        //console.log(answer.textContent);
                         if (gameState.allAnswers[answer.textContent-1] == me.finalAnswer){
-                            //console.log("match")
                             answer.id = "finalAnswer";
                         }
                     });
@@ -136,9 +131,14 @@ socket.on("newConnection", () => {
     firstTimePlayerSetup();
 });
 
+socket.on("invalidRoomCode", () => {
+const me = document.getElementById("me");
+    messagePopUp("A room with that code does not exist.", me, "invalidCodeError", 2000, false)
+})
+
 socket.on("nameInUse", (name) => {
     const me = document.getElementById("me");
-    messagePopUp(`Another player has already claimed the name: ${name}`, me, "nameTakenError", 2000, false)
+    messagePopUp(`Another player has already claimed the name: ${name}`, me, "nameTakenError", 2000, false);
 });
 
 socket.on("gameInProgress", () => {
@@ -299,8 +299,8 @@ socket.on("illegalAbilityUse", (message) => {
     messagePopUp(message, bodyElement, "abilityError", 4000, true);  
 });
 ////// HOST events
-socket.on("hostSetUp", () => {
-    displayLobby([]);
+socket.on("hostSetUp", (roomCode) => {
+    displayLobby(roomCode, []);
 })
 
 socket.on("playerJoined", (newPlayer, hostID) => {
@@ -334,7 +334,7 @@ socket.on("revealAnswer", (players, answer, hostID) => {
 
 socket.on("playerReady", (playerID, hostID) => {
     if (hostID == myID  && window.name != "answerModifier"){
-        const status = document.querySelector(`#${playerID}`);
+        const status = document.querySelector(`#${playerID} .pfp`);
         status.style.opacity = 1;
     }
 })
@@ -364,10 +364,11 @@ socket.on("firstSoundAcquired", (ID) => {
     }
 })
 
-socket.on("sendHostSound", (soundDescription, ID, hostID) => {
+socket.on("sendHostSound", (soundDescription, ID, playerName, hostID) => {
     if (hostID == myID && window.name != "answerModifier"){
         // play appropriate sound
         let path = undefined;
+        let customized = false;
         console.log(soundDescription)
         if (soundDescription == "To complain"){
             const soundNum = Math.floor(Math.random()*4);
@@ -383,32 +384,55 @@ socket.on("sendHostSound", (soundDescription, ID, hostID) => {
             }
         }
         else if (soundDescription == "Encouragement"){
-            path = "/static/audios/saveMe.mp3";
-            // !! personalized: {name} is going to win this round... I can feel it"
+            const soundNum = Math.floor(Math.random()*2);
+            switch (soundNum){
+                case 0:
+                    path = "/static/audios/saveMe.mp3";
+                case 1:
+                    customized = true;
+                    path = "/static/audios/goingToWin.mp3"
+            }
         }
         else if (soundDescription == "Slowpokes to hurry up"){
-            // !! HOW LONG IS THIS GOING TO TAKE 
+            path = "/static/audios/hurryUp.m4a";
+        }
+        else if (soundDescription == "To brag"){
+            const soundNum = Math.floor(Math.random()*3);
+            switch (soundNum){
+                case 0:
+                    path = "/static/audios/knockedOver.mp3";
+                case 1:
+                    path = "/static/audios/stableGenius.mp3";
+                case 2:
+                    path = "/static/audios/laugh.mp3";
+            }
         }
 
-        if (path != undefined){
-            const playerIcon = document.getElementById(ID);
-            const playingSound = document.createElement("img");
-            playingSound.src = "/static/icons/sounds.svg";
+        const playerIcon = document.getElementById(ID);
+        const playingSound = document.createElement("img");
+        playingSound.src = "/static/icons/sounds.svg";
+        if (customized){
+            const utterance = new SpeechSynthesisUtterance(playerName);
+            utterance.addEventListener("start", () => {
+                playerIcon.appendChild(playingSound);
+            })
+            window.speechSynthesis.speak(utterance);
 
+        }
+        if (path != undefined){
             const audio = new Audio(path);
-            audio.addEventListener('playing', () => {
-                playerIcon.parentElement.appendChild(playingSound);
-            });
+            if (!customized){
+                audio.addEventListener('playing', () => {
+                    playerIcon.appendChild(playingSound);
+                });
+            }
             audio.addEventListener('ended', () => {
                 playingSound.remove();
             });
             audio.play();
         }
-
-        //const utterance = new SpeechSynthesisUtterance(soundDescription);
-        //window.speechSynthesis.speak(utterance);
     }
-})
+});
 
 ////// HOST & PLAYER events
 socket.on("startTrivia", (players, gameState, hostID) => {
@@ -495,7 +519,13 @@ function firstTimePlayerSetup(){
     const nameEntry = document.createElement("input");
     nameEntry.classList.add("name");
     nameEntry.type = "text";
+    nameEntry.placeholder = "Username";
     nameEntry.maxLength = 30;
+
+    const codeEntry = document.createElement("input");
+    codeEntry.type = "text";
+    codeEntry.placeholder = "Room Code";
+    codeEntry.maxLength = 4;
 
     const joinBtn = document.createElement("button");
     joinBtn.classList.add("submit");
@@ -503,20 +533,24 @@ function firstTimePlayerSetup(){
     joinBtn.addEventListener("click", () => {
         const pfpPreview = document.querySelector(`#me img.preview`);
         const me = document.getElementById("me");
-        if (pfpPreview.src == ""){
-            messagePopUp("Add a profile picture first!", me, "noPfpError", 1500, false)
+        if (codeEntry.value == ""){
+            messagePopUp("Enter the room code!", me, "noPfpError", 1500, false)
+        }
+        else if (pfpPreview.src == ""){
+            messagePopUp("Add a profile picture first!", me, "noPfpError", 1500, false);
         }
         else if (nameEntry.value == ""){
-            messagePopUp("Add a name first!", me, "noNameError", 1500, false)
+            messagePopUp("Add a name first!", me, "noNameError", 1500, false);
         }
         else {
-            socket.emit("playerJoined", nameEntry.value, myID, pfpPreview.src);
+            socket.emit("playerJoined", nameEntry.value, myID, pfpPreview.src, codeEntry.value);
         }
     })
 
     playerSetup.appendChild(imgEntryUI);
     playerSetup.appendChild(imgEntry);
     playerSetup.appendChild(nameEntry);
+    playerSetup.appendChild(codeEntry);
     playerSetup.appendChild(joinBtn);
 
     bodyElement.appendChild(playerSetup);
@@ -536,7 +570,6 @@ function waitingInLobby(){
     const joinButton = document.querySelector(`#me .submit`);
     joinButton.textContent = "Update";
     const me = document.getElementById("me");
-    //console.log(me);
     messagePopUp("You have successfully connected to the lobby. Remain here until trivia starts.", me, "inLobbyMsg", 0, false);
 }
 
@@ -577,10 +610,8 @@ function setUpPlayerDisplay(){
     submitBtn.textContent = "Lock in";
 
     submitBtn.addEventListener("click", () => {
-        //console.log(userGuess.value)
         if (userGuess.value != ""){
             socket.emit("madeFirstGuess", myID, userGuess.value);
-            //console.log(userGuess.value)
             userGuess.placeholder = "Submitted!";
             userGuess.disabled = true;
             userGuess.value = "";  
@@ -624,21 +655,24 @@ function setUpPlayerDisplay(){
 }
 
 function addSoundMenu(){
-    const sounds = document.createElement("img");
-    sounds.src = "/static/icons/sounds.svg"
-    sounds.id = "sounds";
-    sounds.classList.add("icon");
-    sounds.addEventListener("click", () => {
-        const soundsPopUp = document.querySelector(`#soundsPopUp`)
-        if (soundsPopUp == undefined){
-            socket.emit("requestSounds", myID);
-        }
-        else{
-            soundsPopUp.remove();
-        }
-    })
-    const menus = document.getElementById("menus");
-    menus.appendChild(sounds);
+    const menuExists = document.querySelector(`#sounds`);
+    if (!menuExists){
+        const sounds = document.createElement("img");
+        sounds.src = "/static/icons/sounds.svg"
+        sounds.id = "sounds";
+        sounds.classList.add("icon");
+        sounds.addEventListener("click", () => {
+            const soundsPopUp = document.querySelector(`#soundsPopUp`)
+            if (soundsPopUp == undefined){
+                socket.emit("requestSounds", myID);
+            }
+            else{
+                soundsPopUp.remove();
+            }
+        })
+        const menus = document.getElementById("menus");
+        menus.appendChild(sounds);
+    }  
 }
 
 function readyNewSubmission(){
@@ -818,7 +852,7 @@ function chainMessages(messages, messageNum, appendTo, classToAdd, lengthMS){
     */
 }
 ////// HOST functions
-function displayLobby(players){
+function displayLobby(roomCode, players){
     document.body.innerHTML = "";
     addManualAnswerModifier();
     addHeader();
@@ -826,6 +860,17 @@ function displayLobby(players){
     const lobby = document.createElement("div");
     lobby.id = "lobby";
     bodyElement.appendChild(lobby);
+
+    const codeDiv = document.createElement("div");
+    codeDiv.classList.add("roomCode");
+    const codeLabel = document.createElement("p");
+    codeLabel.textContent = "Room Code:";
+    const joinCode = document.createElement("p");
+    joinCode.textContent = roomCode;
+    joinCode.id = "roomCode";
+    codeDiv.appendChild(codeLabel);
+    codeDiv.appendChild(joinCode);
+    lobby.appendChild(codeDiv);
     
     const playersDiv = document.createElement("div");
     playersDiv.id = "playersDiv"
@@ -835,18 +880,9 @@ function displayLobby(players){
         displayPlayerInLobby(players[i], playersDiv)
     }
 
-    // !! have button appear only after 2+ players have joined
-    const startTriviaButton = document.createElement("button");
-    startTriviaButton.classList.add("startTrivia");
-    startTriviaButton.textContent = "Trivia Time!";
-    startTriviaButton.addEventListener("click", () => {
-        const attemptStart = confirm("Are you sure? Additional players cannot be added later.");
-        if (attemptStart){
-            socket.emit("attemptStart");
-        }
-    })
-
-    lobby.appendChild(startTriviaButton);
+    if (players.length > 1){
+        addStartTriviaButton();
+    }
 }
 
 function addHeader(){
@@ -881,6 +917,28 @@ function displayPlayerInLobby(displayedPlayer, playersDiv){
     player.appendChild(img);
     player.appendChild(name);
     playersDiv.appendChild(player);
+
+    const allPlayers = document.querySelectorAll(`#lobby .player`);
+    if (allPlayers.length > 1){
+        addStartTriviaButton();
+    }
+}
+
+function addStartTriviaButton(){
+    const lobby = document.getElementById("lobby");
+    const existingButton = lobby.querySelector(`.startTrivia`);
+    if (!existingButton){
+        const startTriviaButton = document.createElement("button");
+        startTriviaButton.classList.add("startTrivia");
+        startTriviaButton.textContent = "Trivia Time!";
+        startTriviaButton.addEventListener("click", () => {
+            const attemptStart = confirm("Are you sure? Additional players cannot be added later.");
+            if (attemptStart){
+                socket.emit("attemptStart");
+            }
+        })
+        lobby.appendChild(startTriviaButton);
+    }   
 }
 
 function setUpHostDisplay(players, gameState){
@@ -910,11 +968,13 @@ function setUpHostDisplay(players, gameState){
     const playerStatuses = document.createElement("div");
     playerStatuses.id = "statuses";
     for (let i = 0; i < players.length; i++){
+        const statusDiv = document.createElement("div");
+        statusDiv.id = players[i].playerID
         const statusIcon = document.createElement("img");
         statusIcon.classList.add("pfp");
-        statusIcon.id = players[i].playerID
         statusIcon.src = players[i].playerImg;
-        playerStatuses.appendChild(statusIcon);
+        statusDiv.appendChild(statusIcon);
+        playerStatuses.appendChild(statusDiv);
     }
 
     const trivia = document.createElement("div");
@@ -1094,7 +1154,6 @@ function addQuote(quoteText, quoteNum){
 
     quote.textContent = quoteText;
     header.appendChild(quote);
-    //quote.style.rotate = `${Math.random()*45}deg`
 }
 
 function addAbility(abilityName, abilitiesDiv){

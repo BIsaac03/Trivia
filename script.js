@@ -76,42 +76,49 @@ const gameState = {
     }
 }
 let hostID = undefined;
+let roomCode = undefined;
 
 io.on("connection", (socket) => {
     socket.on("userConnected", (ID) => {
         const returningPlayer = players.find(player => player.playerID == ID)
         if (hostID == undefined){
             hostID = ID;
-            socket.emit("hostSetUp");
+            roomCode = (Math.random().toString(36).slice(2, 6)).toUpperCase();
+            socket.emit("hostSetUp", roomCode);
         }
         else if (returningPlayer == undefined && ID != hostID){
             socket.emit("newConnection");
         }
         else{
-            socket.emit("reconnection", hostID, gameState, players);
+            socket.emit("reconnection", hostID, roomCode, gameState, players);
         }
     })
 
-    socket.on("playerJoined", (name, ID, img) => {
+    socket.on("playerJoined", (name, ID, img, code) => {
         if (gameState.gameHasStarted == false){
-            const existingPlayer = players.find(player => player.playerID == ID);
-            if (existingPlayer == undefined){
-                const nameInUse = players.find(player => player.playerName == name);
-                if (nameInUse == undefined){
-                    const newPlayer = makePlayer(name, ID, img);
-                    players.push(newPlayer);
-                    socket.broadcast.emit("playerJoined", newPlayer, hostID);
-                    socket.emit("waitingInLobby");
-                }
-                else{
-                    socket.emit("nameInUse", name);
-                }
+            if (code != roomCode){
+                socket.emit("invalidRoomCode");
             }
             else{
-                existingPlayer.playerName = name;
-                existingPlayer.playerImg = img;
-                socket.broadcast.emit("playerModified", existingPlayer, hostID);
-                socket.emit("waitingInLobby");
+                const existingPlayer = players.find(player => player.playerID == ID);
+                if (existingPlayer == undefined){
+                    const nameInUse = players.find(player => player.playerName == name);
+                    if (nameInUse == undefined){
+                        const newPlayer = makePlayer(name, ID, img);
+                        players.push(newPlayer);
+                        socket.broadcast.emit("playerJoined", newPlayer, hostID);
+                        socket.emit("waitingInLobby");
+                    }
+                    else{
+                        socket.emit("nameInUse", name);
+                    }
+                }
+                else{
+                    existingPlayer.playerName = name;
+                    existingPlayer.playerImg = img;
+                    socket.broadcast.emit("playerModified", existingPlayer, hostID);
+                    socket.emit("waitingInLobby");
+                }
             }
         }
         else{
@@ -277,17 +284,18 @@ io.on("connection", (socket) => {
         const player = players.find(player => player.playerID == ID);
         if (player != undefined){
             socket.emit("displaySounds", player.sounds);
-            //console.log(player.sounds);
         }
     });
 
     socket.on("playSound", (soundDescription, ID) => {
         const player = players.find(player => player.playerID == ID);
         if (player != undefined){
-            // !! confirm player has sound before asking HOST to play it
-            player.removeSound(soundDescription);
-            socket.broadcast.emit("sendHostSound", soundDescription, ID, hostID);
-        }
+            const hasSound = player.sounds.find((sound) => sound[0] == soundDescription);
+            if (hasSound){
+                player.removeSound(soundDescription);
+                socket.broadcast.emit("sendHostSound", soundDescription, ID, player.playerName, hostID);
+            }
+        }    
     })
 
     socket.on("test", (data) => {
@@ -326,7 +334,6 @@ function makePlayer(name, ID, img){
         else{
             existingSound[1]++;
         }
-        //console.log(sounds);
     }
     const removeSound = (soundDescription) => {
         const sound = sounds.find(sound => sound[0] == soundDescription);
@@ -394,6 +401,7 @@ function adjustPts(){
     for (let i = 0; i < players.length; i++){
         if (players[i].initialGuess == gameState.answer){
             players[i].ptsThisRound += FIRSTTRYPTS;
+            players[i].addSound("To brag");
         }
         if (players[i].finalAnswer == gameState.answer){
             players[i].ptsThisRound += SECONDGUESSPTS;

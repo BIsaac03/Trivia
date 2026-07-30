@@ -47,8 +47,8 @@ socket.on("reconnection", (hostID, roomCode, gameState, players) => {
     else{
         // joining a lobby
         if (!gameState.gameHasStarted){
-            const alreadyJoined = players.find(player => player.playerID == myID);
-            if (alreadyJoined == undefined){
+            const alreadyJoined = players.find((player) => player.playerID == myID);
+            if (!alreadyJoined){
                 firstTimePlayerSetup();
             }
             else{
@@ -60,8 +60,8 @@ socket.on("reconnection", (hostID, roomCode, gameState, players) => {
 
         // joining an ongoing game
         else{
-            const me = players.find(player => player.playerID == myID);
-            if (me != undefined){
+            const me = players.find((player) => player.playerID == myID);
+            if (me){
                 setUpPlayerDisplay();
                 if (me.hasAcquiredFirstSound){
                     addSoundMenu();
@@ -230,7 +230,7 @@ socket.on("displaySounds", (mySounds) => {
 
 socket.on("eliminateAnAnswer", () => {
     const preSelectedAnswer = document.getElementById("finalAnswer");
-    if (preSelectedAnswer != undefined){
+    if (preSelectedAnswer){
         preSelectedAnswer.id = "";
     }
 
@@ -419,7 +419,7 @@ socket.on("sendHostSound", (soundDescription, ID, playerName, hostID) => {
             window.speechSynthesis.speak(utterance);
 
         }
-        if (path != undefined){
+        if (path){
             const audio = new Audio(path);
             if (!customized){
                 audio.addEventListener('playing', () => {
@@ -532,6 +532,7 @@ function firstTimePlayerSetup(){
 
     const codeEntry = document.createElement("input");
     codeEntry.type = "text";
+    codeEntry.id = "roomCodeEntry";
     codeEntry.placeholder = "Room Code";
     codeEntry.maxLength = 4;
 
@@ -550,7 +551,7 @@ function firstTimePlayerSetup(){
         else if (nameEntry.value == ""){
             messagePopUp("Add a name first!", me, "noNameError", 1500, false);
         }
-        else {
+        else{
             socket.emit("playerJoined", nameEntry.value, myID, pfpPreview.src, codeEntry.value);
         }
     })
@@ -576,6 +577,8 @@ function fillInPlayerInfo(player){
 }
 
 function waitingInLobby(){
+    const roomCodeEntry = document.getElementById("roomCodeEntry");
+    roomCodeEntry.remove();
     const joinButton = document.querySelector(`#me .submit`);
     joinButton.textContent = "Update";
     const me = document.getElementById("me");
@@ -594,7 +597,7 @@ function setUpPlayerDisplay(){
     abilities.classList.add("icon");
     abilities.addEventListener("click", () => {
         const abilityPopUp = document.querySelector(`#abilityPopUp`)
-        if (abilityPopUp == undefined){
+        if (!abilityPopUp){
             socket.emit("requestAbilities", myID);
         } 
         else{
@@ -638,7 +641,7 @@ function setUpPlayerDisplay(){
     confirmFinalAnswer.id = "confirmFinalAnswer"
     confirmFinalAnswer.addEventListener("click", () => {
         const selectedAnswer = document.getElementById("finalAnswer");
-        if (selectedAnswer != undefined){
+        if (selectedAnswer){
             socket.emit("choseFinalAnswer", myID, selectedAnswer.textContent-1);
             const answersDOM = answerChoices.children;
             const answers = [...answersDOM];
@@ -672,7 +675,7 @@ function addSoundMenu(){
         sounds.classList.add("icon");
         sounds.addEventListener("click", () => {
             const soundsPopUp = document.querySelector(`#soundsPopUp`)
-            if (soundsPopUp == undefined){
+            if (!soundsPopUp){
                 socket.emit("requestSounds", myID);
             }
             else{
@@ -737,7 +740,7 @@ function playerDisplayAnswers(answers){
         answer.textContent = i+1;
         answer.addEventListener("click", () => {
             const previousSelection = document.getElementById("finalAnswer");
-            if (previousSelection != undefined){
+            if (previousSelection){
                 previousSelection.id = "";
             }
             answer.id = "finalAnswer";
@@ -752,7 +755,7 @@ function eliminatePotentialAnswer(index){
     const answerChoices = document.querySelector(`#trivia .answers .answerChoices`);
     const answersDOM = answerChoices.children;
     const answers = [...answersDOM];
-    const answerButton = answers.find(answer => answer.textContent == index + 1);
+    const answerButton = answers.find((answer) => answer.textContent == index + 1);
     answerButton.disabled = true;
 }
 
@@ -812,7 +815,7 @@ function displayAbility(abilityName, hasAbility, canUseAbility, abilityPopUp, de
 
 function messagePopUp(messageText, appendTo, className, lengthMS, removeAtEndOfRound){
     const existingMessage = appendTo.querySelector(`.message`);
-    if (existingMessage == undefined){
+    if (!existingMessage){
         const message = document.createElement("p");
         message.textContent = messageText;
         message.classList.add("message");
@@ -951,7 +954,7 @@ function addStartTriviaButton(){
         startTriviaButton.addEventListener("click", () => {
             const attemptStart = confirm("Are you sure? Additional players cannot be added later.");
             if (attemptStart){
-                socket.emit("attemptStart");
+                socket.emit("attemptStart", myID);
             }
         })
         lobby.appendChild(startTriviaButton);
@@ -1083,7 +1086,7 @@ function revealAnswers(players, answer){
             const guessedIcon = document.createElement("img");
             guessedIcon.src = players[icons].playerImg;
             guessedIcon.classList.add("pfp");
-            const chosenAnswer = answers.find(selectedAnswer => selectedAnswer.textContent == players[icons].finalAnswer);
+            const chosenAnswer = answers.find((selectedAnswer) => selectedAnswer.textContent == players[icons].finalAnswer);
             const chosenByDiv = chosenAnswer.parentElement.querySelector(`.chosenBy`);
             popAudio.play();
             chosenByDiv.appendChild(guessedIcon);
@@ -1103,7 +1106,7 @@ function revealAnswers(players, answer){
             if (players[authors] == losingPlayer){
                 author.id = "cursedLabel";
             }
-            const initialGuess = answers.find(writtenAnswer => writtenAnswer.textContent == players[authors].initialGuess);
+            const initialGuess = answers.find((writtenAnswer) => writtenAnswer.textContent == players[authors].initialGuess);
             const authorsDiv = initialGuess.parentElement.querySelector(`.authors`);
             authorsDiv.appendChild(author);
         }, stall*1000 + authors*1000);     
@@ -1114,13 +1117,13 @@ function revealAnswers(players, answer){
         const correctLabel = document.createElement("p");
         correctLabel.textContent = "ANSWER";
         correctLabel.id = "correctLabel";
-        const correctAnswer = answers.find(correctAnswer => correctAnswer.textContent == answer);
+        const correctAnswer = answers.find((correctAnswer) => correctAnswer.textContent == answer);
         const authorsDiv = correctAnswer.parentElement.querySelector(`.authors`);
         authorsDiv.appendChild(correctLabel);
     }, stall*2000); 
 
     setTimeout(() => {
-        socket.emit("finishedRound");
+        socket.emit("finishedRound", myID);
     }, 4000 + stall*2000); 
 }
 
@@ -1149,7 +1152,7 @@ function updateScores(players){
     scores.forEach((score) => {
         const name = score.firstChild;
         const pts = score.lastChild;
-        const player = players.find(player => player.playerName == name.textContent);
+        const player = players.find((player) => player.playerName == name.textContent);
         pts.textContent = player.pts;
     })
 }
@@ -1252,7 +1255,7 @@ function displayAnswersToModify(players, correctAnswer){
             modifiedAnswers.push(answer.value);
         });
         
-        socket.emit("getModifiedAnswers", modifiedAnswers);
+        socket.emit("getModifiedAnswers", modifiedAnswers, myID);
         answersToModify.remove();
     })
     answersToModify.appendChild(submitBtn);

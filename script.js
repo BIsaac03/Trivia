@@ -55,7 +55,6 @@ io.on("connection", (socket) => {
             ongoingGame = gamesInProgress.find((game) => game.getGameDetails().hostID == ID);           
         }
         if (ongoingGame){
-            console.log(ongoingGame.getGameDetails());
             socket.emit("reconnection", ongoingGame.getGameDetails(), ongoingGame.getRoundDetails(), ongoingGame.getPlayers());
         }
         if (!ongoingGame){
@@ -185,7 +184,7 @@ io.on("connection", (socket) => {
         }
         else{
             resetPlayers(ongoingGame);
-            ongoingGame.setAllAnswers().allAnswers = [];
+            ongoingGame.setAllAnswers([]);
             io.emit("unreadyAllPlayers", ongoingGame.getGameDetails().hostID);
             sendNextQuesetion(ongoingGame);
         }
@@ -421,7 +420,7 @@ function firstSound(ID){
 
 function allPlayersAreReady(ongoingGame){
     const waitingOnPlayer = ongoingGame.getPlayers().find((player) => player.isReady == false);
-    return waitingOnPlayer;
+    return !waitingOnPlayer;
 }
 
 function sendNextQuesetion(ongoingGame){

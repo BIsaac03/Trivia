@@ -18,27 +18,27 @@ socket.on("connect", () => {
     socket.emit("userConnected", myID);
 });
 
-socket.on("reconnection", (hostID, roomCode, gameState, players) => {
+socket.on("reconnection", (gameDetails, roundDetails, players) => {
     // restore HOST state
     if (window.name == "answerModifier"){
         displayScores(players);
-        if (gameState.waitingOn == "answerModification"){
-            displayAnswersToModify(players, gameState.answer);
+        if (gameDetails.waitingOn == "answerModification"){
+            displayAnswersToModify(players, roundDetails.answer);
         }
     }
-    else if (hostID == myID){
-        if (!gameState.gameHasStarted){
-            displayLobby(roomCode, players);
+    else if (gameDetails.hostID == myID){
+        if (!gameDetails.gameHasStarted){
+            displayLobby(gameDetails.roomCode, players);
         }
         else{
-            setUpHostDisplay(players, gameState);
+            setUpHostDisplay(players, roundDetails, gameDetails);
             updateStatuses(players);
-            displayQuestion(gameState.question, gameState.img);
+            displayQuestion(roundDetails.question, roundDetails.img);
 
-            if (gameState.waitingOn != "initialGuesses"){
-                hostDisplayAnswers(gameState.allAnswers);
-                if (gameState.waitingOn == "answerReveal"){
-                    revealAnswers(players, gameState.answer);
+            if (gameDetails.waitingOn != "initialGuesses"){
+                hostDisplayAnswers(roundDetails.allAnswers);
+                if (gameDetails.waitingOn == "answerReveal"){
+                    revealAnswers(players, roundDetails.answer);
                 }
             }
         }
@@ -46,7 +46,7 @@ socket.on("reconnection", (hostID, roomCode, gameState, players) => {
     // retore PLAYER state
     else{
         // joining a lobby
-        if (!gameState.gameHasStarted){
+        if (!gameDetails.gameHasStarted){
             const alreadyJoined = players.find((player) => player.playerID == myID);
             if (!alreadyJoined){
                 firstTimePlayerSetup();
@@ -69,12 +69,12 @@ socket.on("reconnection", (hostID, roomCode, gameState, players) => {
                 if (me.abilitiesUsedThisRound.continentCheck){
                     messagePopUp(me.abilitiesUsedThisRound.continentCheck, bodyElement, "continent", 0, true);
                 }
-                displayAdditionalInfo(gameState.additionalInfo);
+                displayAdditionalInfo(roundDetails.additionalInfo);
                 if (me.initialGuess == ''){
                     readyNewSubmission();
                 }
                 else if (me.finalAnswer == ''){
-                    if (gameState.allAnswers.length == 0){
+                    if (roundDetails.allAnswers.length == 0){
                         const userGuess = document.querySelector(`.guess input`);
                         const submitBtn = document.querySelector(`#makeInitialGuess`);
 
@@ -84,7 +84,7 @@ socket.on("reconnection", (hostID, roomCode, gameState, players) => {
                         submitBtn.disabled = true;
                     }
                     else{
-                        playerDisplayAnswers(gameState.allAnswers);
+                        playerDisplayAnswers(roundDetails.allAnswers);
                         toggleVisibleSelections();
 
                         if (me.abilitiesUsedThisRound.eliminateOne){
@@ -100,7 +100,7 @@ socket.on("reconnection", (hostID, roomCode, gameState, players) => {
                     
                 }
                 else{
-                    playerDisplayAnswers(gameState.allAnswers);
+                    playerDisplayAnswers(roundDetails.allAnswers);
                     toggleVisibleSelections();
                     const answerChoices = document.querySelector(`.answerChoices`);
                     const confirmFinalAnswer = document.getElementById("confirmFinalAnswer");
@@ -109,7 +109,7 @@ socket.on("reconnection", (hostID, roomCode, gameState, players) => {
                     const answers = [...answersDOM];
                     answers.forEach((answer) => {
                         answer.disabled = true;
-                        if (gameState.allAnswers[answer.textContent-1] == me.finalAnswer){
+                        if (roundDetails.allAnswers[answer.textContent-1] == me.finalAnswer){
                             answer.id = "finalAnswer";
                         }
                     });
@@ -435,9 +435,9 @@ socket.on("sendHostSound", (soundDescription, ID, playerName, hostID) => {
 });
 
 ////// HOST & PLAYER events
-socket.on("startTrivia", (players, gameState, hostID) => {
-    if (hostID == myID && window.name != "answerModifier"){
-        setUpHostDisplay(players, gameState);
+socket.on("startTrivia", (players, roundDetails, gameDetails) => {
+    if (gameDetails.hostID == myID && window.name != "answerModifier"){
+        setUpHostDisplay(players, roundDetails, gameDetails);
     }
     else if (window.name != "answerModifier"){
         setUpPlayerDisplay()
@@ -961,7 +961,7 @@ function addStartTriviaButton(){
     }   
 }
 
-function setUpHostDisplay(players, gameState){
+function setUpHostDisplay(players, roundDetails, gameDetails){
     document.body.innerHTML = "";
     addManualAnswerModifier();
     addHeader();
@@ -971,10 +971,10 @@ function setUpHostDisplay(players, gameState){
     const progress = document.createElement("div");
     progress.id = "progress";
     const questionNum = document.createElement("p");
-    questionNum.textContent = gameState.questionNum;
+    questionNum.textContent = roundDetails.questionNum;
     questionNum.classList.add("currentNum");
     const totalNum = document.createElement("p");
-    totalNum.textContent = ` / ${gameState.totalQuestions}`;
+    totalNum.textContent = ` / ${gameDetails.totalQuestions}`;
     progress.appendChild(questionNum);
     progress.appendChild(totalNum);
 
@@ -1017,7 +1017,7 @@ function setUpHostDisplay(players, gameState){
     bodyElement.appendChild(playerStatuses);
     bodyElement.appendChild(trivia);
 
-    updateAbilityAvailability(gameState.abilitiesToUse);
+    updateAbilityAvailability(gameDetails.abilitiesToUse);
 }
 
 function displayQuestion(question, img){

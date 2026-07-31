@@ -337,22 +337,35 @@ label.imgEntry.pfp{
     display: flex;
 }
 #finalScores .player{
-    width: 25%;
     flex: auto;
     align-self: end;
     display: grid;
     gap: 10px;
     justify-content: center;
+
+}
+#finalScores .player p{
+    visibility: hidden;
     font-size: 32px;
     text-align: center;
 }
 #finalScores .player .bar{
-    background-color: darkgoldenrod;
+    border: 3px solid goldenrod;
+    animation: revealScores 10s linear forwards;
 }
-#finalScores .player .icon{
-    width: 75px;
-    height: 75px;
+@keyframes revealScores {
+  0% {
+    clip-path: inset(100% 0 0 0);
+  }
+  100% {
+    clip-path: inset(0 0 0 0);
+  }
 }
+#finalScores .player .pfp{
+    width: 125px;
+    height: 125px;
+}
+
 
 @media (orientation: landscape) {
     .answerChoices{

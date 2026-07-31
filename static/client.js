@@ -986,7 +986,7 @@ function setUpHostDisplay(players, roundDetails, gameDetails){
     addManualAnswerModifier();
     addHeader();
     const title = document.querySelector(`#header .title`);
-    title.style.opacity = 0;
+    title.style.visibility = "hidden";
 
     const progress = document.createElement("div");
     progress.id = "progress";
@@ -1178,6 +1178,8 @@ function updateScores(players){
 }
 
 function revealFinalScores(players){
+    // !! change back smaller once tested
+    const PXSPERPT = 50;
     const finalScores = document.createElement("div");
     finalScores.id = "finalScores";
 
@@ -1187,9 +1189,14 @@ function revealFinalScores(players){
 
         const playerPtsNum = document.createElement("p");
         playerPtsNum.textContent = player.pts;
+        setTimeout(() => {
+            playerPtsNum.style.visibility = "visible";
+        }, (PXSPERPT * player.pts / 25)*1000);
         const playerPtsBar = document.createElement("div");
         playerPtsBar.classList.add("bar");
-        playerPtsBar.style.height = `calc(3 * ${player.pts}px`;
+        playerPtsBar.style.height = `${PXSPERPT * player.pts}px`;
+        playerPtsBar.style.animation = `revealScores ${PXSPERPT * player.pts / 25}s  ease-out forwards`;
+        playerPtsBar.style.background = `url(${player.playerImg}) no-repeat center/cover`;
         const playerIcon = document.createElement("img");
         playerIcon.src = player.playerImg;
         playerIcon.classList.add("pfp");

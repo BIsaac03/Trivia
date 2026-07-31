@@ -192,7 +192,7 @@ io.on("connection", (socket) => {
         const ongoingGame = gamesInProgress.find((game) => game.getPlayers().find((player) => player.playerID == ID));
         const player = ongoingGame.getPlayers().find((player) => player.playerID == ID);
         if (player){
-            socket.emit("displayAbilities", player.abilities, ongoingGame.getGameDetails().abilitiesToUse);
+            socket.emit("displayAbilities", player.abilities, player.abilitiesUsedThisRound, ongoingGame.getGameDetails().abilitiesToUse);
         }
     });
 
@@ -202,6 +202,9 @@ io.on("connection", (socket) => {
         if (player){
             if (ongoingGame.getGameDetails().waitingOn != "finalAnswers" && abilityName != "continentCheck"){
                 socket.emit("illegalAbilityUse", "You cannot use this ability until all players have submitted their initial guesses.");
+            }
+            else if (Object.values(player.abilitiesUsedThisRound).some(Boolean)){
+                socket.emit("illegalAbilityUse", "You have already used an ability this round.")
             }
             else if (player.finalAnswer != ""){
                 socket.emit("illegalAbilityUse", "You have already submitted your final answer.");
@@ -220,7 +223,7 @@ io.on("connection", (socket) => {
                     case "continentCheck":
                         player.abilities.continentCheck = false;
                         player.abilitiesUsedThisRound.continentCheck = ongoingGame.getRoundDetails().continent;
-                        socket.emit("tellContinent", ongoingGame.continent);
+                        socket.emit("tellContinent", ongoingGame.getRoundDetails().continent);
                         break;
 
                     case "doublePts":
@@ -232,7 +235,7 @@ io.on("connection", (socket) => {
                     case "seeAllSubmissions":
                         player.abilities.seeAllSubmissions = false;
                         player.abilitiesUsedThisRound.seeAllSubmissions = ongoingGame.getRoundDetails().rawAnswers;
-                        socket.emit("showAllSubmissions", ongoingGame.rawAnswers);
+                        socket.emit("showAllSubmissions", ongoingGame.getRoundDetails().rawAnswers);
                         break;
                 }       
             }

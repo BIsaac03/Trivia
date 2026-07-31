@@ -153,17 +153,18 @@ socket.on("waitingInLobby", () => {
     waitingInLobby();
 })
 
-socket.on("displayAbilities", (myAbilities, currentlyAvailableAbilities) => {
+socket.on("displayAbilities", (myAbilities, abilitiesUsedThisRound, currentlyAvailableAbilities) => {
+    const hasUsedAnAbility = Object.values(abilitiesUsedThisRound).some(Boolean);
     const abilityPopUp = document.createElement("div");
     abilityPopUp.id = "abilityPopUp";
 
-    displayAbility("eliminateOne", myAbilities.eliminateOne, currentlyAvailableAbilities.eliminateOne, abilityPopUp,
+    displayAbility("eliminateOne", myAbilities.eliminateOne, hasUsedAnAbility, currentlyAvailableAbilities.eliminateOne, abilityPopUp,
                     "Pick two answers. An incorrect one is removed.");
-    displayAbility("continentCheck", myAbilities.continentCheck, currentlyAvailableAbilities.continentCheck, abilityPopUp,
+    displayAbility("continentCheck", myAbilities.continentCheck, hasUsedAnAbility, currentlyAvailableAbilities.continentCheck, abilityPopUp,
                     "Learn which continent the correct answer is located in.");
-    displayAbility("doublePts", myAbilities.doublePts, currentlyAvailableAbilities.doublePts, abilityPopUp,
+    displayAbility("doublePts", myAbilities.doublePts, hasUsedAnAbility, currentlyAvailableAbilities.doublePts, abilityPopUp,
                     "Double the points you earn this round.\nPoints earned/lost from cursing are not doubled.");
-    displayAbility("seeAllSubmissions", myAbilities.seeAllSubmissions, currentlyAvailableAbilities.seeAllSubmissions, abilityPopUp,
+    displayAbility("seeAllSubmissions", myAbilities.seeAllSubmissions, hasUsedAnAbility, currentlyAvailableAbilities.seeAllSubmissions, abilityPopUp,
                     "See ALL players' answers (along with the correct one), unedited.");
 
     document.addEventListener("click", (event) => {
@@ -793,7 +794,7 @@ function toggleVisibleSelections(){
     }
 }
 
-function displayAbility(abilityName, hasAbility, canUseAbility, abilityPopUp, description){
+function displayAbility(abilityName, hasAbility, hasUsedAnAbility, canUseAbility, abilityPopUp, description){
     const abilityDiv = document.createElement("div");
     abilityDiv.setAttribute("title", description);
 
@@ -814,7 +815,7 @@ function displayAbility(abilityName, hasAbility, canUseAbility, abilityPopUp, de
         abilityButton.textContent = "USED";
         abilityButton.disabled = true;
     }
-    else if (!canUseAbility){
+    else if (!canUseAbility || hasUsedAnAbility){
         abilityStatus.textContent = "Inactive";
         abilityDiv.classList.add("inactive")
         abilityButton.textContent = "USE";

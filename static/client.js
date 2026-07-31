@@ -397,7 +397,15 @@ socket.on("sendHostSound", (soundDescription, ID, playerName, hostID) => {
                     path = "/static/audios/saveMe.mp3";
                 case 1:
                     customized = true;
-                    path = "/static/audios/goingToWin.mp3"
+                    const customizedNum = Math.floor(Math.random()*4);
+                    case 0:
+                        path = "/static/audios/soManyPoints.m4a";
+                    case 1:
+                        path = "/static/audios/isGonnaDoWell.m4a";
+                    case 2:
+                        path = "/static/audios/needsOurPrayers.m4a";
+                    case 3:
+                        path = "/static/audios/isGonnaWin.m4a";
             }
         }
         else if (soundDescription == "Slowpokes to hurry up"){
@@ -1184,7 +1192,7 @@ function revealFinalScores(players){
         playerPtsBar.style.height = `calc(3 * ${player.pts}px`;
         const playerIcon = document.createElement("img");
         playerIcon.src = player.playerImg;
-        playerIcon.classList.add("icon");
+        playerIcon.classList.add("pfp");
         
         playerDiv.appendChild(playerPtsNum);
         playerDiv.appendChild(playerPtsBar);

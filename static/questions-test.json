@@ -1,0 +1,9 @@
+[
+    {
+        "questionText": "Which county has the most Holocene volcanoes?",
+        "answer": "United States",
+        "image": "/static/images/volcano.jpg",
+        "continent": "North America",
+        "additionalInfo": "Volcanoes that have erupted at least once in the past 12,000 years are considered Holocene volcanoes."
+    }
+]

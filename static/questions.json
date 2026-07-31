@@ -1,21 +1,123 @@
 [
     {
-        "questionText": "What is Canada's capital?",
-        "answer": "Ottawa",
-        "image": "/static/images/Ottawa.jpg",
+        "questionText": "Which county has the most Holocene volcanoes?",
+        "answer": "United States",
+        "image": "/static/images/volcano.jpg",
+        "continent": "North America",
+        "additionalInfo": "Volcanoes that have erupted at least once in the past 12,000 years are considered Holocene volcanoes."
+    },
+    {
+        "questionText": "",
+        "answer": "",
+        "image": "",
+        "continent": "",
+        "additionalInfo": ""
+    },
+    {
+        "questionText": "Which country has the highest average annual temperature?",
+        "answer": "Burkina Faso",
+        "image": "",
+        "continent": "Africa",
+        "additionalInfo": "Each daily temperature is calculated by averaging the highest and lowest temperature recorded across the entire country."
+    },
+    {
+        "questionText": "Which country has the lowest average annual temperature?",
+        "answer": "Canada",
+        "image": "",
+        "continent": "North America",
+        "additionalInfo": "Each daily temperature is calculated by averaging the highest and lowest temperature recorded across the entire country."
+    },
+    {
+        "questionText": "Which country has the least populous capital city?",
+        "answer": "Palau",
+        "image": "",
+        "continent": "Oceania",
+        "additionalInfo": ""
+    },
+    {
+        "questionText": "Which country has the oldest in-use constitution?",
+        "answer": "San Marino",
+        "image": "",
+        "continent": "Europe",
+        "additionalInfo": "It need not be codified."
+    },
+    {
+        "questionText": "In which universe is the fictional language Chakobsa spoken?",
+        "answer": "Dune",
+        "image": "",
+        "additionalInfo": "N/A"
+    },
+    {
+        "questionText": "In which universe is the fictional language Syldavian spoken?",
+        "answer": "Tintin",
+        "image": "",
+        "additionalInfo": "N/A"
+    },
+    {
+        "questionText": "In which universe is the fictional language Lapine spoken?",
+        "answer": "Watership Down",
+        "image": "",
+        "additionalInfo": "N/A"
+    },
+    {
+        "questionText": "In which universe is the fictional language Shyriiwook spoken?",
+        "answer": "Star Wars",
+        "image": "",
+        "additionalInfo": "N/A"
+    },   
+    {
+        "questionText": "In which universe is the fictional language Quenya spoken?",
+        "answer": "Lord of the Rings",
+        "image": "",
+        "additionalInfo": "N/A"
+    },
+    {
+        "questionText": "Which country contains the location shown in the image below?",
+        "answer": "Vietnam",
+        "image": "/static/images/HaLongBay.webp",
+        "continent": "Asia",
+        "additionalInfo": ""
+    },
+    {
+        "questionText": "Which country contains the location shown in the image below?",
+        "answer": "United States",
+        "image": "/static/images/GrandPrismatic.jpg",
         "continent": "North America",
         "additionalInfo": ""
     },
     {
-        "questionText": "What is 2 * 2?",
-        "answer": "4",
-        "image": "/static/images/volcano.jpg",
-        "additionalInfo": "* is the sign for multiplication"
+        "questionText": "Which country contains the location shown in the image below?",
+        "answer": "Australia",
+        "image": "/static/images/LakeHillier.webp",
+        "continent": "Oceania",
+        "additionalInfo": ""
     },
     {
-        "questionText": "What is 7 - 1?",
-        "answer": "6",
+        "questionText": "Which country contains the location shown in the image below?",
+        "answer": "China",
+        "image": "/static/images/ZhangyeDanxia.webp",
+        "continent": "Asia",
+        "additionalInfo": ""
+    },
+    {
+        "questionText": "",
+        "answer": "",
         "image": "",
-        "additionalInfo": "- is the sign for subtraction"
+        "continent": "",
+        "additionalInfo": ""
+    },
+    {
+        "questionText": "",
+        "answer": "",
+        "image": "",
+        "continent": "",
+        "additionalInfo": ""
+    },
+    {
+        "questionText": "",
+        "answer": "",
+        "image": "",
+        "continent": "",
+        "additionalInfo": ""
     }
 ]

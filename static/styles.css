@@ -332,6 +332,28 @@ label.imgEntry.pfp{
     color: purple;
 }
 
+#finalScores{
+    align-self: center;
+    display: flex;
+}
+#finalScores .player{
+    width: 25%;
+    flex: auto;
+    align-self: end;
+    display: grid;
+    gap: 10px;
+    justify-content: center;
+    font-size: 32px;
+    text-align: center;
+}
+#finalScores .player .bar{
+    background-color: darkgoldenrod;
+}
+#finalScores .player .icon{
+    width: 75px;
+    height: 75px;
+}
+
 @media (orientation: landscape) {
     .answerChoices{
         grid-template-columns: repeat(3, min(35vw, 25svh));

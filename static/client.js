@@ -35,7 +35,10 @@ socket.on("reconnection", (gameDetails, roundDetails, players) => {
             updateStatuses(players);
             displayQuestion(roundDetails.question, roundDetails.img);
 
-            if (gameDetails.waitingOn != "initialGuesses"){
+            if (gameDetails.waitingOn == "revealFinalScores"){
+                revealFinalScores(players);
+            }
+            else if (gameDetails.waitingOn != "initialGuesses"){
                 hostDisplayAnswers(roundDetails.allAnswers);
                 if (gameDetails.waitingOn == "answerReveal"){
                     revealAnswers(players, roundDetails.answer);
@@ -117,9 +120,9 @@ socket.on("reconnection", (gameDetails, roundDetails, players) => {
                 }
             }
 
-            // !! otherwise, restrict all functionality
             else{
-
+                const me = document.getElementById("me");
+                messagePopUp("A game is already in progress.", me, "gameInProgressError", 2000, false)
             }
         }
     }   
@@ -352,6 +355,10 @@ socket.on("updateScores", (players, hostID) => {
     }
 })
 
+socket.on("revealFinalScores", (players) => {
+    revealFinalScores(players);
+})
+
 socket.on("firstSoundAcquired", (ID) => {
     if (ID == myID){
         chainMessages([ "SHHHH you have discovered a HIDDEN mechanic: audios!",
@@ -471,6 +478,11 @@ socket.on("sendAnswerChoices", (answers, hostID) => {
     }
 });
 
+socket.on("killLobby", () => {
+    firstTimePlayerSetup();
+    const me = document.getElementById("me");
+    messagePopUp("The lobby you were in has been abandoned.", me, "", 5000, false);
+})
 ////// PLAYER functions
 async function displayPfp(file) {
     const compressedFile = await imageCompression(file, {maxSizeMB: 0.5});
@@ -1155,6 +1167,33 @@ function updateScores(players){
         const player = players.find((player) => player.playerName == name.textContent);
         pts.textContent = player.pts;
     })
+}
+
+function revealFinalScores(players){
+    const finalScores = document.createElement("div");
+    finalScores.id = "finalScores";
+
+    players.forEach((player) => {
+        const playerDiv = document.createElement("div");
+        playerDiv.classList.add("player");
+
+        const playerPtsNum = document.createElement("p");
+        playerPtsNum.textContent = player.pts;
+        const playerPtsBar = document.createElement("div");
+        playerPtsBar.classList.add("bar");
+        playerPtsBar.style.height = `calc(3 * ${player.pts}px`;
+        const playerIcon = document.createElement("img");
+        playerIcon.src = player.playerImg;
+        playerIcon.classList.add("icon");
+        
+        playerDiv.appendChild(playerPtsNum);
+        playerDiv.appendChild(playerPtsBar);
+        playerDiv.appendChild(playerIcon);
+        finalScores.appendChild(playerDiv);   
+    })
+
+    const trivia = document.getElementById("trivia");
+    trivia.replaceChildren(finalScores);
 }
 
 function addQuote(quoteText, quoteNum){

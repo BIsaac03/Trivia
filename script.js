@@ -1,4 +1,5 @@
-import questions from "./static/questions.json" with { type: "json" }
+// !! change back to real question JSON after testing
+import questions from "./static/questions-test.json" with { type: "json" }
 
 import express from "express";
 import { createServer } from "http";
@@ -101,13 +102,12 @@ io.on("connection", (socket) => {
     });
 
     socket.on("abandonLobby", (ID) => {
-        const gameToDelete = gamesInProgress.find((game) => game.getPlayers().find((player) => player.playerID == ID));
+        const gameToDelete = gamesInProgress.find((game) => game.getGameDetails().hostID == ID);
         const index = gamesInProgress.indexOf(gameToDelete);
         if (index != -1) {
             gamesInProgress.splice(index, 1); 
-            console.log(gamesInProgress);
         }
-        // !! send kill signals to all players in same lobby
+        io.emit("killLobby");
     });
 
     socket.on("attemptStart", (ID) => {
@@ -180,7 +180,8 @@ io.on("connection", (socket) => {
     socket.on("finishedRound", (ID) => {
         const ongoingGame = gamesInProgress.find((game) => game.getGameDetails().hostID == ID);
         if (ongoingGame.getRoundDetails().questionNum == questions.length){
-            // !! end questions; display final scores on HOST
+            ongoingGame.setWaitingOn("revealFinalScores");
+            socket.emit("revealFinalScores", ongoingGame.getPlayers());
         }
         else{
             resetPlayers(ongoingGame);

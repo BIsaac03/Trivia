@@ -219,7 +219,7 @@ io.on("connection", (socket) => {
 
                     case "continentCheck":
                         player.abilities.continentCheck = false;
-                        player.abilitiesUsedThisRound.continentCheck = ongoingGame.continent;
+                        player.abilitiesUsedThisRound.continentCheck = ongoingGame.getRoundDetails().continent;
                         socket.emit("tellContinent", ongoingGame.continent);
                         break;
 
@@ -231,7 +231,7 @@ io.on("connection", (socket) => {
 
                     case "seeAllSubmissions":
                         player.abilities.seeAllSubmissions = false;
-                        player.abilitiesUsedThisRound.seeAllSubmissions = ongoingGame.rawAnswers;
+                        player.abilitiesUsedThisRound.seeAllSubmissions = ongoingGame.getRoundDetails().rawAnswers;
                         socket.emit("showAllSubmissions", ongoingGame.rawAnswers);
                         break;
                 }       

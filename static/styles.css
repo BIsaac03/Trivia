@@ -43,6 +43,9 @@ input[type="file"]{
     padding: 3px 10px;
     font-size: 24px;
 }
+#me #roomCodeEntry{
+    text-transform: uppercase;
+}
 label.imgEntry.pfp{
     display: grid;
     width: 200px;

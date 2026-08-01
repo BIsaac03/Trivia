@@ -1,5 +1,4 @@
-// !! change back to real question JSON after testing
-import questions from "./static/questions-test.json" with { type: "json" }
+import questions from "./static/questions.json" with { type: "json" }
 
 import express from "express";
 import { createServer } from "http";
@@ -314,8 +313,7 @@ function makeGame(ID, code){
     let questionNum = 0;
     const totalQuestions = questions.length;
     let waitingOn = "initialGuesses";
-    // !! set back to correct values after testing
-    let abilitiesToUse = {eliminateOne: true, continentCheck: true, doublePts: true, seeAllSubmissions: true};
+    let abilitiesToUse = {eliminateOne: true, continentCheck: false, doublePts: false, seeAllSubmissions: false};
     const setAllAnswers = (newAll) => {
         allAnswers = newAll;
     }
@@ -365,8 +363,16 @@ function makeGame(ID, code){
         questionNum++;
     };
     const updateAvailableAbilities = () => {
-        // !! add round availability for each ability
-        if (questionNum > 1){
+        if (questionNum % 2 === 0){
+            abilitiesToUse.continentCheck = true;
+        }
+        else{
+            abilitiesToUse.continentCheck = false;
+        }
+        if (questionNum === 5){
+            abilitiesToUse.seeAllSubmissions = true;
+        }
+        else if (questionNum === 10){
             abilitiesToUse.doublePts = true;
         }
     };

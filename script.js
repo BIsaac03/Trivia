@@ -409,7 +409,7 @@ function makePlayer(name, ID, img){
     const removeSound = (soundDescription) => {
         const sound = sounds.find((sound) => sound[0] == soundDescription);
         if (sound[1] > 1){
-            sounds[1]--;
+            sound[1]--;
         }
         else{
             const index = sounds.indexOf(sound);

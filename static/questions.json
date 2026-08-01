@@ -91,10 +91,10 @@
         "additionalInfo": "Each daily temperature is calculated by averaging the highest and lowest temperature recorded across the entire country."
     },
     {
-        "questionText": "Which US state has the second lowest maximum recorded temperature?",
-        "answer": "Hawaii",
-        "image": "",
-        "additionalInfo": "The lowest is Alaska."
+        "questionText": "What was the name of the first full-length movie?",
+        "answer": "The Story of the Kelly Gang",
+        "image": "/static/images/filmography.jpg",
+        "additionalInfo": "A movie must have a duration exceeding 40 minutes to be considered full-length."
     },
     {
         "questionText": "Which country contains the location shown in the image below?",
@@ -117,10 +117,10 @@
         "additionalInfo": "Count only permanent residents."
     },
     {
-        "questionText": "What was the name of the first full-length movie?",
-        "answer": "The Story of the Kelly Gang",
-        "image": "/static/images/filmography.jpg",
-        "additionalInfo": "A movie must have a duration exceeding 40 minutes to be considered full-length."
+        "questionText": "Which US state has the second lowest maximum recorded temperature?",
+        "answer": "Hawaii",
+        "image": "",
+        "additionalInfo": "The lowest is Alaska."
     },
     {
         "questionText": "Which country contains the location shown in the image below?",

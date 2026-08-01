@@ -287,7 +287,6 @@ socket.on("eliminateAnswer", (eliminatedAnswerIndex) => {
 });
 
 socket.on("tellContinent", (continent) => {
-    // !! format to not overlap with answer choices
     messagePopUp(continent, bodyElement, "continent", 0, true);
 });
 
@@ -1270,6 +1269,7 @@ function addManualAnswerModifier(){
                 //const manualAnswerModification = window.open("http://trivia-k294.onrender.com", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
                 const manualAnswerModification = window.open("http://localhost:5500", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
                 manualAnswerModification.name = "answerModifier";
+                existingWindow.close();
             }
         });
     bodyElement.appendChild(openAnswerModifier);

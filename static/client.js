@@ -1146,6 +1146,7 @@ function revealAnswers(players, answer){
 
     // highlight correct answer
     setTimeout(() => {
+        console.log("/static/audios/ding.mp3");
         playSound("/static/audios/ding.mp3");
         const correctLabel = document.createElement("p");
         correctLabel.textContent = "ANSWER";

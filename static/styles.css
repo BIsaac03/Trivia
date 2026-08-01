@@ -262,9 +262,9 @@ label.imgEntry.pfp{
     position: absolute;
     top: min(16vw, 14svh);
     left: min(3vw, 3svh);
-    font-size: 24px;
+    font-size: 20px;
     width: fit-content;
-    max-width: calc(100vw - calc(2 * min(13vw, 13svh)));
+    max-width: calc(100vw - min(13vw, 13svh));
 }
 
 #trivia .guess{

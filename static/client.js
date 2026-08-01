@@ -422,16 +422,13 @@ socket.on("sendHostSound", (soundDescription, ID, playerName, hostID) => {
             path = "/static/audios/hurryUp.mp3";
         }
         else if (soundDescription == "To brag"){
-            const soundNum = Math.floor(Math.random()*3);
+            const soundNum = Math.floor(Math.random()*2);
             switch (soundNum){
                 case 0:
                     path = "/static/audios/knockedOver.mp3";
                     break;
                 case 1:
                     path = "/static/audios/stableGenius.mp3";
-                    break;
-                case 2:
-                    path = "/static/audios/laugh.mp3";
                     break;
             }
         }
@@ -569,6 +566,7 @@ function firstTimePlayerSetup(){
     codeEntry.id = "roomCodeEntry";
     codeEntry.placeholder = "Room Code";
     codeEntry.maxLength = 4;
+    codeEntry.setAttribute("autocapitalize", "characters");
 
     const joinBtn = document.createElement("button");
     joinBtn.classList.add("submit");
@@ -1055,15 +1053,15 @@ function setUpHostDisplay(players, roundDetails, gameDetails){
 }
 
 function displayQuestion(question, img){
+    const questionImg = document.querySelector(`.question img`);
+    questionImg.style.opacity = 1;
+    questionImg.src = img;
+
     const answersDiv = document.querySelector(`div.answers`);
     answersDiv.style.display = "none";
 
     const questionText = document.querySelector(`.question p`);
     questionText.textContent = question;
-
-    const questionImg = document.querySelector(`.question img`);
-    questionImg.style.opacity = 1;
-    questionImg.src = img;
 }
 
 function hostDisplayAnswers(answers){
@@ -1112,7 +1110,6 @@ function revealAnswers(players, answer){
     const answersDOM = document.querySelectorAll(`div.answers .answerChoice p.answer`);
     const answers = [...answersDOM];
     const stall = players.length;
-    const popAudio = new Audio("/static/audios/pop.mp3");
 
     // display players' final answers
     for (let icons = 0; icons < players.length; icons++){
@@ -1122,8 +1119,8 @@ function revealAnswers(players, answer){
             guessedIcon.classList.add("pfp");
             const chosenAnswer = answers.find((selectedAnswer) => selectedAnswer.textContent == players[icons].finalAnswer);
             const chosenByDiv = chosenAnswer.parentElement.querySelector(`.chosenBy`);
-            popAudio.play();
             chosenByDiv.appendChild(guessedIcon);
+            playSound("/static/audios/pop.mp3");
         }, icons*1000);            
     }
 
@@ -1138,27 +1135,29 @@ function revealAnswers(players, answer){
             const author = document.createElement("p");
             author.textContent = players[authors].playerName;
             if (players[authors] == losingPlayer){
+                playSound("/static/audios/laugh.mp3");
                 author.id = "cursedLabel";
             }
             const initialGuess = answers.find((writtenAnswer) => writtenAnswer.textContent == players[authors].initialGuess);
             const authorsDiv = initialGuess.parentElement.querySelector(`.authors`);
             authorsDiv.appendChild(author);
-        }, stall*1000 + authors*1000);     
+        }, stall*1000 + authors*2000);     
     }
 
     // highlight correct answer
     setTimeout(() => {
+        playSound("/static/audios/ding.mp3");
         const correctLabel = document.createElement("p");
         correctLabel.textContent = "ANSWER";
         correctLabel.id = "correctLabel";
         const correctAnswer = answers.find((correctAnswer) => correctAnswer.textContent == answer);
         const authorsDiv = correctAnswer.parentElement.querySelector(`.authors`);
         authorsDiv.appendChild(correctLabel);
-    }, stall*2000); 
+    }, stall*3000); 
 
     setTimeout(() => {
         socket.emit("finishedRound", myID);
-    }, 4000 + stall*2000); 
+    }, 3000 + stall*3000); 
 }
 
 function displayScores(players){
@@ -1285,6 +1284,11 @@ function updateAbilityAvailability(abilitiesToUse){
             ability.firstChild.style.filter = ``;
         }
     })
+}
+
+function playSound(path){
+    const audio = new Audio(path);
+    audio.play();
 }
 
 function addManualAnswerModifier(){

@@ -3,7 +3,7 @@
         "questionText": "In which universe is the fictional language Lapine spoken?",
         "answer": "Watership Down",
         "image": "",
-        "additionalInfo": "N/A"
+        "additionalInfo": "E.g., 'silflay'."
     },
     {
         "questionText": "Which county has the most Holocene volcanoes?",
@@ -15,7 +15,7 @@
     {
         "questionText": "What is the name of the largest Greek island?",
         "answer": "Crete",
-        "image": "",
+        "image": "/static/images/greece.webp",
         "additionalInfo": "It is both geographically the largest, and the most populous. Do not consider the mainland an 'island'."
     },
     {
@@ -23,13 +23,13 @@
         "answer": "Australia",
         "image": "/static/images/LakeHillier.webp",
         "continent": "Oceania",
-        "additionalInfo": "N/A"
+        "additionalInfo": "The subject of the image has almost the same salt concentration as the Dead Sea."
     },
     {
         "questionText": "In which universe is the fictional language Quenya spoken?",
         "answer": "Lord of the Rings",
         "image": "",
-        "additionalInfo": "N/A"
+        "additionalInfo": "E.g., 'tári'."
     },
     {
         "questionText": "Which country has the highest average annual temperature?",
@@ -39,23 +39,23 @@
         "additionalInfo": "Each daily temperature is calculated by averaging the highest and lowest temperature recorded across the entire country."
     },
     {
-        "questionText": "",
-        "answer": "",
-        "image": "",
-        "additionalInfo": ""
+        "questionText": "What does the acronym 'ZIP' in 'ZIP code' stand for?",
+        "answer": "Zone Improvement Plan",
+        "image": "/static/images/ZIPCode.jpg",
+        "additionalInfo": "The numbers were introduced in 1963 and further extended in 1983."
     },
     {
         "questionText": "Which country contains the location shown in the image below?",
         "answer": "China",
         "image": "/static/images/ZhangyeDanxia.jpg",
         "continent": "Asia",
-        "additionalInfo": "N/A"
+        "additionalInfo": "The subject of the image is the result of 24 million years of sandstone deposits."
     },
     {
         "questionText": "In which universe is the fictional language Shyriiwook spoken?",
         "answer": "Star Wars",
         "image": "",
-        "additionalInfo": "N/A"
+        "additionalInfo": "E.g., 'mumwa'."
     }, 
     {
         "questionText": "Which country has the oldest in-use constitution?",
@@ -65,23 +65,23 @@
         "additionalInfo": "It need not be codified."
     },
     {
-        "questionText": "",
-        "answer": "",
-        "image": "",
-        "additionalInfo": ""
+        "questionText": "What term describes an animal that walks on its toes?",
+        "answer": "Digitigrade",
+        "image": "/status/images/digitigrade.jpg",
+        "additionalInfo": "Examples include cats, dogs, and most birds."
     },
     {
         "questionText": "Which country contains the location shown in the image below?",
         "answer": "United States",
         "image": "/static/images/GrandPrismatic.jpg",
         "continent": "North America",
-        "additionalInfo": "N/A"
+        "additionalInfo": "The subject of the image is the third-largest of its kind."
     },
     {
         "questionText": "In which universe is the fictional language Chakobsa spoken?",
         "answer": "Dune",
         "image": "",
-        "additionalInfo": "N/A"
+        "additionalInfo": "E.g., 'addaam'."
     },
     {
         "questionText": "Which country has the lowest average annual temperature?",
@@ -101,13 +101,13 @@
         "answer": "Vietnam",
         "image": "/static/images/HaLongBay.webp",
         "continent": "Asia",
-        "additionalInfo": "N/A"
+        "additionalInfo": "The subject of the image has an area of around 600 square miles."
     },
     {
         "questionText": "In which universe is the fictional language Syldavian spoken?",
         "answer": "Tintin",
         "image": "",
-        "additionalInfo": "N/A"
+        "additionalInfo": "E.g., 'Klebczen'."
     },
     {
         "questionText": "Which country has the least populous capital city?",
@@ -117,9 +117,16 @@
         "additionalInfo": "Count only permanent residents."
     },
     {
-        "questionText": "",
-        "answer": "",
-        "image": "",
-        "additionalInfo": ""
+        "questionText": "What was the name of the first full-length movie?",
+        "answer": "The Story of the Kelly Gang",
+        "image": "/static/images/filmography.jpg",
+        "additionalInfo": "A movie must have a duration exceeding 40 minutes to be considered full-length."
+    },
+    {
+        "questionText": "Which country contains the location shown in the image below?",
+        "answer": "Venezuela",
+        "image": "https://i.natgeofe.com/n/d5031d22-a00c-4f0d-a11b-53aa919eb886/angel-falls-venezuela.jpg",
+        "continent": "South America",
+        "additionalInfo": "The subject of the image is the tallest uninterrupted waterfall in the world."
     }
 ]

@@ -4,8 +4,8 @@ if (document.cookie == ""){
 const userIDCookie = document.cookie;
 const myID = userIDCookie.slice(7);
 
-const socket = io("https://trivia-k294.onrender.com/", {
-//const socket = io("http://localhost:3000", {
+//const socket = io("https://trivia-k294.onrender.com/", {
+const socket = io("http://localhost:3000", {
     auth: {
         token: userIDCookie
     }
@@ -376,10 +376,8 @@ socket.on("sendHostSound", (soundDescription, ID, playerName, hostID) => {
         // play appropriate sound
         let path = undefined;
         let customized = false;
-        console.log(soundDescription)
         if (soundDescription == "To complain"){
             const soundNum = Math.floor(Math.random()*4);
-            console.log(soundNum);
             switch (soundNum){
                 case 0:
                     path = "/static/audios/biasedBeyondBelief.m4a";
@@ -404,7 +402,6 @@ socket.on("sendHostSound", (soundDescription, ID, playerName, hostID) => {
                 case 1:
                     customized = true;
                     const customizedNum = Math.floor(Math.random()*4);
-                    console.log(customizedNum);
                     switch (customizedNum){
                         case 0:
                             path = "/static/audios/soManyPoints.m4a";
@@ -1195,8 +1192,6 @@ function updateScores(players){
 }
 
 function revealFinalScores(players){
-    // !! change back smaller once tested
-    const PXSPERPT = 50;
     const finalScores = document.createElement("div");
     finalScores.id = "finalScores";
 
@@ -1208,11 +1203,15 @@ function revealFinalScores(players){
         playerPtsNum.textContent = player.pts;
         setTimeout(() => {
             playerPtsNum.style.visibility = "visible";
-        }, (PXSPERPT * player.pts / 25)*1000);
+        }, 2 * player.pts *1000);
+
+        const winner = players.reduce((winner, current) => current.pts > winner.pts ? current : winner);
+        const vhsPerPt = 40 / winner.pts;
+
         const playerPtsBar = document.createElement("div");
         playerPtsBar.classList.add("bar");
-        playerPtsBar.style.height = `${PXSPERPT * player.pts}px`;
-        playerPtsBar.style.animation = `revealScores ${PXSPERPT * player.pts / 25}s  ease-out forwards`;
+        playerPtsBar.style.height = `${vhsPerPt * player.pts}vh`;
+        playerPtsBar.style.animation = `revealScores ${2 * player.pts}s  ease-out forwards`;
         playerPtsBar.style.background = `url(${player.playerImg}) no-repeat center/cover`;
         const playerIcon = document.createElement("img");
         playerIcon.src = player.playerImg;
@@ -1255,7 +1254,6 @@ function addAbility(abilityName, abilitiesDiv){
     abilityIcon.src = `/static/icons/${abilityName}.svg`;
 
     const abilityRounds = document.createElement("p");
-    // !! display rounds abilities can be used
     switch (abilityName){
         case 'eliminateOne': 
             abilityRounds.textContent = "ALL";
@@ -1297,8 +1295,8 @@ function addManualAnswerModifier(){
         openAnswerModifier.addEventListener("click", () => {
             const existingWindow = window.open("", "answerModifier");
             if (!existingWindow || existingWindow.location.href == "about:blank"){
-                const manualAnswerModification = window.open("http://trivia-k294.onrender.com", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
-                //const manualAnswerModification = window.open("http://localhost:5500", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
+                //const manualAnswerModification = window.open("http://trivia-k294.onrender.com", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
+                const manualAnswerModification = window.open("http://localhost:5500", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
                 manualAnswerModification.name = "answerModifier";
                 existingWindow.close();
             }

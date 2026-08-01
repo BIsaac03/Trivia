@@ -67,7 +67,7 @@
     {
         "questionText": "What term describes an animal that walks on its toes?",
         "answer": "Digitigrade",
-        "image": "/status/images/digitigrade.jpg",
+        "image": "/static/images/digitigrade.jpg",
         "additionalInfo": "Examples include cats, dogs, and most birds."
     },
     {

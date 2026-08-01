@@ -233,7 +233,7 @@ label.imgEntry.pfp{
 #trivia{
     grid-area: 2 / 2 / 3 / 3;
     display: grid;
-    padding: 25px;
+    padding: 0px 25px 25px 25px;
     gap: 10px;
 }
 #trivia .question{
@@ -247,7 +247,7 @@ label.imgEntry.pfp{
     margin-top: 50px;
     justify-self: center;
     width: 60vw;
-    height: 55svh;
+    height: 60svh;
     object-fit: contain;
 }
 
@@ -262,6 +262,7 @@ label.imgEntry.pfp{
     position: absolute;
     top: min(16vw, 14svh);
     left: min(3vw, 3svh);
+    font-size: 24px;
 }
 
 #trivia .guess{

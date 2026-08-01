@@ -382,12 +382,16 @@ socket.on("sendHostSound", (soundDescription, ID, playerName, hostID) => {
             switch (soundNum){
                 case 0:
                     path = "/static/audios/biasedBeyondBelief.m4a";
+                    break;
                 case 1:
                     path = "/static/audios/gameIsRigged.m4a";
+                    break;
                 case 2:
                     path = "/static/audios/iWasCheated.m4a";
+                    break;
                 case 3:
                     path = "/static/audios/totallyUnfair.m4a";
+                    break;
             }
         }
         else if (soundDescription == "Encouragement"){
@@ -395,31 +399,39 @@ socket.on("sendHostSound", (soundDescription, ID, playerName, hostID) => {
             switch (soundNum){
                 case 0:
                     path = "/static/audios/saveMe.mp3";
+                    break;
                 case 1:
                     customized = true;
                     const customizedNum = Math.floor(Math.random()*4);
                     case 0:
                         path = "/static/audios/soManyPoints.m4a";
+                        break;
                     case 1:
                         path = "/static/audios/isGonnaDoWell.m4a";
+                        break;
                     case 2:
                         path = "/static/audios/needsOurPrayers.m4a";
+                        break;
                     case 3:
                         path = "/static/audios/isGonnaWin.m4a";
+                        break;
             }
         }
         else if (soundDescription == "Slowpokes to hurry up"){
-            path = "/static/audios/hurryUp.m4a";
+            path = "/static/audios/hurryUp.mp3";
         }
         else if (soundDescription == "To brag"){
             const soundNum = Math.floor(Math.random()*3);
             switch (soundNum){
                 case 0:
                     path = "/static/audios/knockedOver.mp3";
+                    break;
                 case 1:
                     path = "/static/audios/stableGenius.mp3";
+                    break;
                 case 2:
                     path = "/static/audios/laugh.mp3";
+                    break;
             }
         }
 

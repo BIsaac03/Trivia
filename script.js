@@ -246,10 +246,10 @@ io.on("connection", (socket) => {
         const player = ongoingGame.getPlayers().find((player) => player.playerID == ID);
         if (player){
             let eliminatedAnswer = undefined;
-            if (ongoingGame.answer == ongoingGame.getRoundDetails().allAnswers[index1]){
+            if (ongoingGame.getRoundDetails().answer == ongoingGame.getRoundDetails().allAnswers[index1]){
                 eliminatedAnswer = index2;
             }
-            else if (ongoingGame.answer == ongoingGame.getRoundDetails().allAnswers[index2]){
+            else if (ongoingGame.getRoundDetails().answer == ongoingGame.getRoundDetails().allAnswers[index2]){
                 eliminatedAnswer = index1;
             }
             else{
@@ -395,6 +395,7 @@ function makePlayer(name, ID, img){
     let isReady = false;
     const addSound = (soundDescription) => {
         if (hasAcquiredFirstSound == false){
+            hasAcquiredFirstSound = true;
             firstSound(playerID);
         }
         const existingSound = sounds.find((sound) => sound[0] == soundDescription);

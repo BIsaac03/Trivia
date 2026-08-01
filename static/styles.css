@@ -249,6 +249,7 @@ label.imgEntry.pfp{
     width: 60vw;
     height: 60svh;
     object-fit: contain;
+    z-index: -1;
 }
 
 #additionalInfo{

@@ -1287,6 +1287,7 @@ function updateAbilityAvailability(abilitiesToUse){
 }
 
 function playSound(path){
+    console.log(path);
     const audio = new Audio(path);
     audio.play();
 }

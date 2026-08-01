@@ -280,7 +280,7 @@ io.on("connection", (socket) => {
         const player = ongoingGame.getPlayers().find((player) => player.playerID == ID);
         if (player){
             const hasSound = player.sounds.find((sound) => sound[0] == soundDescription);
-            if (hasSound){
+            if (hasSound && hasSound[1] > 0){
                 player.removeSound(soundDescription);
                 socket.broadcast.emit("sendHostSound", soundDescription, ID, player.playerName, ongoingGame.getGameDetails().hostID);
             }

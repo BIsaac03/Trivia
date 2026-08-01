@@ -4,8 +4,8 @@ if (document.cookie == ""){
 const userIDCookie = document.cookie;
 const myID = userIDCookie.slice(7);
 
-const socket = io("https://trivia-k294.onrender.com/", {
-//const socket = io("http://localhost:3000", {
+//const socket = io("https://trivia-k294.onrender.com/", {
+const socket = io("http://localhost:3000", {
     auth: {
         token: userIDCookie
     }
@@ -426,23 +426,24 @@ socket.on("sendHostSound", (soundDescription, ID, playerName, hostID) => {
         const playerIcon = document.getElementById(ID);
         const playingSound = document.createElement("img");
         playingSound.src = "/static/icons/sounds.svg";
-        if (customized){
+
+        const audio = new Audio(path);
+        audio.addEventListener('ended', () => {
+            playingSound.remove();
+        });
+        if (customized && path){
             const utterance = new SpeechSynthesisUtterance(playerName);
             utterance.addEventListener("start", () => {
                 playerIcon.appendChild(playingSound);
             })
+            utterance.addEventListener("end", () => {
+                audio.play();
+            })
             window.speechSynthesis.speak(utterance);
-
         }
-        if (path){
-            const audio = new Audio(path);
-            if (!customized){
-                audio.addEventListener('playing', () => {
-                    playerIcon.appendChild(playingSound);
-                });
-            }
-            audio.addEventListener('ended', () => {
-                playingSound.remove();
+        else if (path){
+            audio.addEventListener('playing', () => {
+                playerIcon.appendChild(playingSound);
             });
             audio.play();
         }
@@ -572,7 +573,7 @@ function firstTimePlayerSetup(){
             messagePopUp("Add a name first!", me, "noNameError", 1500, false);
         }
         else{
-            socket.emit("playerJoined", nameEntry.value, myID, pfpPreview.src, codeEntry.value);
+            socket.emit("playerJoined", nameEntry.value, myID, pfpPreview.src, codeEntry.value.toUpperCase());
         }
     })
 
@@ -1239,7 +1240,21 @@ function addAbility(abilityName, abilitiesDiv){
 
     const abilityRounds = document.createElement("p");
     // !! display rounds abilities can be used
-    abilityRounds.textContent = "0";
+    switch (abilityName){
+        case 'eliminateOne': 
+            abilityRounds.textContent = "ALL";
+            break;
+        case 'continentCheck':
+            abilityRounds.textContent = "EVENS";
+            break;
+        case 'doublePts':
+            abilityRounds.textContent = "10+";
+            break;
+        case 'seeAllSubmissions':
+            abilityRounds.textContent = "5+";
+            break;
+    }
+    
 
     ability.appendChild(abilityIcon);
     ability.appendChild(abilityRounds);
@@ -1266,8 +1281,8 @@ function addManualAnswerModifier(){
         openAnswerModifier.addEventListener("click", () => {
             const existingWindow = window.open("", "answerModifier");
             if (!existingWindow || existingWindow.location.href == "about:blank"){
-                const manualAnswerModification = window.open("http://trivia-k294.onrender.com", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
-                //const manualAnswerModification = window.open("http://localhost:5500", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
+                //const manualAnswerModification = window.open("http://trivia-k294.onrender.com", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
+                const manualAnswerModification = window.open("http://localhost:5500", "_blank", "width=600,height=400,resizable=yes,scrollbars=yes");
                 manualAnswerModification.name = "answerModifier";
                 existingWindow.close();
             }

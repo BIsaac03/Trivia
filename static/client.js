@@ -379,6 +379,7 @@ socket.on("sendHostSound", (soundDescription, ID, playerName, hostID) => {
         console.log(soundDescription)
         if (soundDescription == "To complain"){
             const soundNum = Math.floor(Math.random()*4);
+            console.log(soundNum);
             switch (soundNum){
                 case 0:
                     path = "/static/audios/biasedBeyondBelief.m4a";
@@ -403,18 +404,21 @@ socket.on("sendHostSound", (soundDescription, ID, playerName, hostID) => {
                 case 1:
                     customized = true;
                     const customizedNum = Math.floor(Math.random()*4);
-                    case 0:
-                        path = "/static/audios/soManyPoints.m4a";
-                        break;
-                    case 1:
-                        path = "/static/audios/isGonnaDoWell.m4a";
-                        break;
-                    case 2:
-                        path = "/static/audios/needsOurPrayers.m4a";
-                        break;
-                    case 3:
-                        path = "/static/audios/isGonnaWin.m4a";
-                        break;
+                    console.log(customizedNum);
+                    switch (customizedNum){
+                        case 0:
+                            path = "/static/audios/soManyPoints.m4a";
+                            break;
+                        case 1:
+                            path = "/static/audios/isGonnaDoWell.m4a";
+                            break;
+                        case 2:
+                            path = "/static/audios/needsOurPrayers.m4a";
+                            break;
+                        case 3:
+                            path = "/static/audios/isGonnaWin.m4a";
+                            break;
+                    }  
             }
         }
         else if (soundDescription == "Slowpokes to hurry up"){
